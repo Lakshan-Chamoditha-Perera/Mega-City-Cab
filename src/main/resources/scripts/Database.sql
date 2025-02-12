@@ -9,8 +9,8 @@ USE megacity_cab_db;
 CREATE TABLE User
 (
     userId       INT AUTO_INCREMENT PRIMARY KEY,
-    username     VARCHAR(50)  NOT NULL UNIQUE,
-    passwordHash VARCHAR(255) NOT NULL, -- Use a hashed password for security
+    username     VARCHAR(50)  NOT NULL,
+    passwordHash VARCHAR(255) NOT NULL,
     email        VARCHAR(255) NOT NULL UNIQUE,
     createdAt    DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt    DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
