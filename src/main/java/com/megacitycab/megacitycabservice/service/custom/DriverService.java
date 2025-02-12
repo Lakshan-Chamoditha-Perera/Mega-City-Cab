@@ -1,4 +1,6 @@
 package com.megacitycab.megacitycabservice.service.custom;
 
-public interface DriverService {
+import com.megacitycab.megacitycabservice.service.Service;
+
+public interface DriverService extends Service {
 }

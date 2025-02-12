@@ -1,4 +1,6 @@
 package com.megacitycab.megacitycabservice.service.custom;
 
-public interface BookingService {
+import com.megacitycab.megacitycabservice.service.Service;
+
+public interface BookingService extends Service {
 }

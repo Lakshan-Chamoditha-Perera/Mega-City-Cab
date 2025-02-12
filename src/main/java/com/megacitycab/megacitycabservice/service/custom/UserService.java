@@ -1,11 +1,10 @@
 package com.megacitycab.megacitycabservice.service.custom;
 
 import com.megacitycab.megacitycabservice.entity.custom.User;
+import com.megacitycab.megacitycabservice.service.Service;
 
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
-public interface UserService {
+public interface UserService extends Service {
     List<User> findAll();
 }

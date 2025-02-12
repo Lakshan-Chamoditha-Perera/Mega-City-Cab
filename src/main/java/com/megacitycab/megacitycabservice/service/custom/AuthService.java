@@ -1,11 +1,12 @@
 package com.megacitycab.megacitycabservice.service.custom;
 
+import com.megacitycab.megacitycabservice.service.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-public interface AuthService {
+public interface AuthService extends Service {
 
     void login(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
