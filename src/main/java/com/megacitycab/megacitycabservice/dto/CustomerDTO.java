@@ -1,26 +1,24 @@
-package com.megacitycab.megacitycabservice.entity.custom;
-
-import com.megacitycab.megacitycabservice.dto.CustomerDTO;
-import com.megacitycab.megacitycabservice.entity.Entity;
+package com.megacitycab.megacitycabservice.dto;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
 
-public class Customer implements Entity {
-    private int customerId;
-    private int addedUserId;
-    private String firstName;
-    private String lastName;
-    private String address;
-    private String nic;
-    private Date dateOfBirth;
-    private String mobileNo;
-    private String email;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private boolean isDeleted;
+public class CustomerDTO implements DTO {
+    private final int customerId;
+    private final int addedUserId;
+    private final String firstName;
+    private final String lastName;
+    private final String address;
+    private final String nic;
+    private final Date dateOfBirth;
+    private final String mobileNo;
+    private final String email;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
+    private final boolean isDeleted;
 
-    private Customer(Builder builder) {
+    // Private constructor to be used by the builder
+    private CustomerDTO(Builder builder) {
         this.customerId = builder.customerId;
         this.addedUserId = builder.addedUserId;
         this.firstName = builder.firstName;
@@ -36,103 +34,60 @@ public class Customer implements Entity {
     }
 
     public static Builder builder() {
-        return new Customer.Builder();
-    }
-    // Getters and Setters
-    public int getCustomerId() {
-        return customerId;
+        return new Builder();
     }
 
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
+    public int getCustomerId() {
+        return customerId;
     }
 
     public int getAddedUserId() {
         return addedUserId;
     }
 
-    public void setAddedUserId(int addedUserId) {
-        this.addedUserId = addedUserId;
-    }
-
     public String getFirstName() {
         return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public String getAddress() {
         return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getNic() {
         return nic;
     }
 
-    public void setNic(String nic) {
-        this.nic = nic;
-    }
-
     public Date getDateOfBirth() {
         return dateOfBirth;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
     }
 
     public String getMobileNo() {
         return mobileNo;
     }
 
-    public void setMobileNo(String mobileNo) {
-        this.mobileNo = mobileNo;
-    }
-
     public String getEmail() {
         return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public boolean isDeleted() {
         return isDeleted;
     }
 
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
+    @Override
+    public String toString() {
+        return "CustomerDto{" + "customerId=" + customerId + ", addedUserId=" + addedUserId + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", address='" + address + '\'' + ", nic='" + nic + '\'' + ", dateOfBirth=" + dateOfBirth + ", mobileNo='" + mobileNo + '\'' + ", email='" + email + '\'' + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", isDeleted=" + isDeleted + '}';
     }
 
     public static class Builder {
@@ -209,26 +164,8 @@ public class Customer implements Entity {
             return this;
         }
 
-        public Customer build() {
-            return new Customer(this);
+        public CustomerDTO build() {
+            return new CustomerDTO(this);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "customerId=" + customerId +
-                ", addedUserId=" + addedUserId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", address='" + address + '\'' +
-                ", nic='" + nic + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
-                ", mobileNo='" + mobileNo + '\'' +
-                ", email='" + email + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", isDeleted=" + isDeleted +
-                '}';
     }
 }

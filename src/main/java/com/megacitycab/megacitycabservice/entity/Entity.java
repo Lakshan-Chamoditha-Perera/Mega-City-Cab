@@ -1,4 +1,6 @@
 package com.megacitycab.megacitycabservice.entity;
 
-public interface Entity {
+import java.io.Serializable;
+
+public interface Entity extends Serializable {
 }
