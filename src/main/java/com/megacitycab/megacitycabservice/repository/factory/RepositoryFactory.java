@@ -1,19 +1,13 @@
 package com.megacitycab.megacitycabservice.repository.factory;
 
-import com.megacitycab.megacitycabservice.configuration.listeners.custom.DatabaseConnectionPool;
-import com.megacitycab.megacitycabservice.entity.Entity;
 import com.megacitycab.megacitycabservice.repository.Repository;
 import com.megacitycab.megacitycabservice.repository.RepositoryType;
 import com.megacitycab.megacitycabservice.repository.custom.impl.*;
 
 public class RepositoryFactory {
+    
 
     private static RepositoryFactory instance;
-    private final DatabaseConnectionPool databaseConnectionPool;
-
-    private RepositoryFactory() {
-        databaseConnectionPool = DatabaseConnectionPool.getInstance();
-    }
 
     public static synchronized RepositoryFactory getInstance() {
         if (instance == null) {
@@ -31,7 +25,6 @@ public class RepositoryFactory {
             case DRIVER -> new DriverRepositoryImpl();
             case USER -> new UserRepositoryImpl();
             case VEHICLE -> new VehicleRepositoryImpl();
-            default -> throw new IllegalArgumentException("Invalid repository type");
         };
         return (T) repository;
     }
