@@ -21,18 +21,15 @@ public class SecurityFilter implements Filter {
         HttpSession session = httpRequest.getSession(false);
 
         // Check if the user is authenticated
-        boolean isAuthenticated = (session != null && session.getAttribute("user") != null);
-        logger.log(Level.ALL,"isAuthenticated: " + isAuthenticated);
 
-        String servletPath = httpRequest.getServletPath();
-//        System.out.println(servletPath);
         // Public endpoints (no authentication required)
-        if (servletPath.startsWith("/auth")) {
+        if (httpRequest.getServletPath().startsWith("/auth")) {
             chain.doFilter(request, response); // Allow access to public endpoints
             return;
         }
 
-        // Protected endpoints (authentication required)
+        boolean isAuthenticated = (session != null && session.getAttribute("user") != null);
+        logger.log(Level.ALL, "isAuthenticated: " + isAuthenticated);
         if (!isAuthenticated) {
             logger.info("Security Filter - Not Authenticated. Redirecting to Login Page");
             httpResponse.sendRedirect(httpRequest.getContextPath() + "/auth/login"); // Redirect to login page

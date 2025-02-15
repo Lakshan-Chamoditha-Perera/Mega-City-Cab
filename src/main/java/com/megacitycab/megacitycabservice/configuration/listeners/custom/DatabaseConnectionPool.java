@@ -43,11 +43,9 @@ public class DatabaseConnectionPool {
     }
 
     public void loadProperties() {
-        System.out.println("Initializing DatabaseConnectionPool...");
         try {
             Context initContext = new InitialContext();
             dataSource = (DataSource) initContext.lookup("java:comp/env/DatabaseResource");
-            logger.info("DatabaseConnectionPool initialized successfully.");
         } catch (NamingException e) {
             logger.severe("Failed to initialize DatabaseConnectionPool: " + e.getMessage());
             throw new RuntimeException("Error initializing JNDI DataSource", e);
