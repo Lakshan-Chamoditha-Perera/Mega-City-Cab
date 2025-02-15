@@ -12,8 +12,8 @@ public class UserServiceImpl implements UserService {
     private final TransactionManager transactionManager;
     private final UserRepository userRepository;
 
-    public UserServiceImpl() {
-        transactionManager = new TransactionManager();
+    public UserServiceImpl(TransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
         userRepository = new UserRepositoryImpl();
     }
 

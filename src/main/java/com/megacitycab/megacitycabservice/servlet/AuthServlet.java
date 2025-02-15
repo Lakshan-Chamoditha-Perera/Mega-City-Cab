@@ -1,7 +1,9 @@
 package com.megacitycab.megacitycabservice.servlet;
 
+import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.AuthService;
 import com.megacitycab.megacitycabservice.service.custom.impl.AuthServiceImpl;
+import com.megacitycab.megacitycabservice.service.factory.ServiceFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,7 +21,7 @@ public class AuthServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        authService = new AuthServiceImpl();
+        authService = ServiceFactory.getInstance().getService(ServiceType.AUTH);
     }
 
     @Override

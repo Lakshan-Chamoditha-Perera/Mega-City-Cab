@@ -1,8 +1,9 @@
 package com.megacitycab.megacitycabservice.servlet;
 
 import com.megacitycab.megacitycabservice.entity.custom.User;
+import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.UserService;
-import com.megacitycab.megacitycabservice.service.custom.impl.UserServiceImpl;
+import com.megacitycab.megacitycabservice.service.factory.ServiceFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -22,7 +23,7 @@ public class UserServlet extends HttpServlet {
     @Override
     public void init() {
         logger.info("UserServlet init");
-        userService = new UserServiceImpl();
+        userService = ServiceFactory.getInstance().getService(ServiceType.USER);
     }
 
     @Override

@@ -4,70 +4,70 @@ import com.megacitycab.megacitycabservice.configuration.listeners.custom.Databas
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TransactionManager {
+    private static final Logger logger = Logger.getLogger(TransactionManager.class.getName());
     private final DatabaseConnectionPool connectionPool;
-    private final Logger logger = Logger.getLogger(TransactionManager.class.getName());
 
     public TransactionManager() {
-        connectionPool = DatabaseConnectionPool.getInstance();
+        this.connectionPool = DatabaseConnectionPool.getInstance();
     }
 
-    public <T> T doInTransaction(TransactionCallback<T> callback) {
+    public <T> T doInTransaction(TransactionCallback<T> callback) throws RuntimeException {
         Connection connection = null;
         try {
             connection = connectionPool.getConnection();
             connection.setAutoCommit(false);
-            T result = callback.execute(connection);
 
+            T result = callback.execute(connection);
             connection.commit();
             return result;
         } catch (SQLException e) {
+            // Handle rollback in case of failure
             if (connection != null) {
                 try {
                     connection.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace(); // Log the rollback error
+                    logger.log(Level.SEVERE, "Transaction rolled back due to an error: {0}", e.getMessage());
+                } catch (SQLException rollbackEx) {
+                    logger.log(Level.SEVERE, "Failed to rollback transaction: {0}", rollbackEx.getMessage());
                 }
             }
-            logger.warning(e.getMessage());
-            throw new RuntimeException("Transaction failed", e);
+            throw new RuntimeException(e);
         } finally {
-            if (connection != null) {
-                try {
-                    connection.setAutoCommit(true); // Reset auto-commit to true
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace(); // Log the close error
-                }
-            }
+            // Ensure connection is closed and returned to the pool
+            closeConnection(connection);
         }
     }
 
-    public <T> T doReadOnly(TransactionCallback<T> callback) {
+    public <T> T doReadOnly(TransactionCallback<T> callback) throws RuntimeException {
         Connection connection = null;
         try {
-            // Get a connection from the pool
+            // Acquire connection from the pool
             connection = connectionPool.getConnection();
-            // Execute the callback (read-only logic)
+
+            // Execute callback (read-only logic)
             return callback.execute(connection);
         } catch (SQLException e) {
-            logger.warning(e.getMessage());
-            throw new RuntimeException("Transaction failed", e);
+            logger.log(Level.SEVERE, "Read-only transaction failed: {0}", e.getMessage());
+            throw new RuntimeException(e);
         } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace(); // Log the close error
-                }
-            }
+            // Ensure connection is closed and returned to the pool
+            closeConnection(connection);
         }
     }
 
-    @FunctionalInterface
-    public interface TransactionCallback<T> {
-        T execute(Connection connection) throws SQLException;
+    private void closeConnection(Connection connection) {
+        if (connection != null) {
+            try {
+                if (!connection.getAutoCommit()) {
+                    connection.setAutoCommit(true); // Reset auto-commit
+                }
+                connection.close(); // Return connection to the pool
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "Failed to close connection: {0}", e.getMessage());
+            }
+        }
     }
 }

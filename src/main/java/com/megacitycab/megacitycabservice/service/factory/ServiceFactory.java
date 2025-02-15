@@ -3,6 +3,7 @@ package com.megacitycab.megacitycabservice.service.factory;
 import com.megacitycab.megacitycabservice.service.Service;
 import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.impl.*;
+import com.megacitycab.megacitycabservice.util.TransactionManager;
 
 public class ServiceFactory {
     private static ServiceFactory instance;
@@ -19,14 +20,16 @@ public class ServiceFactory {
 
     @SuppressWarnings("unchecked")
     public <T extends Service> T getService(ServiceType type) {
+
+        TransactionManager transactionManager = new TransactionManager();
+
         Service service = switch (type) {
-            case AUTH -> new AuthServiceImpl();
-            case BOOKING -> new BookingServiceImpl();
-            case CUSTOMER -> new CustomerServiceImpl();
-            case DRIVER -> new DriverServiceImpl();
-            case USER -> new UserServiceImpl();
-            case VEHICLE -> new VehicleServiceImpl();
-            default -> throw new IllegalArgumentException("Invalid repository type");
+            case AUTH -> new AuthServiceImpl(transactionManager);
+            case BOOKING -> new BookingServiceImpl(transactionManager);
+            case CUSTOMER -> new CustomerServiceImpl(transactionManager);
+            case DRIVER -> new DriverServiceImpl(transactionManager);
+            case USER -> new UserServiceImpl(transactionManager);
+            case VEHICLE -> new VehicleServiceImpl(transactionManager);
         };
         return (T) service;
     }

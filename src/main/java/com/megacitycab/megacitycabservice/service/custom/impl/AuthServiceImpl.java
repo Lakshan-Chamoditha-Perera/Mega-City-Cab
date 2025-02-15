@@ -19,8 +19,8 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final Logger logger = Logger.getLogger(AuthServiceImpl.class.getName());
 
-    public AuthServiceImpl() {
-        transactionManager = new TransactionManager();
+    public AuthServiceImpl(TransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
         userRepository = new UserRepositoryImpl();
     }
 
@@ -66,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
 
 
             // Redirect to the dashboard after successful login
-            response.sendRedirect(request.getContextPath() + "/app");
+            response.sendRedirect(request.getContextPath() + "/customers");
 
         } catch (Exception e) {
             logger.severe("Error during login: " + e.getMessage());
