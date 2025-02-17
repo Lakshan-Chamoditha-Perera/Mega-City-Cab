@@ -35,23 +35,6 @@ CREATE TABLE Customer
     FOREIGN KEY (addedUserId) REFERENCES User (userId)
 );
 
--- Vehicle Table
-CREATE TABLE Vehicle
-(
-    vehicleId      INT AUTO_INCREMENT PRIMARY KEY,
-    licensePlate   VARCHAR(15)  NOT NULL UNIQUE,
-    model          VARCHAR(255) NOT NULL,
-    brand          VARCHAR(255) NOT NULL,
-    passengerCount INT          NOT NULL CHECK (passengerCount > 0),
-    color          VARCHAR(50)  NOT NULL,
-    isAvailable    BOOLEAN  DEFAULT TRUE,
-    createdAt      DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updatedAt      DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    isDeleted      BOOLEAN  DEFAULT FALSE,
-    addedUserId    INT,
-    FOREIGN KEY (addedUserId) REFERENCES User (userId)
-);
-
 -- Driver Table
 CREATE TABLE Driver
 (
@@ -67,6 +50,26 @@ CREATE TABLE Driver
     isDeleted     BOOLEAN  DEFAULT FALSE,
     addedUserId   INT,
     FOREIGN KEY (addedUserId) REFERENCES User (userId)
+);
+
+
+-- Vehicle Table
+CREATE TABLE Vehicle
+(
+    vehicleId      INT AUTO_INCREMENT PRIMARY KEY,
+    licensePlate   VARCHAR(15)  NOT NULL UNIQUE,
+    model          VARCHAR(255) NOT NULL,
+    brand          VARCHAR(255) NOT NULL,
+    passengerCount INT          NOT NULL CHECK (passengerCount > 0),
+    color          VARCHAR(50)  NOT NULL,
+    isAvailable    BOOLEAN  DEFAULT TRUE,
+    createdAt      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt      DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    isDeleted      BOOLEAN  DEFAULT FALSE,
+    addedUserId    INT,
+    driverId       INT,
+    FOREIGN KEY (addedUserId) REFERENCES User (userId),
+    FOREIGN KEY (driverId) REFERENCES Driver (driverId)
 );
 
 -- Booking Table
