@@ -1,11 +1,8 @@
-package com.megacitycab.megacitycabservice.entity.custom;
+package com.megacitycab.megacitycabservice.dto;
 
-import com.megacitycab.megacitycabservice.entity.Entity;
-
-import java.io.Serializable;
 import java.sql.Date;
 
-public class Driver implements Entity, Serializable {
+public class DriverDTO implements DTO {
     private int driverId;
     private String firstName;
     private String lastName;
@@ -18,11 +15,12 @@ public class Driver implements Entity, Serializable {
     private boolean isDeleted;
     private int addedUserId;
 
-    public static Driver.Builder builder() {
-        return new Driver.Builder();
+    public static Builder builder() {
+        return new Builder();
     }
 
-    private Driver(Builder builder) {
+    // Private constructor to enforce the use of the Builder
+    private DriverDTO(Builder builder) {
         this.driverId = builder.driverId;
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
@@ -80,6 +78,7 @@ public class Driver implements Entity, Serializable {
         return addedUserId;
     }
 
+    // Builder class
     public static class Builder {
         private int driverId;
         private String firstName;
@@ -148,8 +147,8 @@ public class Driver implements Entity, Serializable {
             return this;
         }
 
-        public Driver build() {
-            return new Driver(this);
+        public DriverDTO build() {
+            return new DriverDTO(this);
         }
     }
 }
