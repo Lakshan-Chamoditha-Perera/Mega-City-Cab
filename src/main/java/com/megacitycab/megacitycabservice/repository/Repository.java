@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface Repository<T extends Entity, K> {
-    T save(T entity, Connection connection) throws SQLException;
+    Boolean save(T entity, Connection connection) throws SQLException;
 
     List<T> findAll(Connection connection) throws SQLException;
 
