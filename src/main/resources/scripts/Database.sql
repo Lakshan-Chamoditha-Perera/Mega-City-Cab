@@ -1,4 +1,5 @@
-Drop database megacity_cab_db;
+-- Drop the database if it exists (use with caution)
+DROP DATABASE IF EXISTS megacity_cab_db;
 
 -- Create the Database
 CREATE DATABASE IF NOT EXISTS megacity_cab_db;
@@ -44,14 +45,13 @@ CREATE TABLE Driver
     licenseNumber VARCHAR(50)  NOT NULL UNIQUE,
     mobileNo      VARCHAR(15)  NOT NULL UNIQUE,
     email         VARCHAR(255) NOT NULL UNIQUE,
-    isAvailable   BOOLEAN  DEFAULT TRUE,
+    availability BOOLEAN DEFAULT TRUE,
     createdAt     DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    isDeleted     BOOLEAN  DEFAULT FALSE,
+    deleted      BOOLEAN DEFAULT FALSE,
     addedUserId   INT,
     FOREIGN KEY (addedUserId) REFERENCES User (userId)
 );
-
 
 -- Vehicle Table
 CREATE TABLE Vehicle
@@ -62,10 +62,11 @@ CREATE TABLE Vehicle
     brand          VARCHAR(255) NOT NULL,
     passengerCount INT          NOT NULL CHECK (passengerCount > 0),
     color          VARCHAR(50)  NOT NULL,
-    isAvailable    BOOLEAN  DEFAULT TRUE,
+    availability BOOLEAN DEFAULT TRUE,
     createdAt      DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt      DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    isDeleted      BOOLEAN  DEFAULT FALSE,
+    deleted      BOOLEAN DEFAULT FALSE,
+    pricePerKm   FLOAT,
     addedUserId    INT,
     driverId       INT,
     FOREIGN KEY (addedUserId) REFERENCES User (userId),
@@ -77,8 +78,6 @@ CREATE TABLE Booking
 (
     bookingId      INT AUTO_INCREMENT PRIMARY KEY,
     customerId     INT,
-    driverId       INT                                       DEFAULT NULL,
-    vehicleId      INT                                       DEFAULT NULL,
     pickupLocation VARCHAR(255)   NOT NULL,
     destination    VARCHAR(255)   NOT NULL,
     pickupTime     DATETIME       NOT NULL,
@@ -89,10 +88,21 @@ CREATE TABLE Booking
     tax            DECIMAL(10, 2)                            DEFAULT 0 CHECK (tax >= 0),
     createdAt      DATETIME                                  DEFAULT CURRENT_TIMESTAMP,
     updatedAt      DATETIME                                  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    isDeleted      BOOLEAN                                   DEFAULT FALSE,
+    deleted        BOOLEAN DEFAULT FALSE,
     addedUserId    INT,
     FOREIGN KEY (addedUserId) REFERENCES User (userId),
-    FOREIGN KEY (customerId) REFERENCES Customer (customerId),
-    FOREIGN KEY (driverId) REFERENCES Driver (driverId),
+    FOREIGN KEY (customerId) REFERENCES Customer (customerId)
+);
+
+-- Vehicle Booking Details Table
+CREATE TABLE VehicleBookingDetails
+(
+    vehicleBookingDetailsId INT AUTO_INCREMENT PRIMARY KEY,
+    bookingId               INT,
+    vehicleId               INT,
+    createdAt               DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt               DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted                 BOOLEAN  DEFAULT FALSE,
+    FOREIGN KEY (bookingId) REFERENCES Booking (bookingId),
     FOREIGN KEY (vehicleId) REFERENCES Vehicle (vehicleId)
 );
