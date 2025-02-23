@@ -1,11 +1,9 @@
-package com.megacitycab.megacitycabservice.entity.custom;
+package com.megacitycab.megacitycabservice.dto;
 
-import com.megacitycab.megacitycabservice.entity.Entity;
 
-import java.io.Serializable;
 import java.sql.Date;
 
-public class Vehicle implements Entity {
+public class VehicleDTO implements DTO {
     private int vehicleId;
     private String licensePlate;
     private String model;
@@ -18,9 +16,10 @@ public class Vehicle implements Entity {
     private boolean deleted;
     private int addedUserId;
     private Integer driverId;
+    private String driverName;
     private float pricePerKm;
 
-    private Vehicle(Builder builder) {
+    private VehicleDTO(VehicleDTO.Builder builder) {
         this.vehicleId = builder.vehicleId;
         this.licensePlate = builder.licensePlate;
         this.model = builder.model;
@@ -33,6 +32,7 @@ public class Vehicle implements Entity {
         this.deleted = builder.deleted;
         this.addedUserId = builder.addedUserId;
         this.driverId = builder.driverId;
+        this.driverName = builder.driverName;
         this.pricePerKm = builder.pricePerKm;
     }
 
@@ -128,16 +128,24 @@ public class Vehicle implements Entity {
         return driverId;
     }
 
+    public void setDriverId(Integer driverId) {
+        this.driverId = driverId;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
+    }
+
+    public String getDriverName() {
+        return driverName;
+    }
+
     public float getPricePerKm() {
         return pricePerKm;
     }
 
     public void setPricePerKm(float pricePerKm) {
         this.pricePerKm = pricePerKm;
-    }
-
-    public void setDriverId(Integer driverId) {
-        this.driverId = driverId;
     }
 
     public static class Builder {
@@ -153,85 +161,91 @@ public class Vehicle implements Entity {
         private boolean deleted;
         private int addedUserId;
         private Integer driverId;
+        private String driverName;
         private float pricePerKm;
 
-        public Builder vehicleId(int vehicleId) {
+        public VehicleDTO.Builder vehicleId(int vehicleId) {
             this.vehicleId = vehicleId;
             return this;
         }
 
-        public Builder licensePlate(String licensePlate) {
+        public VehicleDTO.Builder licensePlate(String licensePlate) {
             this.licensePlate = licensePlate;
             return this;
         }
 
-        public Builder model(String model) {
+        public VehicleDTO.Builder model(String model) {
             this.model = model;
             return this;
         }
 
-        public Builder brand(String brand) {
+        public VehicleDTO.Builder brand(String brand) {
             this.brand = brand;
             return this;
         }
 
-        public Builder passengerCount(int passengerCount) {
+        public VehicleDTO.Builder passengerCount(int passengerCount) {
             this.passengerCount = passengerCount;
             return this;
         }
 
-        public Builder color(String color) {
+        public VehicleDTO.Builder color(String color) {
             this.color = color;
             return this;
         }
 
-        public Builder availability(boolean availability) {
+        public VehicleDTO.Builder availability(boolean availability) {
             this.availability = availability;
             return this;
         }
 
-        public Builder createdAt(Date createdAt) {
+        public VehicleDTO.Builder createdAt(Date createdAt) {
             this.createdAt = createdAt;
             return this;
         }
 
-        public Builder updatedAt(Date updatedAt) {
+        public VehicleDTO.Builder updatedAt(Date updatedAt) {
             this.updatedAt = updatedAt;
             return this;
         }
 
-        public Builder deleted(boolean deleted) {
+        public VehicleDTO.Builder deleted(boolean deleted) {
             this.deleted = deleted;
             return this;
         }
 
-        public Builder addedUserId(int addedUserId) {
+        public VehicleDTO.Builder addedUserId(int addedUserId) {
             this.addedUserId = addedUserId;
             return this;
         }
 
-        public Builder driverId(Integer driverId) {
+        public VehicleDTO.Builder driverId(Integer driverId) {
             this.driverId = driverId;
             return this;
         }
 
-        public Builder pricePerKm(float pricePerKm) {
+        public VehicleDTO.Builder driverName(String driverName) {
+            this.driverName = driverName;
+            return this;
+        }
+
+        public VehicleDTO.Builder pricePerKm(float pricePerKm) {
             this.pricePerKm = pricePerKm;
             return this;
         }
 
-        public Vehicle build() {
-            return new Vehicle(this);
+        public VehicleDTO build() {
+            return new VehicleDTO(this);
         }
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static VehicleDTO.Builder builder() {
+        return new VehicleDTO.Builder();
     }
 
     @Override
     public String toString() {
-        return "Vehicle{" +
+        return "VehicleDTO{" +
                 "vehicleId=" + vehicleId +
                 ", licensePlate='" + licensePlate + '\'' +
                 ", model='" + model + '\'' +
@@ -244,6 +258,7 @@ public class Vehicle implements Entity {
                 ", deleted=" + deleted +
                 ", addedUserId=" + addedUserId +
                 ", driverId=" + driverId +
+                ", driverName='" + driverName + '\'' +
                 ", pricePerKm=" + pricePerKm +
                 '}';
     }
