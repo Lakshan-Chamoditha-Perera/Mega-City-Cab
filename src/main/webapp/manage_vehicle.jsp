@@ -219,7 +219,7 @@
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <form action="${pageContext.request.contextPath}/app" method="get">
+                    <form action="${pageContext.request.contextPath}/home" method="get">
                         <button class="nav-link" type="submit" id="nav-dashboard">
                             <i class="bi bi-speedometer2"></i>
                             Dashboard

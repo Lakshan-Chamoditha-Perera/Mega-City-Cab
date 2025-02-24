@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
 
 
             // Redirect to the dashboard after successful login
-            response.sendRedirect(request.getContextPath() + "/customers");
+            response.sendRedirect(request.getContextPath() + "/home");
 
         } catch (Exception e) {
             logger.severe("Error during login: " + e.getMessage());
