@@ -2,10 +2,9 @@ package com.megacitycab.megacitycabservice.entity.custom;
 
 import com.megacitycab.megacitycabservice.entity.Entity;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class User implements Entity, Serializable {
+public class User implements Entity {
     private int userId;
     private String username;
     private String passwordHash;
