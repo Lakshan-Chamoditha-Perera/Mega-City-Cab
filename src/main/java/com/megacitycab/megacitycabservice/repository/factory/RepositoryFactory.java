@@ -25,6 +25,7 @@ public class RepositoryFactory {
             case DRIVER -> new DriverRepositoryImpl();
             case USER -> new UserRepositoryImpl();
             case VEHICLE -> new VehicleRepositoryImpl();
+            case VEHICLE_BOOKING_DETAILS -> new VehicleBookingDetailsRepositoryImpl();
         };
         return (T) repository;
     }
