@@ -2,6 +2,7 @@ package com.megacitycab.megacitycabservice.repository.custom.impl;
 
 import com.megacitycab.megacitycabservice.entity.custom.User;
 import com.megacitycab.megacitycabservice.repository.custom.UserRepository;
+import com.megacitycab.megacitycabservice.util.SqlExecutor;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,25 +13,33 @@ public class UserRepositoryImpl implements UserRepository {
 
 
     @Override
-    public User save(User entity, Connection connection) throws SQLException {
+    public Boolean save(User entity, Connection connection) throws SQLException {
         String sql = "INSERT INTO user (username, passwordHash, email) VALUES (?, ?, ?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            // Set the parameters for the insert statement
-            statement.setString(1, entity.getUsername());
-            statement.setString(2, entity.getPasswordHash());
-            statement.setString(3, entity.getEmail());
-            int affectedRows = statement.executeUpdate();
+//        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+//            // Set the parameters for the insert statement
+//            statement.setString(1, entity.getUsername());
+//            statement.setString(2, entity.getPasswordHash());
+//            statement.setString(3, entity.getEmail());
+//            int affectedRows = statement.executeUpdate();
+//
+//            if (affectedRows > 0) {
+//                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+//                    if (generatedKeys.next()) {
+//                        entity.setUserId(generatedKeys.getInt(1));
+//                    }
+//                }
+//            }
+//        }
 
-            if (affectedRows > 0) {
-                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        entity.setUserId(generatedKeys.getInt(1));
-                    }
-                }
-            }
-        }
-        return entity;
+        return SqlExecutor.execute(
+                connection,
+                sql,
+                entity.getUsername(),
+                entity.getPasswordHash(),
+                entity.getEmail()
+        );
+
     }
 
 
