@@ -1,6 +1,5 @@
 package com.megacitycab.megacitycabservice.entity.custom;
 
-import com.megacitycab.megacitycabservice.dto.CustomerDTO;
 import com.megacitycab.megacitycabservice.entity.Entity;
 
 import java.sql.Date;
@@ -38,6 +37,7 @@ public class Customer implements Entity {
     public static Builder builder() {
         return new Customer.Builder();
     }
+
     // Getters and Setters
     public int getCustomerId() {
         return customerId;
@@ -216,19 +216,6 @@ public class Customer implements Entity {
 
     @Override
     public String toString() {
-        return "Customer{" +
-                "customerId=" + customerId +
-                ", addedUserId=" + addedUserId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", address='" + address + '\'' +
-                ", nic='" + nic + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
-                ", mobileNo='" + mobileNo + '\'' +
-                ", email='" + email + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", isDeleted=" + isDeleted +
-                '}';
+        return "Customer{" + "customerId=" + customerId + ", addedUserId=" + addedUserId + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", address='" + address + '\'' + ", nic='" + nic + '\'' + ", dateOfBirth=" + dateOfBirth + ", mobileNo='" + mobileNo + '\'' + ", email='" + email + '\'' + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", isDeleted=" + isDeleted + '}';
     }
 }

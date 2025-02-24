@@ -8,4 +8,5 @@ import java.sql.SQLException;
 
 public interface CustomerRepository extends Repository<Customer, Integer> {
     Boolean updateById(Customer customer, Connection connection) throws SQLException;
+    Boolean existsById(Integer id, Connection connection) throws SQLException;
 }

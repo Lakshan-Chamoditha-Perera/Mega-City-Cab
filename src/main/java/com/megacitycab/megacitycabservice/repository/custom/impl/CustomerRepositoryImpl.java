@@ -133,4 +133,11 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 customer.getCustomerId()
         );
     }
+
+    @Override
+    public Boolean existsById(Integer id, Connection connection) throws SQLException {
+        String sql = "SELECT * FROM customer where customerId = ? AND isDeleted = false";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, id);
+        return resultSet.next();
+    }
 }
