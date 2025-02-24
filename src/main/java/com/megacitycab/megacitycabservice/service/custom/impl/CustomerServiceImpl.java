@@ -25,7 +25,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<CustomerDTO> getAllCustomers() {
         try {
-            List<Customer> customerList = transactionManager.doReadOnly(connection -> customerRepository.findAll(connection));
+            List<Customer> customerList = transactionManager.doReadOnly(
+                    connection -> customerRepository.findAll(connection));
 
             return customerList.stream().map(
                     customer -> CustomerDTO.builder()
@@ -34,7 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
                             .lastName(customer.getLastName())
                             .address(customer.getAddress())
                             .nic(customer.getNic())
-//                            .dateOfBirth(customer.getDateOfBirth())
+                            .dateOfBirth(customer.getDateOfBirth())
                             .mobileNo(customer.getMobileNo())
                             .email(customer.getEmail())
                             .build())
@@ -49,7 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Boolean saveCustomer(CustomerDTO customerDTO) throws RuntimeException {
         try {
-            Customer customer = transactionManager.doInTransaction(
+            return transactionManager.doInTransaction(
                     connection -> customerRepository.save(
                             Customer.builder()
                                     .firstName(customerDTO.getFirstName())
@@ -62,7 +63,6 @@ public class CustomerServiceImpl implements CustomerService {
                                     .build(),
                             connection
                     ));
-            return customer!=null;
         } catch (RuntimeException e) {
             e.printStackTrace();
             throw e;
