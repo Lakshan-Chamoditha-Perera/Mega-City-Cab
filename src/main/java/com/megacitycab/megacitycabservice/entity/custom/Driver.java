@@ -2,20 +2,19 @@ package com.megacitycab.megacitycabservice.entity.custom;
 
 import com.megacitycab.megacitycabservice.entity.Entity;
 
-import java.io.Serializable;
 import java.sql.Date;
 
-public class Driver implements Entity, Serializable {
+public class Driver implements Entity {
     private int driverId;
     private String firstName;
     private String lastName;
     private String licenseNumber;
     private String mobileNo;
     private String email;
-    private boolean isAvailable;
+    private boolean availability;
     private Date createdAt;
     private Date updatedAt;
-    private boolean isDeleted;
+    private boolean deleted;
     private int addedUserId;
 
     public static Driver.Builder builder() {
@@ -29,10 +28,10 @@ public class Driver implements Entity, Serializable {
         this.licenseNumber = builder.licenseNumber;
         this.mobileNo = builder.mobileNo;
         this.email = builder.email;
-        this.isAvailable = builder.isAvailable;
+        this.availability = builder.availability;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
-        this.isDeleted = builder.isDeleted;
+        this.deleted = builder.deleted;
         this.addedUserId = builder.addedUserId;
     }
 
@@ -60,8 +59,8 @@ public class Driver implements Entity, Serializable {
         return email;
     }
 
-    public boolean isAvailable() {
-        return isAvailable;
+    public boolean getAvailability() {
+        return availability;
     }
 
     public Date getCreatedAt() {
@@ -72,8 +71,8 @@ public class Driver implements Entity, Serializable {
         return updatedAt;
     }
 
-    public boolean isDeleted() {
-        return isDeleted;
+    public boolean getDeleted() {
+        return deleted;
     }
 
     public int getAddedUserId() {
@@ -87,10 +86,10 @@ public class Driver implements Entity, Serializable {
         private String licenseNumber;
         private String mobileNo;
         private String email;
-        private boolean isAvailable;
+        private boolean availability;
         private Date createdAt;
         private Date updatedAt;
-        private boolean isDeleted;
+        private boolean deleted;
         private int addedUserId;
 
         public Builder driverId(int driverId) {
@@ -123,8 +122,8 @@ public class Driver implements Entity, Serializable {
             return this;
         }
 
-        public Builder isAvailable(boolean isAvailable) {
-            this.isAvailable = isAvailable;
+        public Builder availability(boolean availability) {
+            this.availability = availability;
             return this;
         }
 
@@ -138,8 +137,8 @@ public class Driver implements Entity, Serializable {
             return this;
         }
 
-        public Builder isDeleted(boolean isDeleted) {
-            this.isDeleted = isDeleted;
+        public Builder getDeleted(boolean deleted) {
+            this.deleted = deleted;
             return this;
         }
 

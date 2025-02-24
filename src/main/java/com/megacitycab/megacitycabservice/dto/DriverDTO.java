@@ -9,17 +9,16 @@ public class DriverDTO implements DTO {
     private String licenseNumber;
     private String mobileNo;
     private String email;
-    private boolean isAvailable;
+    private boolean availability;
     private Date createdAt;
     private Date updatedAt;
-    private boolean isDeleted;
+    private boolean deleted;
     private int addedUserId;
 
     public static Builder builder() {
         return new Builder();
     }
 
-    // Private constructor to enforce the use of the Builder
     private DriverDTO(Builder builder) {
         this.driverId = builder.driverId;
         this.firstName = builder.firstName;
@@ -27,10 +26,10 @@ public class DriverDTO implements DTO {
         this.licenseNumber = builder.licenseNumber;
         this.mobileNo = builder.mobileNo;
         this.email = builder.email;
-        this.isAvailable = builder.isAvailable;
+        this.availability = builder.availability;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
-        this.isDeleted = builder.isDeleted;
+        this.deleted = builder.deleted;
         this.addedUserId = builder.addedUserId;
     }
 
@@ -58,8 +57,8 @@ public class DriverDTO implements DTO {
         return email;
     }
 
-    public boolean isAvailable() {
-        return isAvailable;
+    public boolean getAvailability() {
+        return availability;
     }
 
     public Date getCreatedAt() {
@@ -70,15 +69,14 @@ public class DriverDTO implements DTO {
         return updatedAt;
     }
 
-    public boolean isDeleted() {
-        return isDeleted;
+    public boolean getDeleted() {
+        return deleted;
     }
 
     public int getAddedUserId() {
         return addedUserId;
     }
 
-    // Builder class
     public static class Builder {
         private int driverId;
         private String firstName;
@@ -86,10 +84,10 @@ public class DriverDTO implements DTO {
         private String licenseNumber;
         private String mobileNo;
         private String email;
-        private boolean isAvailable;
+        private boolean availability;
         private Date createdAt;
         private Date updatedAt;
-        private boolean isDeleted;
+        private boolean deleted;
         private int addedUserId;
 
         public Builder driverId(int driverId) {
@@ -122,8 +120,8 @@ public class DriverDTO implements DTO {
             return this;
         }
 
-        public Builder isAvailable(boolean isAvailable) {
-            this.isAvailable = isAvailable;
+        public Builder availability(boolean availability) {
+            this.availability = availability;
             return this;
         }
 
@@ -137,8 +135,8 @@ public class DriverDTO implements DTO {
             return this;
         }
 
-        public Builder isDeleted(boolean isDeleted) {
-            this.isDeleted = isDeleted;
+        public Builder deleted(boolean deleted) {
+            this.deleted = deleted;
             return this;
         }
 
@@ -150,5 +148,22 @@ public class DriverDTO implements DTO {
         public DriverDTO build() {
             return new DriverDTO(this);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "DriverDTO{" +
+                "driverId=" + driverId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", licenseNumber='" + licenseNumber + '\'' +
+                ", mobileNo='" + mobileNo + '\'' +
+                ", email='" + email + '\'' +
+                ", availability=" + availability +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", deleted=" + deleted +
+                ", addedUserId=" + addedUserId +
+                '}';
     }
 }
