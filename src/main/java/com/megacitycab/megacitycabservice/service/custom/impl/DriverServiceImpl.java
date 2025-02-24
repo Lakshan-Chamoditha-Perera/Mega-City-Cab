@@ -1,6 +1,5 @@
 package com.megacitycab.megacitycabservice.service.custom.impl;
 
-import com.megacitycab.megacitycabservice.dto.CustomerDTO;
 import com.megacitycab.megacitycabservice.dto.DriverDTO;
 import com.megacitycab.megacitycabservice.entity.custom.Driver;
 import com.megacitycab.megacitycabservice.repository.RepositoryType;
@@ -22,10 +21,10 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public List<DriverDTO> getAllDrivers() {
+    public List<DriverDTO> getAllAvailableDriversForVehicle() {
         try {
             List<Driver> driversList = transactionManager.doReadOnly(
-                    connection -> driverRepository.findAll(connection));
+                    connection -> driverRepository.getAllDriversNotAssignedVehicle(connection));
 
             return driversList.stream().map(
                             driver -> DriverDTO.builder()
@@ -34,7 +33,7 @@ public class DriverServiceImpl implements DriverService {
                                     .lastName(driver.getLastName())
                                     .licenseNumber(driver.getLicenseNumber())
                                     .mobileNo(driver.getMobileNo())
-                                    .isAvailable(driver.isAvailable())
+                                    .availability(driver.getAvailability())
                                     .email(driver.getEmail())
                                     .build())
                     .toList();
@@ -67,10 +66,21 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Boolean deleteDriver(Integer id) throws IOException {
         try {
-            return transactionManager.doInTransaction(
-                    connection -> driverRepository.delete(id, connection));
+            // Check if the driver is assigned to any vehicle
+            Integer count = transactionManager.doReadOnly(connection -> {
+                return driverRepository.getDriverAssignedVehicleCount(id, connection);
+            });
+            if (count > 0) {
+                throw new IOException("Driver is assigned to a vehicle and cannot be deleted.");
+            }
+
+            // Proceed with the deletion
+            return transactionManager.doInTransaction(connection -> {
+                return driverRepository.delete(id, connection); // Perform the deletion
+            });
+
         } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error deleting driver: " + e.getMessage(), e);
         }
     }
 
@@ -93,4 +103,28 @@ public class DriverServiceImpl implements DriverService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<DriverDTO> getAllDrivers() {
+        try {
+            List<Driver> driversList = transactionManager.doReadOnly(
+                    connection -> driverRepository.findAll(connection));
+
+            return driversList.stream().map(
+                            driver -> DriverDTO.builder()
+                                    .driverId(driver.getDriverId())
+                                    .firstName(driver.getFirstName())
+                                    .lastName(driver.getLastName())
+                                    .licenseNumber(driver.getLicenseNumber())
+                                    .mobileNo(driver.getMobileNo())
+                                    .availability(driver.getAvailability())
+                                    .email(driver.getEmail())
+                                    .build())
+                    .toList();
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
 }
