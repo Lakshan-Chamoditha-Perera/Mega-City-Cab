@@ -1,8 +1,9 @@
 package com.megacitycab.megacitycabservice.service.custom.impl;
 
 import com.megacitycab.megacitycabservice.entity.custom.User;
+import com.megacitycab.megacitycabservice.repository.RepositoryType;
 import com.megacitycab.megacitycabservice.repository.custom.UserRepository;
-import com.megacitycab.megacitycabservice.repository.custom.impl.UserRepositoryImpl;
+import com.megacitycab.megacitycabservice.repository.factory.RepositoryFactory;
 import com.megacitycab.megacitycabservice.service.custom.AuthService;
 import com.megacitycab.megacitycabservice.util.TransactionManager;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +22,7 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthServiceImpl(TransactionManager transactionManager) {
         this.transactionManager = transactionManager;
-        userRepository = new UserRepositoryImpl();
+        userRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.USER);
     }
 
 
