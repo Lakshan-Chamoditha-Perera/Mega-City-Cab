@@ -24,7 +24,7 @@ public class TransactionManager {
             T result = callback.execute(connection);
             connection.commit();
             return result;
-        } catch (SQLException e) {
+        } catch (SQLException | RuntimeException e) {
             // Handle rollback in case of failure
             if (connection != null) {
                 try {
