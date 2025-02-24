@@ -131,7 +131,185 @@
         }
     </style>
 </head>
-<body class="py-5">
+<body class="py-4">
+
+
+<!-- navbar.jsp -->
+<nav class="navbar navbar-expand-lg sticky-top">
+    <style>
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            padding: 1rem 1.5rem;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-nav {
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            color: var(--secondary-color) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color) !important;
+            background-color: var(--hover-bg-color);
+        }
+
+        .nav-link i {
+            font-size: 1.25rem;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        @media (max-width: 991.98px) {
+            .navbar-nav {
+                padding: 1rem 0;
+            }
+
+            .auth-buttons {
+                padding: 1rem 0;
+                border-top: 1px solid var(--hover-bg-color);
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+
+    <div class="container-fluid">
+        <!-- Logo and Brand -->
+        <a class="navbar-brand" href="#" onclick="navigate('app')">
+            <i class="bi bi-car-front-fill"></i>
+            Megacity Cab Service
+        </a>
+
+        <!-- Mobile Toggle Button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <!-- Navigation Items -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <form action="${pageContext.request.contextPath}/app" method="get">
+                        <button class="nav-link" type="submit" id="nav-dashboard">
+                            <i class="bi bi-speedometer2"></i>
+                            Dashboard
+                        </button>
+                    </form>
+                </li>
+                <li class="nav-item">
+                    <form action="${pageContext.request.contextPath}/customers" method="get">
+                        <button class="nav-link" type="submit" id="nav-customers">
+                            <i class="bi bi-people"></i>
+                            Customers
+                        </button>
+                    </form>
+                </li>
+                <li class="nav-item">
+                    <form action="${pageContext.request.contextPath}/vehicles" method="get">
+                        <button class="nav-link" type="submit" id="nav-vehicles">
+                            <i class="bi bi-car-front"></i>
+                            Vehicles
+                        </button>
+                    </form>
+                </li>
+                <li class="nav-item">
+                    <form action="${pageContext.request.contextPath}/drivers" method="get">
+                        <button class="nav-link" type="submit" id="nav-drivers">
+                            <i class="bi bi-person-badge"></i>
+                            Drivers
+                        </button>
+                    </form>
+                </li>
+                <li class="nav-item">
+                    <form action="${pageContext.request.contextPath}/bookings" method="get">
+                        <button class="nav-link" type="submit" id="nav-bookings">
+                            <i class="bi bi-calendar-check"></i>
+                            Bookings
+                        </button>
+                    </form>
+                </li>
+            </ul>
+
+            <!-- Auth Buttons -->
+            <div class="auth-buttons">
+                <% if (session.getAttribute("user") == null) { %>
+                <form action="${pageContext.request.contextPath}/login" method="get">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Login
+                    </button>
+                </form>
+                <% } else { %>
+                <form action="${pageContext.request.contextPath}/logout" method="get">
+                    <button type="submit" class="btn btn-outline-danger">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Logout
+                    </button>
+                </form>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set active nav item based on current path
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navItems = {
+                'app': 'nav-dashboard',
+                'customers': 'nav-customers',
+                'vehicles': 'nav-vehicles',
+                'drivers': 'nav-drivers',
+                'bookings': 'nav-bookings'
+            };
+
+            // Remove all active classes first
+            Object.values(navItems).forEach(id => {
+                document.getElementById(id)?.classList.remove('active');
+            });
+
+            // Add active class to current nav item
+            for (const [path, id] of Object.entries(navItems)) {
+                if (currentPath.includes(path)) {
+                    document.getElementById(id)?.classList.add('active');
+                    break;
+                }
+            }
+        });
+    </script>
+</nav>
+
+
 <div class="container">
     <!-- Success and Error Messages -->
     <c:if test="${param.success != null}">
@@ -248,28 +426,28 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <c:forEach var="customer" items="${customers}">
+                        <c:forEach var="vehicle" items="${customers}">
                             <tr>
-                                <td>${customer.customerId}</td>
-                                <td>${customer.firstName != null ? customer.firstName : '-'}</td>
-                                <td>${customer.lastName != null ? customer.lastName : '-'}</td>
-                                <td>${customer.address != null ? customer.address : '-'}</td>
-                                <td>${customer.nic != null ? customer.nic : '-'}</td>
-                                <td>${customer.dateOfBirth != null ? customer.dateOfBirth : '-'}</td>
-                                <td>${customer.mobileNo != null ? customer.mobileNo : '-'}</td>
-                                <td>${customer.email != null ? customer.email : '-'}</td>
+                                <td>${vehicle.customerId}</td>
+                                <td>${vehicle.firstName != null ? vehicle.firstName : '-'}</td>
+                                <td>${vehicle.lastName != null ? vehicle.lastName : '-'}</td>
+                                <td>${vehicle.address != null ? vehicle.address : '-'}</td>
+                                <td>${vehicle.nic != null ? vehicle.nic : '-'}</td>
+                                <td>${vehicle.dateOfBirth != null ? vehicle.dateOfBirth : '-'}</td>
+                                <td>${vehicle.mobileNo != null ? vehicle.mobileNo : '-'}</td>
+                                <td>${vehicle.email != null ? vehicle.email : '-'}</td>
                                 <td>
                                     <div class="action-buttons">
                                         <!-- Edit button -->
                                         <button type="button" class="btn btn-sm btn-warning edit-button"
-                                                data-customer-id="${customer.customerId}"
-                                                data-first-name="${customer.firstName}"
-                                                data-last-name="${customer.lastName}"
-                                                data-address="${customer.address}"
-                                                data-nic="${customer.nic}"
-                                                data-date-of-birth="${customer.dateOfBirth}"
-                                                data-mobile-no="${customer.mobileNo}"
-                                                data-email="${customer.email}"
+                                                data-customer-id="${vehicle.customerId}"
+                                                data-first-name="${vehicle.firstName}"
+                                                data-last-name="${vehicle.lastName}"
+                                                data-address="${vehicle.address}"
+                                                data-nic="${vehicle.nic}"
+                                                data-date-of-birth="${vehicle.dateOfBirth}"
+                                                data-mobile-no="${vehicle.mobileNo}"
+                                                data-email="${vehicle.email}"
                                                 aria-label="Edit Customer">
                                             Edit
                                         </button>
@@ -277,7 +455,7 @@
                                         <form action="${pageContext.request.contextPath}/customers" method="post"
                                               onsubmit="return confirmDelete();" style="display:inline;">
                                             <input type="hidden" name="action" value="DELETE">
-                                            <input type="hidden" name="customerId" value="${customer.customerId}">
+                                            <input type="hidden" name="customerId" value="${vehicle.customerId}">
                                             <button type="submit" class="btn btn-sm btn-danger" aria-label="Delete Customer">Delete</button>
                                         </form>
                                     </div>
