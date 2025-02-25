@@ -1,6 +1,7 @@
 package com.megacitycab.megacitycabservice.servlet;
 
 import com.megacitycab.megacitycabservice.dto.CustomerDTO;
+import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.CustomerService;
 import com.megacitycab.megacitycabservice.service.factory.ServiceFactory;
@@ -37,15 +38,14 @@ public class CustomerServlet extends HttpServlet {
             request.setAttribute("customers", customers);
             request.getRequestDispatcher("/manage_customer.jsp").forward(request, response);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error retrieving customers", e);
-            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Error fetching customers");
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String action = request.getParameter("action");
-
         if ("SAVE".equals(action)) {
             handleCustomerSave(request, response);
         } else if ("DELETE".equals(action)) {
@@ -76,13 +76,16 @@ public class CustomerServlet extends HttpServlet {
 
             System.out.println(success);
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/customers?success=Customer successfully update");
+                response.sendRedirect(request.getContextPath() + "/customers?success=Customer successfully updated");
             } else {
                 response.sendRedirect(request.getContextPath() + "/customers?error=Failed to update customer");
             }
-        } catch (Exception e) {
+        } catch (MegaCityCabException e) {
             logger.log(Level.SEVERE, "Error updating customer", e);
             response.sendRedirect(request.getContextPath() + "/customers?error=" + e.getMessage());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 
@@ -97,9 +100,12 @@ public class CustomerServlet extends HttpServlet {
             } else {
                 response.sendRedirect(request.getContextPath() + "/customers?error=Failed to delete customer");
             }
-        } catch (Exception e) {
+        } catch (MegaCityCabException e) {
             logger.log(Level.SEVERE, "Error deleting customer", e);
             response.sendRedirect(request.getContextPath() + "/customers?error=" + e.getMessage());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 
@@ -116,16 +122,15 @@ public class CustomerServlet extends HttpServlet {
                             .email(request.getParameter("email"))
                             .nic(request.getParameter("nic"))
                             .build());
-
-
             if (success) {
                 response.sendRedirect(request.getContextPath() + "/customers?success=Customer successfully saved");
             } else {
                 response.sendRedirect(request.getContextPath() + "/customers?error=Failed to save customer");
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error saving customer", e);
+        } catch (MegaCityCabException e) {
             response.sendRedirect(request.getContextPath() + "/customers?error=" + e.getMessage());
+        } catch (Exception e) {
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 }
