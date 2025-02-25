@@ -1,6 +1,7 @@
 package com.megacitycab.megacitycabservice.servlet;
 
 import com.megacitycab.megacitycabservice.dto.DriverDTO;
+import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.DriverService;
 import com.megacitycab.megacitycabservice.service.factory.ServiceFactory;
@@ -27,7 +28,7 @@ public class DriverServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         logger.info("Handling GET request for drivers");
 
         try {
@@ -35,9 +36,12 @@ public class DriverServlet extends HttpServlet {
             logger.info("Retrieved drivers: " + drivers.size());
             request.setAttribute("drivers", drivers);
             request.getRequestDispatcher("/manage_driver.jsp").forward(request, response);
+        }  catch (MegaCityCabException e) {
+            logger.log(Level.SEVERE, "Error deleting customer", e);
+            response.sendRedirect(request.getContextPath() + "/drivers?error=" + e.getMessage());
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error retrieving drivers", e);
-            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Error fetching drivers");
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 
@@ -77,9 +81,12 @@ public class DriverServlet extends HttpServlet {
             } else {
                 response.sendRedirect(request.getContextPath() + "/drivers?error=Failed to update driver");
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error updating driver", e);
+        } catch (MegaCityCabException e) {
+            logger.log(Level.SEVERE, "Error deleting customer", e);
             response.sendRedirect(request.getContextPath() + "/drivers?error=" + e.getMessage());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 
@@ -94,9 +101,12 @@ public class DriverServlet extends HttpServlet {
             } else {
                 response.sendRedirect(request.getContextPath() + "/drivers?error=Failed to delete driver");
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error deleting driver", e);
+        } catch (MegaCityCabException e) {
+            logger.log(Level.SEVERE, "Error deleting customer", e);
             response.sendRedirect(request.getContextPath() + "/drivers?error=" + e.getMessage());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 
@@ -119,9 +129,12 @@ public class DriverServlet extends HttpServlet {
             } else {
                 response.sendRedirect(request.getContextPath() + "/drivers?error=Failed to save driver");
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error saving driver", e);
+        } catch (MegaCityCabException e) {
+            logger.log(Level.SEVERE, "Error deleting customer", e);
             response.sendRedirect(request.getContextPath() + "/drivers?error=" + e.getMessage());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 }
