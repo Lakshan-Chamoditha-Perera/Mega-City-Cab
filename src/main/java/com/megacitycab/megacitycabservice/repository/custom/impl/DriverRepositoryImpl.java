@@ -68,6 +68,13 @@ public class DriverRepositoryImpl implements DriverRepository {
     }
 
     @Override
+    public Integer getCount(Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM driver WHERE deleted = false";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql);
+        return resultSet.next() ? resultSet.getInt(1) : 0;
+    }
+
+    @Override
     public Boolean updateById(Driver driver, Connection connection) throws SQLException {
         String sql = "UPDATE driver SET firstName = ?, lastName = ?, licenseNumber = ?, mobileNo = ?, email = ? WHERE driverId = ?";
         return SqlExecutor.execute(
@@ -124,7 +131,56 @@ public class DriverRepositoryImpl implements DriverRepository {
     @Override
     public Integer getDriverAssignedVehicleCount(Integer id, Connection connection) throws SQLException {
         String checkAssignedVehicleSql = "SELECT COUNT(*) FROM vehicle WHERE driverId = ?";
-        return SqlExecutor.execute(connection, checkAssignedVehicleSql, id);
+
+        ResultSet resultSet = SqlExecutor.execute(connection, checkAssignedVehicleSql, id);
+        if (resultSet.next()) {
+            return resultSet.getInt(1);
+        }
+        return 0;
     }
+
+    @Override
+    public Boolean existsByEmail(String email, Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM driver WHERE email = ?";
+
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, email);
+        resultSet.next() ;
+        return resultSet.getInt(1) != 0;
+    }
+
+    @Override
+    public Boolean existsByMobile(String mobileNo, Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM driver WHERE mobileNo = ?";
+
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, mobileNo);
+        resultSet.next() ;
+        return resultSet.getInt(1) != 0;
+    }
+
+    @Override
+    public Boolean existsById(Integer id, Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM driver WHERE driverId = ?";
+
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, id);
+        resultSet.next() ;
+        return resultSet.getInt(1) != 0;
+    }
+
+    @Override
+    public Boolean existsByEmailExceptId(String email, int driverId, Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM driver WHERE email = ? AND driverId <> ?";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, email, driverId);
+        resultSet.next();
+        return resultSet.getInt(1) != 0;
+    }
+
+    @Override
+    public Boolean existsByMobileExceptId(String mobileNo, int driverId, Connection connection) throws SQLException{
+        String sql = "SELECT COUNT(*) FROM driver WHERE mobileNo = ? AND driverId <> ?";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, mobileNo, driverId);
+        resultSet.next();
+        return resultSet.getInt(1) != 0;
+    }
+
 
 }

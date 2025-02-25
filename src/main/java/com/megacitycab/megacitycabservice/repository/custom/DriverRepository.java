@@ -17,4 +17,14 @@ public interface DriverRepository extends Repository<Driver, Integer> {
 
     Integer getDriverAssignedVehicleCount(Integer id, Connection connection) throws SQLException;
 
+    Boolean existsByEmail(String email, Connection connection) throws SQLException;
+
+    Boolean existsByMobile(String mobileNo, Connection connection) throws SQLException;
+
+    Boolean existsById(Integer id, Connection connection) throws SQLException;
+
+    Boolean existsByEmailExceptId(String email, int driverId, Connection connection) throws SQLException;
+
+    Boolean existsByMobileExceptId(String mobileNo, int driverId, Connection connection) throws SQLException;
+
 }
