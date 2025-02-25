@@ -4,6 +4,7 @@ import com.megacitycab.megacitycabservice.dto.BookingDTO;
 import com.megacitycab.megacitycabservice.dto.CustomerDTO;
 import com.megacitycab.megacitycabservice.dto.VehicleBookingDetailsDTO;
 import com.megacitycab.megacitycabservice.dto.VehicleDTO;
+import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.BookingService;
 import com.megacitycab.megacitycabservice.service.custom.CustomerService;
@@ -128,9 +129,11 @@ public class BookingServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/bookings?error=Booking failed.");
             }
 
+        } catch (MegaCityCabException e) {
+            response.sendRedirect(request.getContextPath() + "/bookings?error=" + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Error fetching bookings page");
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=" + e.getMessage());
         }
 
     }

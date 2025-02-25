@@ -5,6 +5,8 @@ import com.megacitycab.megacitycabservice.dto.VehicleBookingDetailsDTO;
 import com.megacitycab.megacitycabservice.entity.custom.Booking;
 import com.megacitycab.megacitycabservice.entity.custom.Vehicle;
 import com.megacitycab.megacitycabservice.entity.custom.VehicleBookingDetails;
+import com.megacitycab.megacitycabservice.exception.ErrorMessage;
+import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.repository.RepositoryType;
 import com.megacitycab.megacitycabservice.repository.custom.BookingRepository;
 import com.megacitycab.megacitycabservice.repository.custom.CustomerRepository;
@@ -32,13 +34,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Boolean addBooking(BookingDTO bookingDTO) {
+    public Boolean addBooking(BookingDTO bookingDTO) throws MegaCityCabException, RuntimeException {
 
-        try {
             Boolean isCustomerExists = transactionManager.doReadOnly(
                     connection -> customerRepository.existsById(bookingDTO.getCustomerId(), connection));
             if (!isCustomerExists) {
-                throw new RuntimeException("Customer not found");
+                throw new MegaCityCabException(ErrorMessage.CUSTOMER_NOT_FOUND);
             }
 
             float[] totalPrice = {0}; // Use an array to store the value, allowing mutation inside the lambda
@@ -49,13 +50,13 @@ public class BookingServiceImpl implements BookingService {
 
                     Vehicle vehicle = vehicleRepository.findById(vehicleId, connection);
                     if (vehicle == null) {
-                        throw new RuntimeException("Vehicle with ID " + vehicleId + " does not exist.");
+                        throw new MegaCityCabException(ErrorMessage.VEHICLE_NOT_FOUND);
                     }
 
                     // Check if vehicle is available for booking
                     boolean isVehicleAvailable = vehicleRepository.findVehicleAvailabilityOnSpecificDate(connection, vehicleId, Date.valueOf(bookingDTO.getPickupTime().toLocalDate()));
                     if (isVehicleAvailable) {
-                        throw new RuntimeException("Vehicle with ID " + vehicleId + " is already booked.");
+                        throw new MegaCityCabException(ErrorMessage.VEHICLE_NOT_AVAILABLE_FOR_BOOKING);
                     }
                     totalPrice[0] += vehicle.getPricePerKm() * bookingDTO.getDistance(); // Update the total price
                 }
@@ -88,8 +89,13 @@ public class BookingServiceImpl implements BookingService {
                 return true;
             });
             return doneInTransaction;
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+    }
+
+    @Override
+    public Integer getBookingsCount() throws RuntimeException, MegaCityCabException {
+        return transactionManager.doReadOnly(
+                connection -> bookingRepository.getCount(connection)
+        );
+
     }
 }

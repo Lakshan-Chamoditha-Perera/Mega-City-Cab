@@ -2,6 +2,7 @@ package com.megacitycab.megacitycabservice.repository.custom.impl;
 
 import com.megacitycab.megacitycabservice.entity.custom.Booking;
 import com.megacitycab.megacitycabservice.repository.custom.BookingRepository;
+import com.megacitycab.megacitycabservice.util.SqlExecutor;
 
 import java.sql.*;
 import java.util.List;
@@ -26,6 +27,13 @@ public class BookingRepositoryImpl implements BookingRepository {
     @Override
     public boolean delete(Integer id, Connection connection) {
         return false;
+    }
+
+    @Override
+    public Integer getCount(Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM booking WHERE deleted = false";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql);
+        return resultSet.next() ? resultSet.getInt(1) : 0;
     }
 
     @Override
