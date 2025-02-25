@@ -12,6 +12,6 @@ public interface AuthService extends Service {
 
     void register(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
-    void logout(HttpServletRequest request, HttpServletResponse response);
+    void logout(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
 }

@@ -1,6 +1,7 @@
 package com.megacitycab.megacitycabservice.service.custom.impl;
 
 import com.megacitycab.megacitycabservice.entity.custom.User;
+import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.repository.RepositoryType;
 import com.megacitycab.megacitycabservice.repository.custom.UserRepository;
 import com.megacitycab.megacitycabservice.repository.factory.RepositoryFactory;
@@ -109,12 +110,29 @@ public class AuthServiceImpl implements AuthService {
         } catch (IOException e) {
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/auth/register?error=" + e.getMessage());
+        } catch (MegaCityCabException e) {
+            throw new RuntimeException(e);
         }
     }
 
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            logger.info("Logging out user");
 
+            // Invalidate the session
+            HttpSession session = request.getSession(false); // Get session if exists
+            if (session != null) {
+                session.invalidate(); // Destroy session
+            }
+
+            // Redirect to login page after logout
+            response.sendRedirect(request.getContextPath() + "/auth/login?logout=success");
+        } catch (Exception e) {
+            logger.severe("Error during logout: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/auth/login?error=logout_failed");
+        }
     }
+
 }

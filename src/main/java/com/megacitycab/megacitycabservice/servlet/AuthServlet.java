@@ -2,7 +2,6 @@ package com.megacitycab.megacitycabservice.servlet;
 
 import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.AuthService;
-import com.megacitycab.megacitycabservice.service.custom.impl.AuthServiceImpl;
 import com.megacitycab.megacitycabservice.service.factory.ServiceFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,12 +19,12 @@ public class AuthServlet extends HttpServlet {
     private AuthService authService;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         authService = ServiceFactory.getInstance().getService(ServiceType.AUTH);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         logger.info("doPost");
         String pathInfo = request.getPathInfo();
 
@@ -40,6 +39,9 @@ public class AuthServlet extends HttpServlet {
                 break;
             case "/register":
                 authService.register(request, response);
+                break;
+            case "/logout":
+                authService.logout(request, response);
                 break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Resource not found");
