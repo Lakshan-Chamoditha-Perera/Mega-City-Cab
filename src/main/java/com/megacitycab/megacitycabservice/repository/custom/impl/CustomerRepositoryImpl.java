@@ -111,10 +111,16 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 //            int affectedRows = statement.executeUpdate();
 //            return affectedRows > 0;
 //        }
-
         return SqlExecutor.execute(connection, sql, id);
-
     }
+
+    @Override
+    public Integer getCount(Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM customer WHERE isDeleted = false";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql);
+        return resultSet.next() ? resultSet.getInt(1) : 0;
+    }
+
 
     @Override
     public Boolean updateById(Customer customer, Connection connection) throws SQLException {
@@ -136,8 +142,26 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
     @Override
     public Boolean existsById(Integer id, Connection connection) throws SQLException {
-        String sql = "SELECT * FROM customer where customerId = ? AND isDeleted = false";
+        String sql = "SELECT COUNT(*) FROM customer where customerId = ? AND isDeleted = false";
         ResultSet resultSet = SqlExecutor.execute(connection, sql, id);
-        return resultSet.next();
+        // 0
+        resultSet.next() ;
+        return resultSet.getInt(1) != 0; // Returns true if customers exists
+    }
+
+    @Override
+    public Boolean existsByEmail(String email, Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM customer where email = ?";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, email);
+        resultSet.next() ;
+        return resultSet.getInt(1) != 0; // Returns true if customers exists
+    }
+
+    @Override
+    public Boolean existsByEmailExceptId(String email, int customerId, Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM customer WHERE email = ? AND customerId <> ?";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, email, customerId);
+        resultSet.next();
+        return resultSet.getInt(1) != 0; // Returns true if another customer has email
     }
 }
