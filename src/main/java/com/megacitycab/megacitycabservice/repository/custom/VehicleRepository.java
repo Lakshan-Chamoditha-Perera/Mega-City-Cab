@@ -19,4 +19,10 @@ public interface VehicleRepository extends Repository<Vehicle, Integer> {
     Boolean findVehicleAvailabilityOnSpecificDate(Connection connection, Integer vehicleId, Date localDateTime) throws SQLException;
 
     Boolean existsById(Connection connection, Integer vehicleId) throws SQLException;
+
+    Boolean existsByLicensePlateExceptId(String licensePlate, int vehicleId, Connection connection) throws SQLException;
+
+    Boolean hasPendingOrConfirmedBookings(Integer id, Connection connection) throws SQLException;
+
+    Boolean existsByLicensePlate(String licensePlate, Connection connection) throws SQLException;
 }

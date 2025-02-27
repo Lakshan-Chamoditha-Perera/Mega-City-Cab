@@ -71,6 +71,13 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
 
     @Override
+    public Integer getCount(Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM vehicle WHERE deleted = false";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql);
+        return resultSet.next() ? resultSet.getInt(1) : 0;
+    }
+
+    @Override
     public List<VehicleDTO> getVehiclesWithDriver(Connection connection) throws SQLException {
         String sql = "SELECT v.*, d.firstName, d.lastName, d.driverId FROM vehicle v LEFT JOIN driver d on v.driverId = d.driverId WHERE v.deleted = false ";
         ResultSet resultSet = SqlExecutor.execute(connection, sql);
@@ -138,9 +145,41 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     @Override
     public Boolean existsById(Connection connection, Integer vehicleId) throws SQLException {
-        String sql = "SELECT * FROM vehicle where vehicleId = ? AND isDeleted = false";
+        String sql = "SELECT COUNT(*) FROM vehicle where vehicleId = ? AND isDeleted = false";
         ResultSet resultSet = SqlExecutor.execute(connection, sql);
+        resultSet.next() ;
+        return resultSet.getInt(1) != 0;
+    }
+
+    @Override
+    public Boolean existsByLicensePlateExceptId(String licensePlate, int vehicleId, Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM vehicle WHERE licensePlate = ? AND vehicleId <> ?";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, licensePlate, vehicleId);
+        resultSet.next() ;
+        return resultSet.getInt(1) != 0;
+    }
+
+    @Override
+    public Boolean hasPendingOrConfirmedBookings(Integer id, Connection connection) throws SQLException {
+        String sql = """
+                SELECT 1
+                FROM vehiclebookingdetails vbd
+                         LEFT JOIN booking b ON b.bookingId = vbd.bookingId
+                WHERE vbd.vehicleId = ?
+                  AND b.status IN ('pending', 'confirmed')
+                LIMIT 1
+            """;
+
+         ResultSet resultSet = SqlExecutor.execute(connection, sql, id);
         return resultSet.next();
+    }
+
+    @Override
+    public Boolean existsByLicensePlate(String licensePlate, Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM vehicle WHERE licensePlate = ?";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, licensePlate);
+        resultSet.next() ;
+        return resultSet.getInt(1) != 0;
     }
 
 
