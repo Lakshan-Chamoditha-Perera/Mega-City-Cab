@@ -2,6 +2,7 @@ package com.megacitycab.megacitycabservice.servlet;
 
 import com.megacitycab.megacitycabservice.dto.DriverDTO;
 import com.megacitycab.megacitycabservice.dto.VehicleDTO;
+import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.DriverService;
 import com.megacitycab.megacitycabservice.service.custom.VehicleService;
@@ -14,7 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @WebServlet(name = "vehicleServlet", value = "/vehicles")
@@ -42,9 +42,12 @@ public class VehicleServlet extends HttpServlet {
             request.setAttribute("vehicles", vehicles);
             request.setAttribute("drivers", drivers);
             request.getRequestDispatcher("/manage_vehicle.jsp").forward(request, response);
+        } catch (MegaCityCabException e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/vehicles?error=" + e.getMessage());
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error retrieving drivers", e);
-            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Error fetching vehicles");
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 
@@ -86,9 +89,12 @@ public class VehicleServlet extends HttpServlet {
             } else {
                 response.sendRedirect(request.getContextPath() + "/vehicles?error=Failed to update vehicle");
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error updating vehicle", e);
+        } catch (MegaCityCabException e) {
+            e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/vehicles?error=" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 
@@ -104,9 +110,12 @@ public class VehicleServlet extends HttpServlet {
             } else {
                 response.sendRedirect(request.getContextPath() + "/vehicles?error=Failed to delete vehicle");
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error deleting vehicle", e);
+        } catch (MegaCityCabException e) {
+            e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/vehicles?error=" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 
@@ -131,9 +140,12 @@ public class VehicleServlet extends HttpServlet {
             } else {
                 response.sendRedirect(request.getContextPath() + "/vehicles?error=Failed to save vehicles");
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error saving vehicle", e);
+        } catch (MegaCityCabException e) {
+            e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/vehicles?error=" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 
