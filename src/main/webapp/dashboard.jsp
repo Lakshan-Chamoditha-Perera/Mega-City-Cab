@@ -265,7 +265,7 @@
                     </button>
                 </form>
                 <% } else { %>
-                <form action="${pageContext.request.contextPath}/logout" method="get">
+                <form action="${pageContext.request.contextPath}/auth/logout" method="post">
                     <button type="submit" class="btn btn-outline-danger">
                         <i class="bi bi-box-arrow-right"></i>
                         Logout
@@ -304,7 +304,6 @@
     </script>
 </nav>
 
-
 <div class="container">
     <!-- Welcome Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -323,7 +322,9 @@
             <div class="card stat-card">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <div class="stat-value">120</div>
+                        <div class="stat-value">
+                            ${customersCount}
+                        </div>
                         <div class="stat-label">Total Customers</div>
                     </div>
                     <i class="bi bi-people stat-icon"></i>
@@ -334,7 +335,9 @@
             <div class="card stat-card">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <div class="stat-value">50</div>
+                        <div class="stat-value">
+                            ${vehiclesCount}
+                        </div>
                         <div class="stat-label">Total Vehicles</div>
                     </div>
                     <i class="bi bi-car-front stat-icon"></i>
@@ -345,7 +348,9 @@
             <div class="card stat-card">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <div class="stat-value">45</div>
+                        <div class="stat-value">
+                            ${driversCount}
+                        </div>
                         <div class="stat-label">Total Drivers</div>
                     </div>
                     <i class="bi bi-person-badge stat-icon"></i>
@@ -356,7 +361,9 @@
             <div class="card stat-card">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <div class="stat-value">300</div>
+                        <div class="stat-value">
+                            ${bookingsCount}
+                        </div>
                         <div class="stat-label">Total Bookings</div>
                     </div>
                     <i class="bi bi-calendar-check stat-icon"></i>
@@ -483,7 +490,7 @@
 
     // Navigation function
     function navigate(path) {
-        const url = `${baseUrl}/${path}?action=GET`;
+        const url = `${baseUrl}/${path}?action=POST`;
         window.location.href = url;
     }
 
