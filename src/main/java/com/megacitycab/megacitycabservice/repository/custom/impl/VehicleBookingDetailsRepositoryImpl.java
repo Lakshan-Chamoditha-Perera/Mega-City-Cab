@@ -34,4 +34,11 @@ public class VehicleBookingDetailsRepositoryImpl implements VehicleBookingDetail
     public boolean delete(Integer id, Connection connection) throws SQLException {
         return false;
     }
+
+    @Override
+    public Integer getCount(Connection connection) throws SQLException {
+        return 0;
+    }
+
+
 }
