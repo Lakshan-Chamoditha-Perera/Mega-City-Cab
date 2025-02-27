@@ -17,6 +17,7 @@ import com.megacitycab.megacitycabservice.service.custom.BookingService;
 import com.megacitycab.megacitycabservice.util.TransactionManager;
 
 import java.sql.Date;
+import java.util.List;
 
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
@@ -97,5 +98,12 @@ public class BookingServiceImpl implements BookingService {
                 connection -> bookingRepository.getCount(connection)
         );
 
+    }
+
+    @Override
+    public List<BookingDTO> getBookingsWithCustomer() throws RuntimeException, MegaCityCabException {
+        return transactionManager.doReadOnly(
+                connection -> bookingRepository.getBookingsWithCustomer(connection)
+        );
     }
 }
