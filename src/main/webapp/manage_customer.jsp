@@ -11,6 +11,14 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        * {
+            scrollbar-width: none;
+        }
+
         :root {
             --primary-color: #0d6efd;
             --secondary-color: #6c757d;
@@ -310,7 +318,7 @@
 </nav>
 
 
-<div class="container">
+<div class="container my-4">
     <!-- Success and Error Messages -->
     <c:if test="${param.success != null}">
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -326,7 +334,7 @@
     </c:if>
 
     <!-- Customer Management Section -->
-    <div class="card p-4 mb-4">
+    <div class="card p-4 my-4">
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h1 class="section-title">

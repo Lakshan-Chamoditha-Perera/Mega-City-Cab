@@ -12,6 +12,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
           rel="stylesheet">
     <style>
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        * {
+            scrollbar-width: none;
+        }
         :root {
             --primary-color: #0d6efd;
             --secondary-color: #6c757d;
@@ -309,7 +315,7 @@
     </script>
 </nav>
 
-<div class="container">
+<div class="container my-4">
     <!-- Success and Error Messages -->
     <c:if test="${param.success != null}">
         <div class="alert alert-success alert-dismissible fade show" role="alert">
