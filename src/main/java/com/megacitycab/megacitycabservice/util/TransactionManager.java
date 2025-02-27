@@ -1,6 +1,7 @@
 package com.megacitycab.megacitycabservice.util;
 
 import com.megacitycab.megacitycabservice.configuration.listeners.custom.DatabaseConnectionPool;
+import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,7 +16,7 @@ public class TransactionManager {
         this.connectionPool = DatabaseConnectionPool.getInstance();
     }
 
-    public <T> T doInTransaction(TransactionCallback<T> callback) throws RuntimeException {
+    public <T> T doInTransaction(TransactionCallback<T> callback) throws RuntimeException, MegaCityCabException {
         Connection connection = null;
         try {
             connection = connectionPool.getConnection();
@@ -35,13 +36,15 @@ public class TransactionManager {
                 }
             }
             throw new RuntimeException(e);
+        } catch (MegaCityCabException e) {
+            throw e;
         } finally {
             // Ensure connection is closed and returned to the pool
             closeConnection(connection);
         }
     }
 
-    public <T> T doReadOnly(TransactionCallback<T> callback) throws RuntimeException {
+    public <T> T doReadOnly(TransactionCallback<T> callback) throws RuntimeException, MegaCityCabException {
         Connection connection = null;
         try {
             // Acquire connection from the pool
@@ -52,6 +55,8 @@ public class TransactionManager {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Read-only transaction failed: {0}", e.getMessage());
             throw new RuntimeException(e);
+        } catch (MegaCityCabException e) {
+            throw e;
         } finally {
             // Ensure connection is closed and returned to the pool
             closeConnection(connection);
