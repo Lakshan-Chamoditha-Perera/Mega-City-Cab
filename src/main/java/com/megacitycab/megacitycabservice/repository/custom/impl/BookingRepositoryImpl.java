@@ -1,10 +1,12 @@
 package com.megacitycab.megacitycabservice.repository.custom.impl;
 
+import com.megacitycab.megacitycabservice.dto.BookingDTO;
 import com.megacitycab.megacitycabservice.entity.custom.Booking;
 import com.megacitycab.megacitycabservice.repository.custom.BookingRepository;
 import com.megacitycab.megacitycabservice.util.SqlExecutor;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BookingRepositoryImpl implements BookingRepository {
@@ -62,6 +64,31 @@ public class BookingRepositoryImpl implements BookingRepository {
         } else {
             throw new SQLException("Failed to retrieve generated booking ID.");
         }
+    }
+
+    @Override
+    public List<BookingDTO> getBookingsWithCustomer(Connection connection) throws SQLException {
+        String sql = "SELECT b.bookingId, c.firstName, c.lastName, b.pickupTime, b.total, b.status " +
+                "FROM booking b JOIN customer c ON b.customerId = c.customerId";
+        List<BookingDTO> bookings = new ArrayList<>();
+
+        try (ResultSet resultSet = SqlExecutor.execute(connection, sql)) {
+            while (resultSet.next()) {
+                // Create a BookingDTO object using the Builder pattern
+                BookingDTO bookingDTO = BookingDTO.builder()
+                        .bookingId(resultSet.getInt("bookingId"))
+                        .customerName(resultSet.getString("firstName")+" "+resultSet.getString("lastName"))
+                        .pickupTime(resultSet.getTimestamp("pickupTime").toLocalDateTime())
+                        .total(resultSet.getFloat("total"))
+                        .status(resultSet.getString("status"))
+                        .build();
+
+                // Add the BookingDTO to the list
+                bookings.add(bookingDTO);
+            }
+        }
+
+        return bookings;
     }
 }
 
