@@ -71,6 +71,13 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Integer getCount(Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM user WHERE isDeleted = false";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql);
+        return resultSet.next() ? resultSet.getInt(1) : 0;
+    }
+
+    @Override
     public Optional<User> findByEmail(String email, Connection connection) throws SQLException {
         String sql = "SELECT * FROM user WHERE email = ?";
 

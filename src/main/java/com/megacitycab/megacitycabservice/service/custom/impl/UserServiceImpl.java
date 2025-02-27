@@ -1,6 +1,7 @@
 package com.megacitycab.megacitycabservice.service.custom.impl;
 
 import com.megacitycab.megacitycabservice.entity.custom.User;
+import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.repository.custom.UserRepository;
 import com.megacitycab.megacitycabservice.repository.custom.impl.UserRepositoryImpl;
 import com.megacitycab.megacitycabservice.service.custom.UserService;
@@ -18,22 +19,17 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public void save(User user) {
+    public void save(User user) throws MegaCityCabException {
         transactionManager.doInTransaction(connection -> {
             return userRepository.save(user, connection);
         });
     }
 
-    public List<User> findAll() {
-        try {
-            System.out.println("Service FIndAll");
+    public List<User> findAll() throws RuntimeException, MegaCityCabException {
             List<User> users = transactionManager.doReadOnly(connection -> {
                 return userRepository.findAll(connection);
             });
             return users;
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

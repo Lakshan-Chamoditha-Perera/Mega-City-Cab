@@ -1,6 +1,7 @@
 package com.megacitycab.megacitycabservice.servlet;
 
 import com.megacitycab.megacitycabservice.entity.custom.User;
+import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.UserService;
 import com.megacitycab.megacitycabservice.service.factory.ServiceFactory;
@@ -38,10 +39,12 @@ public class UserServlet extends HttpServlet {
 
             // Forward the request to the JSP page
             request.getRequestDispatcher("/userPage.jsp").forward(request, response);
-        } catch (RuntimeException e) {
+        }catch (MegaCityCabException e) {
             e.printStackTrace();
-            // return error page
-
+            response.sendRedirect(request.getContextPath() + "/home?error=" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Internal error");
         }
     }
 
