@@ -43,6 +43,9 @@ public class BookingServlet extends HttpServlet {
             List<VehicleDTO> vehicles = vehicleService.getAllVehiclesWithDriver();
             request.setAttribute("vehicles", vehicles);
 
+            List<BookingDTO> allBookings = bookingService.getBookingsWithCustomer();
+            request.setAttribute("allBookings", allBookings);
+
             request.getRequestDispatcher("/manage_booking.jsp").forward(request, response);
         } catch (Exception e) {
             response.sendRedirect(request.getContextPath() + "/error.jsp?message=Error fetching bookings page");

@@ -174,6 +174,79 @@
             display: flex;
             gap: 0.5rem;
         }
+
+        /* Activity Card Styles */
+        .activity-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.2s;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background-color: var(--hover-bg-color);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .activity-icon.bg-primary {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: var(--primary-color);
+        }
+
+        .activity-details h6 {
+            margin: 0;
+            color: #212529;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .activity-details p {
+            margin: 0;
+            color: var(--secondary-color);
+            font-size: 0.875rem;
+        }
+
+        .activity-details p strong {
+            color: #212529;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge.bg-warning {
+            background-color: var(--warning-color);
+            color: #000;
+        }
+
+        .badge.bg-success {
+            background-color: var(--success-color);
+            color: #fff;
+        }
     </style>
 </head>
 <body class="py-4">
@@ -377,10 +450,21 @@
                 <h1 class="section-title">
                     <i class="bi bi-calendar-check"></i>Manage Bookings
                 </h1>
+                <div class="d-flex gap-2 mb-3">
+                    <button id="show-view-button" class="btn btn-outline-primary">
+                        <i class="bi bi-list-ul me-1"></i>
+                        Show All Bookings
+                    </button>
+                    <button id="show-form-button" class="btn btn-outline-success">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Show Booking Form
+                    </button>
+                </div>
             </div>
 
             <!-- Add/Edit Booking Form -->
-            <form id="bookingForm" action="${pageContext.request.contextPath}/bookings" method="post">
+            <form id="bookingForm" style="display: none;" action="${pageContext.request.contextPath}/bookings"
+                  method="post">
                 <input type="hidden" id="bookingId" name="bookingId">
                 <input type="hidden" id="action" name="action" value="SAVE">
 
@@ -603,10 +687,121 @@
                     </div>
                 </div>
             </form>
+            <div id="all-bookings-view">
+                <div>
+                    <div class="activity-card">
+                        <c:forEach var="booking" items="${allBookings}">
+                            <div class="activity-item">
+                                <div class="activity-icon bg-primary">
+                                    <i class="bi bi-calendar-check"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <h6>Booking #${booking.bookingId}</h6>
+                                    <p>
+                                        <strong>Customer:</strong> ${booking.customerName} |
+                                        <strong>Date:</strong> ${booking.pickupTime} |
+                                        <strong>Status:</strong>
+                                        <span class="badge bg-${booking.status == 'pending' ? 'warning' : 'success'}">
+                                                ${booking.status}
+                                        </span>
+                                    </p>
+                                    <!-- Button to trigger the modal -->
+                                    <button class="btn btn-sm btn-outline-primary mt-2" data-bs-toggle="modal"
+                                            data-bs-target="#vehicleModal${booking.bookingId}">
+                                        <i class="bi bi-car-front me-1"></i>
+                                        View Vehicles
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Modal for Viewing Vehicles -->
+                            <div class="modal fade" id="vehicleModal${booking.bookingId}" tabindex="-1"
+                                 aria-labelledby="vehicleModalLabel${booking.bookingId}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="vehicleModalLabel${booking.bookingId}">
+                                                Vehicles for Booking #${booking.bookingId}
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Vehicle Details for the Booking -->
+                                            <c:if test="${not empty booking.vehicleBookingDetailsDTOSList}">
+                                                <ul class="list-group">
+                                                    <c:forEach var="vehicle"
+                                                               items="${booking.vehicleBookingDetailsDTOSList}">
+                                                        <li class="list-group-item">
+                                                            <strong>Vehicle ID:</strong> ${vehicle.vehicleId} <br>
+                                                            <strong>Type:</strong> ${vehicle.vehicleType} <br>
+                                                            <strong>Model:</strong> ${vehicle.vehicleModel} <br>
+                                                            <strong>License Plate:</strong> ${vehicle.licensePlate}
+                                                        </li>
+                                                    </c:forEach>
+                                                </ul>
+                                            </c:if>
+                                            <c:if test="${empty booking.vehicleBookingDetailsDTOSList}">
+                                                <p>No vehicles assigned to this booking.</p>
+                                            </c:if>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Function to toggle visibility of the "View All Bookings" section and the booking form
+    function toggleView(viewId, formId) {
+        const viewSection = document.getElementById(viewId);
+        const formSection = document.getElementById(formId);
+
+        if (viewSection && formSection) {
+            if (viewSection.style.display === "none") {
+                // Show the view section and hide the form
+                viewSection.style.display = "block";
+                formSection.style.display = "none";
+            } else {
+                // Hide the view section and show the form
+                viewSection.style.display = "none";
+                formSection.style.display = "block";
+            }
+        }
+    }
+
+    // Function to initialize event listeners for the buttons
+    function initializeButtons() {
+        const showViewButton = document.getElementById("show-view-button");
+        const showFormButton = document.getElementById("show-form-button");
+
+        if (showViewButton && showFormButton) {
+            // Add click event listeners to the buttons
+            showViewButton.addEventListener("click", () => {
+                toggleView("all-bookings-view", "bookingForm");
+            });
+
+            showFormButton.addEventListener("click", () => {
+                toggleView("all-bookings-view", "bookingForm");
+            });
+        }
+    }
+
+    // Initialize the buttons when the DOM is fully loaded
+    document.addEventListener("DOMContentLoaded", initializeButtons);
+</script>
 
 <%--<script>--%>
 <%--    document.addEventListener("DOMContentLoaded", function () {--%>
