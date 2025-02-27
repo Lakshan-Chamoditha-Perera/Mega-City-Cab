@@ -4,23 +4,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class BookingDTO implements DTO {
-    private final int bookingId;
-    private final int customerId;
-    private final Integer driverId;
-    private final Integer vehicleId;
-    private final String pickupLocation;
-    private final String destination;
-    private final LocalDateTime pickupTime;
-    private final String status;
-    private final double distance;
-    private final double fare;
-    private final double discount;
-    private final double tax;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-    private final boolean deleted;
-    private final int addedUserId;
-    private final List<VehicleBookingDetailsDTO> vehicleBookingDetailsDTOSList;
+    private  int bookingId;
+    private  int customerId;
+    private  Integer driverId;
+    private  Integer vehicleId;
+    private  String pickupLocation;
+    private  String destination;
+    private  LocalDateTime pickupTime;
+    private  String status;
+    private  double distance;
+    private  double fare;
+    private  double discount;
+    private  double tax;
+    private  LocalDateTime createdAt;
+    private  LocalDateTime updatedAt;
+    private  boolean deleted;
+    private  int addedUserId;
+    private  List<VehicleBookingDetailsDTO> vehicleBookingDetailsDTOSList;
+    private String customerName;
+    private double total;
 
     private BookingDTO(Builder builder) {
         this.bookingId = builder.bookingId;
@@ -40,8 +42,11 @@ public class BookingDTO implements DTO {
         this.deleted = builder.deleted;
         this.addedUserId = builder.addedUserId;
         this.vehicleBookingDetailsDTOSList = builder.vehicleBookingDetailsDTOSList;
+        this.customerName = builder.customerName;
+        this.total = builder.total;
     }
 
+    // Builder Pattern Implementation
     public static class Builder {
         private int bookingId;
         private int customerId;
@@ -60,6 +65,8 @@ public class BookingDTO implements DTO {
         private boolean deleted;
         private int addedUserId;
         private List<VehicleBookingDetailsDTO> vehicleBookingDetailsDTOSList;
+        private String customerName;
+        private double total;
 
         public Builder bookingId(int bookingId) {
             this.bookingId = bookingId;
@@ -146,11 +153,22 @@ public class BookingDTO implements DTO {
             return this;
         }
 
+        public Builder customerName(String customerName) {
+            this.customerName = customerName;
+            return this;
+        }
+
+        public Builder total(double total) {
+            this.total = total;
+            return this;
+        }
+
         public BookingDTO build() {
             return new BookingDTO(this);
         }
     }
 
+    // Static method to create a new Builder instance
     public static Builder builder() {
         return new Builder();
     }
@@ -222,5 +240,116 @@ public class BookingDTO implements DTO {
 
     public List<VehicleBookingDetailsDTO> getVehicleBookingDetailsDTOSList() {
         return vehicleBookingDetailsDTOSList;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    // Setter for customerName (if needed)
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setBookingId(int bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public void setDriverId(Integer driverId) {
+        this.driverId = driverId;
+    }
+
+    public void setVehicleId(Integer vehicleId) {
+        this.vehicleId = vehicleId;
+    }
+
+    public void setPickupLocation(String pickupLocation) {
+        this.pickupLocation = pickupLocation;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    public void setPickupTime(LocalDateTime pickupTime) {
+        this.pickupTime = pickupTime;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public void setFare(double fare) {
+        this.fare = fare;
+    }
+
+    public void setDiscount(double discount) {
+        this.discount = discount;
+    }
+
+    public void setTax(double tax) {
+        this.tax = tax;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public void setAddedUserId(int addedUserId) {
+        this.addedUserId = addedUserId;
+    }
+
+    public void setVehicleBookingDetailsDTOSList(List<VehicleBookingDetailsDTO> vehicleBookingDetailsDTOSList) {
+        this.vehicleBookingDetailsDTOSList = vehicleBookingDetailsDTOSList;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    // toString() method for debugging and logging
+    @Override
+    public String toString() {
+        return "BookingDTO{" +
+                "bookingId=" + bookingId +
+                ", customerId=" + customerId +
+                ", driverId=" + driverId +
+                ", vehicleId=" + vehicleId +
+                ", pickupLocation='" + pickupLocation + '\'' +
+                ", destination='" + destination + '\'' +
+                ", pickupTime=" + pickupTime +
+                ", status='" + status + '\'' +
+                ", distance=" + distance +
+                ", fare=" + fare +
+                ", discount=" + discount +
+                ", tax=" + tax +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", deleted=" + deleted +
+                ", addedUserId=" + addedUserId +
+                ", vehicleBookingDetailsDTOSList=" + vehicleBookingDetailsDTOSList +
+                ", customerName='" + customerName + '\'' +
+                ", total=" + total +
+                '}';
     }
 }
