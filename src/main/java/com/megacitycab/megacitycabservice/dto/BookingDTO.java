@@ -23,6 +23,10 @@ public class BookingDTO implements DTO {
     private  List<VehicleBookingDetailsDTO> vehicleBookingDetailsDTOSList;
     private String customerName;
     private double total;
+    private List<VehicleDTO> vehicleList;
+
+    public BookingDTO() {
+    }
 
     private BookingDTO(Builder builder) {
         this.bookingId = builder.bookingId;
@@ -44,6 +48,7 @@ public class BookingDTO implements DTO {
         this.vehicleBookingDetailsDTOSList = builder.vehicleBookingDetailsDTOSList;
         this.customerName = builder.customerName;
         this.total = builder.total;
+        this.vehicleList = builder.vehicleList;
     }
 
     // Builder Pattern Implementation
@@ -67,6 +72,7 @@ public class BookingDTO implements DTO {
         private List<VehicleBookingDetailsDTO> vehicleBookingDetailsDTOSList;
         private String customerName;
         private double total;
+        private List<VehicleDTO> vehicleList;
 
         public Builder bookingId(int bookingId) {
             this.bookingId = bookingId;
@@ -162,6 +168,12 @@ public class BookingDTO implements DTO {
             this.total = total;
             return this;
         }
+
+        public List<VehicleDTO> vehicleList(List<VehicleDTO> vehicleList) {
+            this.vehicleList = vehicleList;
+            return vehicleList;
+        }
+
 
         public BookingDTO build() {
             return new BookingDTO(this);
@@ -325,6 +337,14 @@ public class BookingDTO implements DTO {
 
     public void setTotal(double total) {
         this.total = total;
+    }
+
+    public List<VehicleDTO> getVehicleList() {
+        return vehicleList;
+    }
+
+    public void setVehicleList(List<VehicleDTO> vehicleList) {
+        this.vehicleList = vehicleList;
     }
 
     // toString() method for debugging and logging
