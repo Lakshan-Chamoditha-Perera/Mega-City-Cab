@@ -733,20 +733,20 @@
                                         </div>
                                         <div class="modal-body">
                                             <!-- Vehicle Details for the Booking -->
-                                            <c:if test="${not empty booking.vehicleBookingDetailsDTOSList}">
+                                            <c:if test="${not empty booking.vehicleList}">
                                                 <ul class="list-group">
                                                     <c:forEach var="vehicle"
-                                                               items="${booking.vehicleBookingDetailsDTOSList}">
+                                                               items="${booking.vehicleList}">
                                                         <li class="list-group-item">
                                                             <strong>Vehicle ID:</strong> ${vehicle.vehicleId} <br>
-                                                            <strong>Type:</strong> ${vehicle.vehicleType} <br>
-                                                            <strong>Model:</strong> ${vehicle.vehicleModel} <br>
+                                                            <strong>Type:</strong> ${vehicle.brand} <br>
+                                                            <strong>Model:</strong> ${vehicle.model} <br>
                                                             <strong>License Plate:</strong> ${vehicle.licensePlate}
                                                         </li>
                                                     </c:forEach>
                                                 </ul>
                                             </c:if>
-                                            <c:if test="${empty booking.vehicleBookingDetailsDTOSList}">
+                                            <c:if test="${empty booking.vehicleList}">
                                                 <p>No vehicles assigned to this booking.</p>
                                             </c:if>
                                         </div>
