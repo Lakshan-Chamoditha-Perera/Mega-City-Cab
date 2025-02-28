@@ -16,7 +16,6 @@ public class RepositoryFactory {
         return instance;
     }
 
-
     @SuppressWarnings("unchecked")
     public <T extends Repository> T getRepository(RepositoryType type) {
         Repository repository = switch (type) {
@@ -26,6 +25,7 @@ public class RepositoryFactory {
             case USER -> new UserRepositoryImpl();
             case VEHICLE -> new VehicleRepositoryImpl();
             case VEHICLE_BOOKING_DETAILS -> new VehicleBookingDetailsRepositoryImpl();
+            case QUERY -> new QueryRepositoryImpl();
         };
         return (T) repository;
     }
