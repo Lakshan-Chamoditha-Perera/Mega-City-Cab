@@ -7,5 +7,5 @@ import java.sql.SQLException;
 
 @FunctionalInterface
 public interface TransactionCallback<T> {
-    T execute(Connection connection) throws SQLException, MegaCityCabException;
+    T execute(Connection connection) throws Exception;
 }

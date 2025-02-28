@@ -5,6 +5,8 @@ import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.impl.*;
 import com.megacitycab.megacitycabservice.util.TransactionManager;
 
+import java.sql.SQLException;
+
 public class ServiceFactory {
     private static ServiceFactory instance;
 
@@ -21,17 +23,22 @@ public class ServiceFactory {
     @SuppressWarnings("unchecked")
     public <T extends Service> T getService(ServiceType type) {
 
-        TransactionManager transactionManager = new TransactionManager();
+        try {
+            TransactionManager transactionManager = new TransactionManager();
 
-        Service service = switch (type) {
-            case AUTH -> new AuthServiceImpl(transactionManager);
-            case BOOKING -> new BookingServiceImpl(transactionManager);
-            case CUSTOMER -> new CustomerServiceImpl(transactionManager);
-            case DRIVER -> new DriverServiceImpl(transactionManager);
-            case USER -> new UserServiceImpl(transactionManager);
-            case VEHICLE -> new VehicleServiceImpl(transactionManager);
-        };
-        return (T) service;
+            Service service = switch (type) {
+                case AUTH -> new AuthServiceImpl(transactionManager);
+                case BOOKING -> new BookingServiceImpl(transactionManager);
+                case CUSTOMER -> new CustomerServiceImpl(transactionManager);
+                case DRIVER -> new DriverServiceImpl(transactionManager);
+                case USER -> new UserServiceImpl(transactionManager);
+                case VEHICLE -> new VehicleServiceImpl(transactionManager);
+            };
+            return (T) service;
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 
