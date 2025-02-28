@@ -1,5 +1,6 @@
 package com.megacitycab.megacitycabservice.service.custom.impl;
 
+import com.megacitycab.megacitycabservice.configuration.filters.SecurityFilter;
 import com.megacitycab.megacitycabservice.entity.custom.User;
 import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.repository.RepositoryType;
@@ -13,61 +14,61 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AuthServiceImpl implements AuthService {
 
+    private static final Logger logger = Logger.getLogger(AuthServiceImpl.class.getName());
+
+    private static final String LOGIN_URL = "/auth/login";
+    private static final String REGISTER_URL = "/auth/register";
+    private static final String DASHBOARD_URL = "/home";
+
     private final TransactionManager transactionManager;
     private final UserRepository userRepository;
-    private final Logger logger = Logger.getLogger(AuthServiceImpl.class.getName());
 
     public AuthServiceImpl(TransactionManager transactionManager) {
         this.transactionManager = transactionManager;
-        userRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.USER);
+        this.userRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.USER);
     }
-
 
     @Override
     public void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             logger.info("Attempting to log in user");
 
-            // Get form parameters from the login form
             String email = request.getParameter("email");
             String password = request.getParameter("password");
 
-            // Validate input
             if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
                 response.sendRedirect(request.getContextPath() + "/auth/login?error=invalid_input");
                 return;
             }
 
-            // Fetch user from the database
             Optional<User> user = transactionManager.doReadOnly(connection -> userRepository.findByEmail(email, connection));
 
             if (user.isEmpty()) {
-                // User not found
                 response.sendRedirect(request.getContextPath() + "/auth/login?error=user_not_found");
                 return;
             }
 
             User userEntity = user.get();
 
-            // Validate password (in a real-world scenario, compare hashed passwords)
             if (!userEntity.getPasswordHash().equals(password)) {
-                // Invalid password
                 response.sendRedirect(request.getContextPath() + "/auth/login?error=invalid_credentials");
                 return;
             }
 
-            // Create session and store user details
             HttpSession session = request.getSession();
-            session.setAttribute("user", userEntity); // Set the entire user object in the session
-            session.setAttribute("userId", userEntity.getUserId()); // Optionally store userId
-            session.setAttribute("userEmail", userEntity.getEmail()); // Optionally store email
+            session.setAttribute("user", userEntity);
+            session.setAttribute("userId", userEntity.getUserId());
+            session.setAttribute("userEmail", userEntity.getEmail());
 
+            String sessionToken = UUID.randomUUID().toString();
+            session.setAttribute("session_token", sessionToken);
 
-            // Redirect to the dashboard after successful login
             response.sendRedirect(request.getContextPath() + "/home");
 
         } catch (Exception e) {
@@ -80,59 +81,50 @@ public class AuthServiceImpl implements AuthService {
     public void register(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             logger.info("Registering new user");
-            System.out.println("Context path : " + request.getContextPath());
-            // Get form parameters from the registration form
+
             String email = request.getParameter("email");
             String password = request.getParameter("password");
             String username = request.getParameter("username");
 
-            Optional<User> existingUser = transactionManager.doReadOnly(connection -> userRepository.findByEmail(email, connection));
+            Optional<User> existingUser = transactionManager.doReadOnly(
+                    conn -> userRepository.findByEmail(email, conn));
 
             if (existingUser.isPresent()) {
-                response.sendRedirect(request.getContextPath() + "/auth/register?error=" + "User already exists for " + email);
+                response.sendRedirect(request.getContextPath() + REGISTER_URL + "?error=User already exists for " + email);
                 return;
             }
 
-            // Create a new User object
             User newUser = new User();
             newUser.setUsername(username);
             newUser.setEmail(email);
-            newUser.setPasswordHash(password);  // In a real-world scenario, this should be hashed
+            newUser.setPasswordHash(password);
+            transactionManager.doInTransaction(
+                    conn -> userRepository.save(newUser, conn));
 
-            // Save the user in the database
-            transactionManager.doInTransaction(connection -> {
-                return userRepository.save(newUser, connection);
-            });
-
-            // Redirect to the login page after successful registration
-            response.sendRedirect(request.getContextPath() + "/auth/register?success=true");
-
+            response.sendRedirect(request.getContextPath() + REGISTER_URL + "?success=true");
         } catch (IOException e) {
-            e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/auth/register?error=" + e.getMessage());
+            logger.log(Level.SEVERE, "IOException during registration", e);
+            response.sendRedirect(request.getContextPath() + REGISTER_URL + "?error=" + e.getMessage());
         } catch (MegaCityCabException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Database error during registration", e);
         }
     }
-
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             logger.info("Logging out user");
+            HttpSession session = request.getSession(false);
 
-            // Invalidate the session
-            HttpSession session = request.getSession(false); // Get session if exists
             if (session != null) {
-                session.invalidate(); // Destroy session
+                SecurityFilter.handleLogout(request);
+                session.invalidate();
             }
 
-            // Redirect to login page after logout
-            response.sendRedirect(request.getContextPath() + "/auth/login?logout=success");
+            response.sendRedirect(request.getContextPath() + LOGIN_URL + "?logout=success");
         } catch (Exception e) {
-            logger.severe("Error during logout: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/auth/login?error=logout_failed");
+            logger.log(Level.SEVERE, "Error during logout", e);
+            response.sendRedirect(request.getContextPath() + LOGIN_URL + "?error=logout_failed");
         }
     }
-
 }
