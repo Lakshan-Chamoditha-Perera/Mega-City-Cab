@@ -2,16 +2,14 @@ package com.megacitycab.megacitycabservice.service.custom.impl;
 
 import com.megacitycab.megacitycabservice.dto.BookingDTO;
 import com.megacitycab.megacitycabservice.dto.VehicleBookingDetailsDTO;
+import com.megacitycab.megacitycabservice.dto.VehicleDTO;
 import com.megacitycab.megacitycabservice.entity.custom.Booking;
 import com.megacitycab.megacitycabservice.entity.custom.Vehicle;
 import com.megacitycab.megacitycabservice.entity.custom.VehicleBookingDetails;
 import com.megacitycab.megacitycabservice.exception.ErrorMessage;
 import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.repository.RepositoryType;
-import com.megacitycab.megacitycabservice.repository.custom.BookingRepository;
-import com.megacitycab.megacitycabservice.repository.custom.CustomerRepository;
-import com.megacitycab.megacitycabservice.repository.custom.VehicleBookingDetailsRepository;
-import com.megacitycab.megacitycabservice.repository.custom.VehicleRepository;
+import com.megacitycab.megacitycabservice.repository.custom.*;
 import com.megacitycab.megacitycabservice.repository.factory.RepositoryFactory;
 import com.megacitycab.megacitycabservice.service.custom.BookingService;
 import com.megacitycab.megacitycabservice.util.TransactionManager;
@@ -25,12 +23,14 @@ public class BookingServiceImpl implements BookingService {
     private final CustomerRepository customerRepository;
     private final TransactionManager transactionManager;
     private final VehicleBookingDetailsRepository vehicleBookingDetailRepository;
+    private final QueryRepository queryRepository;
 
     public BookingServiceImpl(TransactionManager transactionManager) {
         bookingRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.BOOKING);
         vehicleRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.VEHICLE);
         customerRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.CUSTOMER);
         vehicleBookingDetailRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.VEHICLE_BOOKING_DETAILS);
+        queryRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.QUERY);
         this.transactionManager = transactionManager;
     }
 
@@ -102,8 +102,18 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDTO> getBookingsWithCustomer() throws RuntimeException, MegaCityCabException {
-        return transactionManager.doReadOnly(
+        List<BookingDTO> bookingDTOS = transactionManager.doReadOnly(
                 connection -> bookingRepository.getBookingsWithCustomer(connection)
         );
+
+        for (int i = 0; i < bookingDTOS.size(); i++) {
+            final BookingDTO bookingDTO = bookingDTOS.get(i);
+            List<VehicleDTO> vehicleList = transactionManager.doReadOnly(
+                    connection -> queryRepository.getVehiclesByBookingId(connection, bookingDTO.getBookingId())
+            );
+            bookingDTO.setVehicleList(vehicleList);
+        }
+
+        return bookingDTOS;
     }
 }
