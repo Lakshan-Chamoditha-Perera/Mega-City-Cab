@@ -106,3 +106,5 @@ CREATE TABLE VehicleBookingDetails
     FOREIGN KEY (bookingId) REFERENCES Booking (bookingId),
     FOREIGN KEY (vehicleId) REFERENCES Vehicle (vehicleId)
 );
+
+CREATE INDEX idx_customer_isDeleted ON customer (isDeleted);
