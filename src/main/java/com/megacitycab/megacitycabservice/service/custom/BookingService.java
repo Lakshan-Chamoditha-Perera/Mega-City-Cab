@@ -1,6 +1,6 @@
 package com.megacitycab.megacitycabservice.service.custom;
 
-import com.megacitycab.megacitycabservice.dto.BookingDTO;
+import com.megacitycab.megacitycabservice.dto.custom.BookingDTO;
 import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.service.Service;
 
@@ -13,4 +13,6 @@ public interface BookingService extends Service {
     Integer getBookingsCount() throws RuntimeException, MegaCityCabException;
 
     List<BookingDTO> getBookingsWithCustomer()throws RuntimeException, MegaCityCabException;
+
+    Float getTotalProfit()  throws RuntimeException, MegaCityCabException;
 }

@@ -1,8 +1,8 @@
 package com.megacitycab.megacitycabservice.service.custom.impl;
 
-import com.megacitycab.megacitycabservice.dto.BookingDTO;
-import com.megacitycab.megacitycabservice.dto.VehicleBookingDetailsDTO;
-import com.megacitycab.megacitycabservice.dto.VehicleDTO;
+import com.megacitycab.megacitycabservice.dto.custom.BookingDTO;
+import com.megacitycab.megacitycabservice.dto.custom.VehicleBookingDetailsDTO;
+import com.megacitycab.megacitycabservice.dto.custom.VehicleDTO;
 import com.megacitycab.megacitycabservice.entity.custom.Booking;
 import com.megacitycab.megacitycabservice.entity.custom.Vehicle;
 import com.megacitycab.megacitycabservice.entity.custom.VehicleBookingDetails;
@@ -115,5 +115,13 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return bookingDTOS;
+    }
+
+    @Override
+    public Float getTotalProfit() throws RuntimeException, MegaCityCabException {
+       Float val =  transactionManager.doReadOnly(
+                connection -> bookingRepository.getTotalProfit(connection)
+        );
+        return 0f;
     }
 }
