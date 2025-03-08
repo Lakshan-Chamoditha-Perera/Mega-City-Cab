@@ -1,11 +1,10 @@
 package com.megacitycab.megacitycabservice.servlet;
 
-import com.megacitycab.megacitycabservice.dto.DriverDTO;
+import com.megacitycab.megacitycabservice.dto.custom.DriverDTO;
 import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.DriverService;
 import com.megacitycab.megacitycabservice.service.factory.ServiceFactory;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
