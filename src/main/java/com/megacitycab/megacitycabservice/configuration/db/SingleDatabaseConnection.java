@@ -1,5 +1,7 @@
 package com.megacitycab.megacitycabservice.configuration.db;
 
+import com.megacitycab.megacitycabservice.configuration.listeners.custom.WebAppConfiguration;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -8,13 +10,14 @@ public class SingleDatabaseConnection {
     private static SingleDatabaseConnection instance;
     private Connection connection;
 
-    private static final String URL = "jdbc:mysql://localhost:3306/megacity_cab_db";
-    private static final String USER = "root";
-    private static final String PASSWORD = "1234";
-
     private SingleDatabaseConnection() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-            this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
+
+        String url = WebAppConfiguration.getInstance().getProperty("DATABASE_URL");
+        String user = WebAppConfiguration.getInstance().getProperty("DATABASE_USER");
+        String password = WebAppConfiguration.getInstance().getProperty("DATABASE_PASSWORD");
+
+        this.connection = DriverManager.getConnection(url, user, password);
     }
 
     public static SingleDatabaseConnection getInstance() throws SQLException, ClassNotFoundException {
