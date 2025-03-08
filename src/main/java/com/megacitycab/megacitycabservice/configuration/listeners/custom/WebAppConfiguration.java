@@ -27,23 +27,10 @@ public class WebAppConfiguration {
 
     private void loadProperties() {
         try (InputStream baseInput = getClass().getClassLoader().getResourceAsStream("application.properties")) {
-
             if (baseInput == null) {
                 throw new RuntimeException("Base properties file not found: application.properties");
             }
-
             properties.load(baseInput);
-
-            String envType = properties.getProperty("APP_ENV", "dev").trim();
-            String envSpecificFile = "application-" + envType + ".properties";
-
-            try (InputStream envInput = getClass().getClassLoader().getResourceAsStream(envSpecificFile)) {
-                if (envInput != null) {
-                    properties.load(envInput);
-                } else {
-                    logger.info("Environment-specific properties file not found: " + envSpecificFile);
-                }
-            }
         } catch (Exception e) {
             logger.warning(e.getMessage());
         }
