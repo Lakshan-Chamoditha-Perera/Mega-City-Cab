@@ -37,11 +37,13 @@ public class MegaCItyWebServlet extends HttpServlet {
             Integer vehiclesCount = vehicleService.getVehiclesCount();
             Integer driversCount = driverService.getDriversCount();
             Integer bookingsCount = bookingService.getBookingsCount();
+            Float totalProfit = bookingService.getTotalProfit();
 
             request.setAttribute("customersCount", customersCount);
             request.setAttribute("vehiclesCount", vehiclesCount);
             request.setAttribute("driversCount", driversCount);
             request.setAttribute("bookingsCount", bookingsCount);
+            request.setAttribute("totalProfit", totalProfit);
 
 
             request.getRequestDispatcher("/dashboard.jsp").forward(request, response);

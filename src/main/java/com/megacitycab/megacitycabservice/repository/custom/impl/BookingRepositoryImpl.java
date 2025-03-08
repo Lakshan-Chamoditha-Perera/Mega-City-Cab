@@ -1,6 +1,6 @@
 package com.megacitycab.megacitycabservice.repository.custom.impl;
 
-import com.megacitycab.megacitycabservice.dto.BookingDTO;
+import com.megacitycab.megacitycabservice.dto.custom.BookingDTO;
 import com.megacitycab.megacitycabservice.entity.custom.Booking;
 import com.megacitycab.megacitycabservice.repository.custom.BookingRepository;
 import com.megacitycab.megacitycabservice.util.SqlExecutor;
@@ -89,6 +89,12 @@ public class BookingRepositoryImpl implements BookingRepository {
         }
 
         return bookings;
+    }
+
+    @Override
+    public Float getTotalProfit(Connection connection) throws SQLException {
+        String sql = "SELECT sum(profit) FROM booking WHERE deleted = false";
+        return 0f;
     }
 }
 
