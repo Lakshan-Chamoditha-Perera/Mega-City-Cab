@@ -1,4 +1,6 @@
-package com.megacitycab.megacitycabservice.dto;
+package com.megacitycab.megacitycabservice.dto.custom;
+
+import com.megacitycab.megacitycabservice.dto.DTO;
 
 public class VehicleBookingDetailsDTO implements DTO {
     private Integer vehicleId;

@@ -1,6 +1,6 @@
 package com.megacitycab.megacitycabservice.service.custom.impl;
 
-import com.megacitycab.megacitycabservice.dto.VehicleDTO;
+import com.megacitycab.megacitycabservice.dto.custom.VehicleDTO;
 import com.megacitycab.megacitycabservice.entity.custom.Vehicle;
 import com.megacitycab.megacitycabservice.exception.ErrorMessage;
 import com.megacitycab.megacitycabservice.exception.MegaCityCabException;

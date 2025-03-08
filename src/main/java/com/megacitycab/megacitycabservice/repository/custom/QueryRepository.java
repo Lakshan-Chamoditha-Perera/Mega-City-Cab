@@ -1,6 +1,6 @@
 package com.megacitycab.megacitycabservice.repository.custom;
 
-import com.megacitycab.megacitycabservice.dto.VehicleDTO;
+import com.megacitycab.megacitycabservice.dto.custom.VehicleDTO;
 import com.megacitycab.megacitycabservice.repository.Repository;
 
 import java.sql.Connection;

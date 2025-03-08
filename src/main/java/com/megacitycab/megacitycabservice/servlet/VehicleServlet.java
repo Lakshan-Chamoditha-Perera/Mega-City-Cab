@@ -1,7 +1,7 @@
 package com.megacitycab.megacitycabservice.servlet;
 
-import com.megacitycab.megacitycabservice.dto.DriverDTO;
-import com.megacitycab.megacitycabservice.dto.VehicleDTO;
+import com.megacitycab.megacitycabservice.dto.custom.DriverDTO;
+import com.megacitycab.megacitycabservice.dto.custom.VehicleDTO;
 import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.DriverService;
