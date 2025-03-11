@@ -1,5 +1,6 @@
 package com.megacitycab.megacitycabservice.servlet;
 
+import com.megacitycab.megacitycabservice.dto.custom.BookingStatsDTO;
 import com.megacitycab.megacitycabservice.exception.MegaCityCabException;
 import com.megacitycab.megacitycabservice.service.ServiceType;
 import com.megacitycab.megacitycabservice.service.custom.BookingService;
@@ -39,12 +40,14 @@ public class MegaCItyWebServlet extends HttpServlet {
             Integer bookingsCount = bookingService.getBookingsCount();
             Float totalProfit = bookingService.getTotalProfit();
 
+            BookingStatsDTO bookingStatsDTO =  bookingService.getBookingStats();
+
             request.setAttribute("customersCount", customersCount);
             request.setAttribute("vehiclesCount", vehiclesCount);
             request.setAttribute("driversCount", driversCount);
             request.setAttribute("bookingsCount", bookingsCount);
             request.setAttribute("totalProfit", totalProfit);
-
+            request.setAttribute("bookingStats",bookingStatsDTO);
 
             request.getRequestDispatcher("/dashboard.jsp").forward(request, response);
         } catch (MegaCityCabException e) {
