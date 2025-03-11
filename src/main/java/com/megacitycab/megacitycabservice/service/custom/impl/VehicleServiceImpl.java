@@ -10,12 +10,14 @@ import com.megacitycab.megacitycabservice.repository.custom.VehicleBookingDetail
 import com.megacitycab.megacitycabservice.repository.custom.VehicleRepository;
 import com.megacitycab.megacitycabservice.repository.factory.RepositoryFactory;
 import com.megacitycab.megacitycabservice.service.custom.VehicleService;
+import com.megacitycab.megacitycabservice.util.RegExPatterns;
 import com.megacitycab.megacitycabservice.util.TransactionCallback;
 import com.megacitycab.megacitycabservice.util.TransactionManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class VehicleServiceImpl implements VehicleService {
     private final TransactionManager transactionManager;
@@ -38,11 +40,16 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public boolean saveVehicle(VehicleDTO vehicleDTO) throws RuntimeException, MegaCityCabException {
+        // Validate vehicle fields using RegEx patterns
+        validateVehicleFields(vehicleDTO);
 
+        // Check if a vehicle with the same license plate already exists
         Boolean isExists = transactionManager.doReadOnly(connection ->
                 vehicleRepository.existsByLicensePlate(vehicleDTO.getLicensePlate(), connection));
 
-        if (isExists) throw new MegaCityCabException(ErrorMessage.VEHICLE_ALREADY_EXISTS_FOR_LICENSE_PLATE);
+        if (isExists) {
+            throw new MegaCityCabException(ErrorMessage.VEHICLE_ALREADY_EXISTS_FOR_LICENSE_PLATE);
+        }
 
         return transactionManager.doInTransaction(
                 connection -> vehicleRepository.save(
@@ -62,6 +69,29 @@ public class VehicleServiceImpl implements VehicleService {
         );
     }
 
+    private void validateVehicleFields(VehicleDTO vehicleDTO) throws MegaCityCabException {
+        if (!Pattern.matches(RegExPatterns.LICENSE_PLATE, vehicleDTO.getLicensePlate())) {
+            throw new MegaCityCabException(ErrorMessage.INVALID_LICENSE_PLATE);
+        }
+        if (!Pattern.matches(RegExPatterns.MODEL, vehicleDTO.getModel())) {
+            throw new MegaCityCabException(ErrorMessage.INVALID_MODEL);
+        }
+        if (!Pattern.matches(RegExPatterns.BRAND, vehicleDTO.getBrand())) {
+            throw new MegaCityCabException(ErrorMessage.INVALID_BRAND);
+        }
+        if (!Pattern.matches(RegExPatterns.COLOR, vehicleDTO.getColor())) {
+            throw new MegaCityCabException(ErrorMessage.INVALID_COLOR);
+        }
+        if (!Pattern.matches(RegExPatterns.POSITIVE_INTEGER, vehicleDTO.getPassengerCount() + "")) {
+            throw new MegaCityCabException(ErrorMessage.INVALID_PASSENGER_COUNT);
+        }
+
+        if (!Pattern.matches(RegExPatterns.POSITIVE_FLOAT, vehicleDTO.getPricePerKm() + "")) {
+            throw new MegaCityCabException(ErrorMessage.INVALID_PRICE_PER_KM);
+        }
+
+    }
+
     @Override
     public boolean deleteVehicle(Integer id) throws RuntimeException, MegaCityCabException {
 
@@ -73,8 +103,7 @@ public class VehicleServiceImpl implements VehicleService {
             throw new MegaCityCabException(ErrorMessage.VEHICLE_NOT_FOUND);
         }
 
-        //check vehicle has pending or confirmed booking
-        Boolean hasBookings = transactionManager.doReadOnly(new TransactionCallback<Boolean>() { // Specify the return type
+        Boolean hasBookings = transactionManager.doReadOnly(new TransactionCallback<Boolean>() {
             @Override
             public Boolean execute(Connection connection) throws SQLException, MegaCityCabException {
                 return vehicleRepository.hasPendingOrConfirmedBookings(id, connection);
@@ -84,16 +113,13 @@ public class VehicleServiceImpl implements VehicleService {
             throw new MegaCityCabException(ErrorMessage.VEHICLE_HAS_BEEN_BOOKED);
         }
 
-        // Perform the deletion within a transaction
         return transactionManager.doInTransaction(connection -> {
             Integer driverId = vehicle.getDriverId();
 
-            // If the vehicle has a driver, update the driver's availability
             if (driverId != null && driverId != 0) {
                 driverRepository.updateDriverAvailability(connection, true, driverId);
             }
 
-            // Delete the vehicle
             boolean isDeleted = vehicleRepository.delete(id, connection);
             return isDeleted;
         });
@@ -101,7 +127,9 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public boolean updateVehicle(VehicleDTO vehicleDTO) throws MegaCityCabException, RuntimeException {
-        // Find the existing vehicle by ID
+
+        validateVehicleFields(vehicleDTO);
+
         Vehicle existingVehicle = transactionManager.doReadOnly(connection -> {
             return vehicleRepository.findById(vehicleDTO.getVehicleId(), connection);
         });
@@ -110,7 +138,6 @@ public class VehicleServiceImpl implements VehicleService {
             throw new MegaCityCabException(ErrorMessage.VEHICLE_NOT_FOUND);
         }
 
-        // exists vehicle by license plate except vehicleId
         Boolean licensePlateAvailable = transactionManager.doReadOnly(connection -> {
             return vehicleRepository.existsByLicensePlateExceptId(
                     vehicleDTO.getLicensePlate(), vehicleDTO.getVehicleId(), connection);
@@ -120,7 +147,6 @@ public class VehicleServiceImpl implements VehicleService {
             throw new MegaCityCabException(ErrorMessage.VEHICLE_ALREADY_EXISTS_FOR_LICENSE_PLATE);
         }
 
-        // Update fields with new values
         existingVehicle.setLicensePlate(vehicleDTO.getLicensePlate());
         existingVehicle.setModel(vehicleDTO.getModel());
         existingVehicle.setBrand(vehicleDTO.getBrand());
@@ -129,10 +155,8 @@ public class VehicleServiceImpl implements VehicleService {
         existingVehicle.setAvailability(vehicleDTO.getAvailability());
         existingVehicle.setPricePerKm(vehicleDTO.getPricePerKm());
 
-        // Set driverId to null if it's 0, otherwise set it to the provided value
         existingVehicle.setDriverId(vehicleDTO.getDriverId() == 0 ? null : vehicleDTO.getDriverId());
 
-        // Perform the update within a transaction
         return transactionManager.doInTransaction(connection -> {
             boolean isUpdated = vehicleRepository.update(existingVehicle, connection);
 
