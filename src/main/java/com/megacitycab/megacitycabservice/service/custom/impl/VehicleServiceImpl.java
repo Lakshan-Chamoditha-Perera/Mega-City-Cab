@@ -32,8 +32,8 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public List<VehicleDTO> getAllVehiclesWithDriver() throws RuntimeException, MegaCityCabException {
-            return transactionManager.doReadOnly(
-                    connection -> vehicleRepository.getVehiclesWithDriver(connection));
+        return transactionManager.doReadOnly(
+                connection -> vehicleRepository.getVehiclesWithDriver(connection));
     }
 
     @Override
@@ -53,7 +53,9 @@ public class VehicleServiceImpl implements VehicleService {
                                 .passengerCount(vehicleDTO.getPassengerCount())
                                 .color(vehicleDTO.getColor())
                                 .availability(vehicleDTO.getAvailability())
-                                .driverId(vehicleDTO.getDriverId())
+                                .driverId(vehicleDTO.getDriverId() == 0 ? null : vehicleDTO.getDriverId())
+                                .addedUserId(vehicleDTO.getAddedUserId())
+                                .pricePerKm(vehicleDTO.getPricePerKm())
                                 .build(),
                         connection
                 )
@@ -63,20 +65,13 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public boolean deleteVehicle(Integer id) throws RuntimeException, MegaCityCabException {
 
-            System.out.println("Starting deleteVehicle method for Vehicle ID: " + id);
+        Vehicle vehicle = transactionManager.doReadOnly(connection -> {
+            return vehicleRepository.findById(id, connection);
+        });
 
-            // Fetch the vehicle by ID
-            Vehicle vehicle = transactionManager.doReadOnly(connection -> {
-                System.out.println("Fetching vehicle from repository for ID: " + id);
-                return vehicleRepository.findById(id, connection);
-            });
-
-            if (vehicle == null) {
-                System.out.println("Vehicle with ID " + id + " not found.");
-                throw new MegaCityCabException(ErrorMessage.VEHICLE_NOT_FOUND);
-            }
-
-            System.out.println("Vehicle found. Proceeding with deletion for Vehicle ID: " + id);
+        if (vehicle == null) {
+            throw new MegaCityCabException(ErrorMessage.VEHICLE_NOT_FOUND);
+        }
 
         //check vehicle has pending or confirmed booking
         Boolean hasBookings = transactionManager.doReadOnly(new TransactionCallback<Boolean>() { // Specify the return type
@@ -89,42 +84,31 @@ public class VehicleServiceImpl implements VehicleService {
             throw new MegaCityCabException(ErrorMessage.VEHICLE_HAS_BEEN_BOOKED);
         }
 
-
         // Perform the deletion within a transaction
-            return transactionManager.doInTransaction(connection -> {
-                Integer driverId = vehicle.getDriverId();
-                System.out.println("Driver ID associated with the vehicle: " + driverId);
+        return transactionManager.doInTransaction(connection -> {
+            Integer driverId = vehicle.getDriverId();
 
-                // If the vehicle has a driver, update the driver's availability
-                if (driverId != null && driverId != 0) {
-                    System.out.println("Updating driver availability for Driver ID: " + driverId);
-                    driverRepository.updateDriverAvailability(connection, true, driverId);
-                }
+            // If the vehicle has a driver, update the driver's availability
+            if (driverId != null && driverId != 0) {
+                driverRepository.updateDriverAvailability(connection, true, driverId);
+            }
 
-                // Delete the vehicle
-                boolean isDeleted = vehicleRepository.delete(id, connection);
-                System.out.println("Vehicle deletion status: " + isDeleted);
-
-                return isDeleted;
-            });
+            // Delete the vehicle
+            boolean isDeleted = vehicleRepository.delete(id, connection);
+            return isDeleted;
+        });
     }
 
     @Override
     public boolean updateVehicle(VehicleDTO vehicleDTO) throws MegaCityCabException, RuntimeException {
-            System.out.println("Starting updateVehicle method for Vehicle ID: " + vehicleDTO.getVehicleId());
+        // Find the existing vehicle by ID
+        Vehicle existingVehicle = transactionManager.doReadOnly(connection -> {
+            return vehicleRepository.findById(vehicleDTO.getVehicleId(), connection);
+        });
 
-            // Find the existing vehicle by ID
-            Vehicle existingVehicle = transactionManager.doReadOnly(connection -> {
-                System.out.println("Fetching vehicle from repository for ID: " + vehicleDTO.getVehicleId());
-                return vehicleRepository.findById(vehicleDTO.getVehicleId(), connection);
-            });
-
-            if (existingVehicle == null) {
-                System.out.println("Vehicle with ID " + vehicleDTO.getVehicleId() + " not found.");
-                throw new MegaCityCabException(ErrorMessage.VEHICLE_NOT_FOUND);
-            }
-
-            System.out.println("Vehicle found. Updating fields for Vehicle ID: " + vehicleDTO.getVehicleId());
+        if (existingVehicle == null) {
+            throw new MegaCityCabException(ErrorMessage.VEHICLE_NOT_FOUND);
+        }
 
         // exists vehicle by license plate except vehicleId
         Boolean licensePlateAvailable = transactionManager.doReadOnly(connection -> {
@@ -136,34 +120,28 @@ public class VehicleServiceImpl implements VehicleService {
             throw new MegaCityCabException(ErrorMessage.VEHICLE_ALREADY_EXISTS_FOR_LICENSE_PLATE);
         }
 
-            // Update fields with new values
-            existingVehicle.setLicensePlate(vehicleDTO.getLicensePlate());
-            existingVehicle.setModel(vehicleDTO.getModel());
-            existingVehicle.setBrand(vehicleDTO.getBrand());
-            existingVehicle.setPassengerCount(vehicleDTO.getPassengerCount());
-            existingVehicle.setColor(vehicleDTO.getColor());
-            existingVehicle.setAvailability(vehicleDTO.getAvailability());
+        // Update fields with new values
+        existingVehicle.setLicensePlate(vehicleDTO.getLicensePlate());
+        existingVehicle.setModel(vehicleDTO.getModel());
+        existingVehicle.setBrand(vehicleDTO.getBrand());
+        existingVehicle.setPassengerCount(vehicleDTO.getPassengerCount());
+        existingVehicle.setColor(vehicleDTO.getColor());
+        existingVehicle.setAvailability(vehicleDTO.getAvailability());
+        existingVehicle.setPricePerKm(vehicleDTO.getPricePerKm());
 
-            // Set driverId to null if it's 0, otherwise set it to the provided value
-            existingVehicle.setDriverId(vehicleDTO.getDriverId() == 0 ? null : vehicleDTO.getDriverId());
-            System.out.println("Driver ID set to: " + existingVehicle.getDriverId());
+        // Set driverId to null if it's 0, otherwise set it to the provided value
+        existingVehicle.setDriverId(vehicleDTO.getDriverId() == 0 ? null : vehicleDTO.getDriverId());
 
-            // Perform the update within a transaction
-            System.out.println("Starting transaction to update vehicle and driver availability.");
-            return transactionManager.doInTransaction(connection -> {
-                boolean isUpdated = vehicleRepository.update(existingVehicle, connection);
-                System.out.println("Vehicle update status: " + isUpdated);
+        // Perform the update within a transaction
+        return transactionManager.doInTransaction(connection -> {
+            boolean isUpdated = vehicleRepository.update(existingVehicle, connection);
 
-                if (isUpdated && existingVehicle.getDriverId() != null) {
-                    System.out.println("Updating driver availability for Driver ID: " + existingVehicle.getDriverId());
-                    boolean driverAvailabilityUpdated = driverRepository.updateDriverAvailability(connection, true, existingVehicle.getDriverId());
-                    System.out.println("Driver availability update status: " + driverAvailabilityUpdated);
-                    return driverAvailabilityUpdated;
-                }
-
-                return isUpdated;
-            });
-
+            if (isUpdated && existingVehicle.getDriverId() != null) {
+                boolean driverAvailabilityUpdated = driverRepository.updateDriverAvailability(connection, true, existingVehicle.getDriverId());
+                return driverAvailabilityUpdated;
+            }
+            return isUpdated;
+        });
     }
 
     @Override

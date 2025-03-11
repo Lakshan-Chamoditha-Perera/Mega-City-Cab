@@ -35,10 +35,7 @@ public class VehicleServlet extends HttpServlet {
 
         try {
             List<VehicleDTO> vehicles = vehicleService.getAllVehiclesWithDriver();
-            System.out.println("Vehicles found: " + vehicles.size());
-            System.out.println(vehicles);
             List<DriverDTO> drivers = driverService.getAllAvailableDriversForVehicle();
-            System.out.println("Drivers found: " + drivers.size());
             request.setAttribute("vehicles", vehicles);
             request.setAttribute("drivers", drivers);
             request.getRequestDispatcher("/manage_vehicle.jsp").forward(request, response);
@@ -70,19 +67,19 @@ public class VehicleServlet extends HttpServlet {
         logger.info("Handling POST request to update vehicle");
         try {
             String driverId = request.getParameter("driverId");
+            VehicleDTO vehicleDTO = VehicleDTO.builder()
+                    .vehicleId(Integer.parseInt(request.getParameter("vehicleId")))
+                    .licensePlate(request.getParameter("licensePlate"))
+                    .model(request.getParameter("model"))
+                    .brand(request.getParameter("brand"))
+                    .passengerCount(Integer.parseInt(request.getParameter("passengerCount")))
+                    .color(request.getParameter("color"))
+                    .availability(Boolean.parseBoolean(request.getParameter("availability")))
+                    .driverId((driverId == null || driverId.isEmpty()) ? 0 : Integer.parseInt(driverId))
+                    .pricePerKm(Float.parseFloat(request.getParameter("pricePerKm")))
+                    .build();
 
-            boolean success = vehicleService.updateVehicle(
-                    VehicleDTO.builder()
-                            .vehicleId(Integer.parseInt(request.getParameter("vehicleId")))
-                            .licensePlate(request.getParameter("licensePlate"))
-                            .model(request.getParameter("model"))
-                            .brand(request.getParameter("brand"))
-                            .passengerCount(Integer.parseInt(request.getParameter("passengerCount")))
-                            .color(request.getParameter("color"))
-                            .availability(Boolean.parseBoolean(request.getParameter("availability")))
-                            .driverId((driverId == null || driverId.isEmpty()) ? 0 : Integer.parseInt(driverId))
-                            .build()
-            );
+            boolean success = vehicleService.updateVehicle(vehicleDTO);
 
             if (success) {
                 response.sendRedirect(request.getContextPath() + "/vehicles?success=Vehicle updated successfully");
@@ -131,6 +128,8 @@ public class VehicleServlet extends HttpServlet {
                             .color(request.getParameter("color"))
                             .availability(Boolean.valueOf(request.getParameter("availability")))
                             .driverId(Integer.parseInt(request.getParameter("driverId")))
+                            .addedUserId((Integer) request.getAttribute("userId"))
+                            .pricePerKm(Float.parseFloat(request.getParameter("pricePerKm")))
                             .build()
             );
 
