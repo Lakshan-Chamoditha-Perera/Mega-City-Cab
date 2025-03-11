@@ -19,7 +19,6 @@ public class CustomerDTO implements DTO {
     private final LocalDateTime updatedAt;
     private final boolean isDeleted;
 
-    // Private constructor to be used by the builder
     private CustomerDTO(Builder builder) {
         this.customerId = builder.customerId;
         this.addedUserId = builder.addedUserId;
