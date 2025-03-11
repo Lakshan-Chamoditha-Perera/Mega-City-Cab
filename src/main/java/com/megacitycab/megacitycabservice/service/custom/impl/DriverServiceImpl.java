@@ -8,9 +8,11 @@ import com.megacitycab.megacitycabservice.repository.RepositoryType;
 import com.megacitycab.megacitycabservice.repository.custom.DriverRepository;
 import com.megacitycab.megacitycabservice.repository.factory.RepositoryFactory;
 import com.megacitycab.megacitycabservice.service.custom.DriverService;
+import com.megacitycab.megacitycabservice.util.RegExPatterns;
 import com.megacitycab.megacitycabservice.util.TransactionManager;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class DriverServiceImpl implements DriverService {
     private final DriverRepository driverRepository;
@@ -23,25 +25,28 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public List<DriverDTO> getAllAvailableDriversForVehicle() throws RuntimeException, MegaCityCabException {
-            List<Driver> driversList = transactionManager.doReadOnly(
-                    connection -> driverRepository.getAllDriversNotAssignedVehicle(connection));
+        List<Driver> driversList = transactionManager.doReadOnly(
+                connection -> driverRepository.getAllDriversNotAssignedVehicle(connection));
 
-            return driversList.stream().map(
-                            driver -> DriverDTO.builder()
-                                    .driverId(driver.getDriverId())
-                                    .firstName(driver.getFirstName())
-                                    .lastName(driver.getLastName())
-                                    .licenseNumber(driver.getLicenseNumber())
-                                    .mobileNo(driver.getMobileNo())
-                                    .availability(driver.getAvailability())
-                                    .email(driver.getEmail())
-                                    .build())
-                    .toList();
+        return driversList.stream().map(
+                        driver -> DriverDTO.builder()
+                                .driverId(driver.getDriverId())
+                                .firstName(driver.getFirstName())
+                                .lastName(driver.getLastName())
+                                .licenseNumber(driver.getLicenseNumber())
+                                .mobileNo(driver.getMobileNo())
+                                .availability(driver.getAvailability())
+                                .email(driver.getEmail())
+                                .build())
+                .toList();
 
     }
 
     @Override
     public Boolean saveDriver(DriverDTO driverDTO) throws RuntimeException, MegaCityCabException {
+        // Validate driver fields using RegEx patterns
+        validateDriverFields(driverDTO);
+
         // Check if email already exists
         Boolean existsByEmail = transactionManager.doReadOnly(
                 connection -> driverRepository.existsByEmail(driverDTO.getEmail(), connection));
@@ -58,6 +63,7 @@ public class DriverServiceImpl implements DriverService {
             throw new MegaCityCabException(ErrorMessage.DRIVER_MOBILE_ALREADY_EXISTS);
         }
 
+        // Save the driver
         return transactionManager.doInTransaction(
                 connection -> driverRepository.save(
                         Driver.builder()
@@ -70,6 +76,24 @@ public class DriverServiceImpl implements DriverService {
                                 .build(),
                         connection
                 ));
+    }
+
+    private void validateDriverFields(DriverDTO driverDTO) throws MegaCityCabException {
+        if (!Pattern.matches(RegExPatterns.NAME, driverDTO.getFirstName())) {
+            throw new MegaCityCabException(ErrorMessage.INVALID_FIRST_NAME);
+        }
+        if (!Pattern.matches(RegExPatterns.NAME, driverDTO.getLastName())) {
+            throw new MegaCityCabException(ErrorMessage.INVALID_LAST_NAME);
+        }
+        if (!Pattern.matches(RegExPatterns.DRIVER_LICENSE_NUMBER, driverDTO.getLicenseNumber())) {
+            throw new MegaCityCabException(ErrorMessage.INVALID_DRIVER_LICENSE_NUMBER);
+        }
+        if (!Pattern.matches(RegExPatterns.MOBILE_NUMBER, driverDTO.getMobileNo())) {
+            throw new MegaCityCabException(ErrorMessage.INVALID_MOBILE_NUMBER);
+        }
+        if (!Pattern.matches(RegExPatterns.EMAIL, driverDTO.getEmail())) {
+            throw new MegaCityCabException(ErrorMessage.INVALID_EMAIL);
+        }
     }
 
     @Override
@@ -96,6 +120,9 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Boolean updateDriver(DriverDTO driverDTO) throws MegaCityCabException {
+
+        validateDriverFields(driverDTO);
+
         // Check if driver exists
         Boolean existsById = transactionManager.doReadOnly(
                 connection -> driverRepository.existsById(driverDTO.getDriverId(), connection));
@@ -137,20 +164,20 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public List<DriverDTO> getAllDrivers() throws RuntimeException, MegaCityCabException {
 
-            List<Driver> driversList = transactionManager.doReadOnly(
-                    connection -> driverRepository.findAll(connection));
+        List<Driver> driversList = transactionManager.doReadOnly(
+                connection -> driverRepository.findAll(connection));
 
-            return driversList.stream().map(
-                            driver -> DriverDTO.builder()
-                                    .driverId(driver.getDriverId())
-                                    .firstName(driver.getFirstName())
-                                    .lastName(driver.getLastName())
-                                    .licenseNumber(driver.getLicenseNumber())
-                                    .mobileNo(driver.getMobileNo())
-                                    .availability(driver.getAvailability())
-                                    .email(driver.getEmail())
-                                    .build())
-                    .toList();
+        return driversList.stream().map(
+                        driver -> DriverDTO.builder()
+                                .driverId(driver.getDriverId())
+                                .firstName(driver.getFirstName())
+                                .lastName(driver.getLastName())
+                                .licenseNumber(driver.getLicenseNumber())
+                                .mobileNo(driver.getMobileNo())
+                                .availability(driver.getAvailability())
+                                .email(driver.getEmail())
+                                .build())
+                .toList();
 
     }
 

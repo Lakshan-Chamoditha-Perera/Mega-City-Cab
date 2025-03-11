@@ -32,6 +32,7 @@ public enum ErrorMessage {
     DRIVER_ALREADY_EXISTS("A driver with the provided details already exists in the system. Please use unique information."),
     DRIVER_MOBILE_ALREADY_EXISTS("The mobile number is already registered to another driver. Please provide a unique mobile number."),
     DRIVER_ASSIGNED_TO_VEHICLE("The driver is already assigned to a vehicle. Please assign a different driver or remove the current assignment."),
+    INVALID_DRIVER_LICENSE_NUMBER("The provided driver license number is invalid. It should be alphanumeric and 8 to 15 characters long."),
 
     // Booking & Payment-related errors
     INVALID_BOOKING("The provided booking details are invalid. Please check the information and try again."),
