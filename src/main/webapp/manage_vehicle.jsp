@@ -31,6 +31,7 @@
         body {
             background-color: var(--background-color);
             min-height: 100vh;
+            padding: 0 10.33vw;
         }
 
         .card {
@@ -136,9 +137,68 @@
         .table-hover tbody tr:hover {
             background-color: var(--hover-bg-color);
         }
+
+
+        .pagination-container {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .pagination-info {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .pagination .page-link {
+            color: var(--primary-color);
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .pagination .page-link:hover {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+
+        /* Items per page selector styling */
+        .items-per-page-container {
+            margin-bottom: 1rem;
+        }
+
+        .items-per-page-container label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .items-per-page-container .form-select {
+            border-color: #dee2e6;
+        }
+
+        .items-per-page-container .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
     </style>
 </head>
-<body class="py-4">
+<body class="">
 
 <!-- navbar.jsp -->
 <nav class="navbar navbar-expand-lg sticky-top">
@@ -268,15 +328,15 @@
 
             <!-- Auth Buttons -->
             <div class="auth-buttons">
-                <% if (session.getAttribute("user") == null) { %>
-                <form action="${pageContext.request.contextPath}/login" method="get">
+                <% if (session.getAttribute("userId") == null) { %>
+                <form action="${pageContext.request.contextPath}/auth/login" method="get">
                     <button type="submit" class="btn btn-outline-primary">
                         <i class="bi bi-box-arrow-in-right"></i>
                         Login
                     </button>
                 </form>
                 <% } else { %>
-                <form action="${pageContext.request.contextPath}/logout" method="get">
+                <form action="${pageContext.request.contextPath}/auth/logout" method="post">
                     <button type="submit" class="btn btn-outline-danger">
                         <i class="bi bi-box-arrow-right"></i>
                         Logout
@@ -388,6 +448,14 @@
                             <label for="availability">Availability</label>
                         </div>
                     </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="form-floating">
+                            <input min="1" type="number" class="form-control" id="pricePerKm" name="pricePerKm"
+                                   placeholder="Passenger Count" required>
+                            <label for="pricePerKm">Price per 1 Km</label>
+                        </div>
+                    </div>
 <%--                    <div class="col-md-6 col-lg-4">--%>
 <%--                        <div class="form-floating">--%>
 <%--                            <input type="date" class="form-control" id="createdAt" name="createdAt" required>--%>
@@ -433,6 +501,15 @@
                 <i class="bi bi-table me-2"></i>
                 Vehicle List
             </h2>
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-secondary me-2" onclick="printVehicleList()">
+                    <i class="bi bi-printer"></i> Print
+                </button>
+                <button class="btn btn-success" onclick="exportToCSV()">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Export as CSV
+                </button>
+            </div>
+
             <div class="table-container">
                 <c:if test="${empty vehicles}">
                     <div class="alert alert-info">
@@ -440,7 +517,7 @@
                     </div>
                 </c:if>
                 <c:if test="${not empty vehicles}">
-                    <table class="table table-hover vehicle-table mb-0">
+                    <table id="vehicleTable" class="table table-hover vehicle-table mb-0">
                         <thead>
                         <tr>
                             <th>ID</th>
@@ -452,6 +529,7 @@
                             <th>Availability</th>
                             <th>Driver</th> <!-- Updated column header -->
                             <th>Created Date</th>
+                            <th>Price per Km</th>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -479,6 +557,7 @@
                                 <td>
                                     ${vehicle.createdAt}
                                 </td>
+                                <td>${vehicle.pricePerKm}</td>
                                 <td>
                                     <div class="action-buttons">
                                         <!-- Edit button -->
@@ -492,6 +571,7 @@
                                                 data-is-available="${vehicle.availability}"
                                                 data-driver-id="${vehicle.driverId}"
 <%--                                                data-created-at="${vehicle.createdAt}"--%>
+                                                data-price-per-km="${vehicle.pricePerKm}"
                                                 aria-label="Edit Vehicle">
                                             Edit
                                         </button>
@@ -537,6 +617,8 @@
             document.getElementById('color').value = button.dataset.color;
             document.getElementById('availability').value = button.dataset.availability;
             document.getElementById('driverId').value = button.dataset.driverId;
+            document.getElementById('pricePerKm').value = button.dataset.pricePerKm;
+
             // document.getElementById('createdAt').value = button.dataset.createdAt;
             // Change the form action to "UPDATE"
             document.getElementById('action').value = 'UPDATE';
@@ -558,6 +640,168 @@
         // Change the button text back to "Add Vehicle"
         document.getElementById('submitButtonText').textContent = 'Add Vehicle';
     });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Pagination configuration
+        const itemsPerPage = 10;
+        let currentPage = 1;
+
+        const tableBody = document.querySelector('.vehicle-table tbody');
+        if (!tableBody) return; // Exit if table doesn't exist
+
+        const tableRows = Array.from(tableBody.querySelectorAll('tr'));
+        const totalPages = Math.ceil(tableRows.length / itemsPerPage);
+
+        // Function to display rows for current page
+        function displayTableRows() {
+            // Hide all rows first
+            tableRows.forEach(row => {
+                row.style.display = 'none';
+            });
+
+            // Calculate which rows to show
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, tableRows.length);
+
+            // Show only rows for current page
+            for (let i = startIndex; i < endIndex; i++) {
+                tableRows[i].style.display = '';
+            }
+
+            // Update pagination info text
+            document.getElementById('pagination-info').textContent =
+                `Showing ${startIndex + 1} to ${endIndex} of ${tableRows.length} customers`;
+
+            document.querySelectorAll('.page-item').forEach((item, index) => {
+                if (index === 0) {
+                    item.classList.toggle('disabled', currentPage === 1);
+                } else if (index === document.querySelectorAll('.page-item').length - 1) { // Next button
+                    item.classList.toggle('disabled', currentPage === totalPages);
+                } else { // Page number buttons
+                    const pageNum = parseInt(item.querySelector('.page-link').textContent);
+                    item.classList.toggle('active', pageNum === currentPage);
+                }
+            });
+        }
+
+        function createPagination() {
+            const paginationContainer = document.createElement('div');
+            paginationContainer.className = 'pagination-container d-flex justify-content-between align-items-center mt-3';
+
+            const paginationInfo = document.createElement('div');
+            paginationInfo.id = 'pagination-info';
+            paginationInfo.className = 'pagination-info';
+
+            const paginationNav = document.createElement('nav');
+            paginationNav.setAttribute('aria-label', 'Vehicle table navigation');
+
+            const paginationList = document.createElement('ul');
+            paginationList.className = 'pagination pagination-sm mb-0';
+
+            const prevItem = document.createElement('li');
+            prevItem.className = 'page-item disabled';
+            const prevLink = document.createElement('a');
+            prevLink.className = 'page-link';
+            prevLink.href = '#';
+            prevLink.setAttribute('aria-label', 'Previous');
+            prevLink.innerHTML = '<span aria-hidden="true">&laquo;</span>';
+            prevItem.appendChild(prevLink);
+            paginationList.appendChild(prevItem);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = 'page-item' + (i === 1 ? ' active' : '');
+                const pageLink = document.createElement('a');
+                pageLink.className = 'page-link';
+                pageLink.href = '#';
+                pageLink.textContent = i;
+                pageItem.appendChild(pageLink);
+                paginationList.appendChild(pageItem);
+            }
+
+            const nextItem = document.createElement('li');
+            nextItem.className = 'page-item' + (totalPages === 1 ? ' disabled' : '');
+            const nextLink = document.createElement('a');
+            nextLink.className = 'page-link';
+            nextLink.href = '#';
+            nextLink.setAttribute('aria-label', 'Next');
+            nextLink.innerHTML = '<span aria-hidden="true">&raquo;</span>';
+            nextItem.appendChild(nextLink);
+            paginationList.appendChild(nextItem);
+
+            paginationNav.appendChild(paginationList);
+            paginationContainer.appendChild(paginationInfo);
+            paginationContainer.appendChild(paginationNav);
+
+            const tableContainer = document.querySelector('.table-container');
+            tableContainer.appendChild(paginationContainer);
+
+            prevLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayTableRows();
+                }
+            });
+
+            nextLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayTableRows();
+                }
+            });
+            document.querySelectorAll('.page-item:not(:first-child):not(:last-child) .page-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    currentPage = parseInt(this.textContent);
+                    displayTableRows();
+                });
+            });
+        }
+
+        if (tableRows.length > 0) {
+            createPagination();
+            displayTableRows();
+        }
+        document.getElementById('vehicleForm').addEventListener('submit', function () {
+            currentPage = 1;
+        });
+    });
+
+    function printVehicleList() {
+        const printContents = document.getElementById('vehicleTable').outerHTML;
+        const originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        window.location.reload(); // Reload to restore the page
+    }
+
+    // Function to export the customer list as CSV
+    function exportToCSV() {
+        const table = document.getElementById('vehicleTable');
+        const rows = table.querySelectorAll('tr');
+        let csvContent = '';
+
+        rows.forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('th, td').forEach(cell => {
+                if (!cell.querySelector('button')) { // Exclude action buttons
+                    rowData.push(cell.innerText);
+                }
+            });
+            csvContent += rowData.join(',') + '\n';
+        });
+
+        const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'vehicles.csv';
+        link.click();
+    }
 </script>
 </body>
 </html>
