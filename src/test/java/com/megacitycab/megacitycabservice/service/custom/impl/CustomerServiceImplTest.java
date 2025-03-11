@@ -58,6 +58,72 @@ class CustomerServiceImplTest {
     }
 
     @Test
+    @DisplayName("Test Saving Customer with Invalid First Name")
+    void testSaveCustomerWithInvalidFirstName() {
+        CustomerDTO customerDTO = CustomerDTO.builder()
+                .firstName("Ranil123")
+                .lastName("Wickremesinghe")
+                .address("Temple Trees, Colombo")
+                .nic("123456789V")
+                .dateOfBirth(Date.valueOf("1949-03-24"))
+                .mobileNo("0771234567")
+                .email("ranil.w@example.com")
+                .addedUserId(1)
+                .build();
+
+        MegaCityCabException exception = assertThrows(
+                MegaCityCabException.class,
+                () -> customerService.saveCustomer(customerDTO)
+        );
+
+        assertEquals(ErrorMessage.INVALID_FIRST_NAME.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Test Saving Customer with Invalid NIC")
+    void testSaveCustomerWithInvalidNIC() {
+        CustomerDTO customerDTO = CustomerDTO.builder()
+                .firstName("Ranil")
+                .lastName("Wickremesinghe")
+                .address("Temple Trees, Colombo")
+                .nic("12345678")
+                .dateOfBirth(Date.valueOf("1949-03-24"))
+                .mobileNo("0771234567")
+                .email("ranil.w@example.com")
+                .addedUserId(1)
+                .build();
+
+        MegaCityCabException exception = assertThrows(
+                MegaCityCabException.class,
+                () -> customerService.saveCustomer(customerDTO)
+        );
+
+        assertEquals(ErrorMessage.INVALID_NIC.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Test Saving Customer with Invalid Mobile Number")
+    void testSaveCustomerWithInvalidMobileNumber() {
+        CustomerDTO customerDTO = CustomerDTO.builder()
+                .firstName("Ranil")
+                .lastName("Wickremesinghe")
+                .address("Temple Trees, Colombo")
+                .nic("123456789V")
+                .dateOfBirth(Date.valueOf("1949-03-24"))
+                .mobileNo("077123456")
+                .email("ranil.w@example.com")
+                .addedUserId(1)
+                .build();
+
+        MegaCityCabException exception = assertThrows(
+                MegaCityCabException.class,
+                () -> customerService.saveCustomer(customerDTO)
+        );
+
+        assertEquals(ErrorMessage.INVALID_MOBILE_NUMBER.getMessage(), exception.getMessage());
+    }
+
+    @Test
     @Order(2)
     @DisplayName("Test Saving Customer 2 (Mahinda Rajapaksa)")
     void testSaveCustomer2() throws MegaCityCabException {
@@ -188,7 +254,7 @@ class CustomerServiceImplTest {
                 .customerId(testCustomerId1)
                 .firstName("Ranil")
                 .lastName("Wickremesinghe Updated")
-                .address("President's House, Colombo")
+                .address("President House, Colombo")
                 .nic("123456789V")
                 .dateOfBirth(Date.valueOf("1949-03-24"))
                 .mobileNo("0771234567")
@@ -242,7 +308,7 @@ class CustomerServiceImplTest {
                 .nic("111111111V")
                 .dateOfBirth(Date.valueOf("1990-01-01"))
                 .mobileNo("0774444444")
-                .email("ranil.updated@example.com") // Duplicate email
+                .email("ranil.updated@example.com")
                 .addedUserId(1)
                 .build();
 
@@ -260,11 +326,11 @@ class CustomerServiceImplTest {
     void testSaveCustomerWithExistingMobileNumber() {
         CustomerDTO customerDTO = CustomerDTO.builder()
                 .firstName("Test")
-                .lastName("User2")
+                .lastName("User")
                 .address("Test Address 2")
                 .nic("222222222V")
                 .dateOfBirth(Date.valueOf("1990-02-02"))
-                .mobileNo("0771234567") // Duplicate mobile number
+                .mobileNo("0771234567")
                 .email("test.user2@example.com")
                 .addedUserId(1)
                 .build();
