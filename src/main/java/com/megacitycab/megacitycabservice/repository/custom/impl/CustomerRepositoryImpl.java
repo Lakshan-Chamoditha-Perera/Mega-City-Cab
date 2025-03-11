@@ -4,10 +4,7 @@ import com.megacitycab.megacitycabservice.entity.custom.Customer;
 import com.megacitycab.megacitycabservice.repository.custom.CustomerRepository;
 import com.megacitycab.megacitycabservice.util.SqlExecutor;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -17,7 +14,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
     @Override
     public Boolean save(Customer entity, Connection connection) throws SQLException {
-        String sql = "INSERT INTO customer (firstName, lastName, email, nic, address, mobileNo, dateOfBirth) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO customer (firstName, lastName, email, nic, address, mobileNo, dateOfBirth, addedUserId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 //        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 //            statement.setString(1, entity.getFirstName());
 //            statement.setString(2, entity.getLastName());
@@ -48,7 +45,8 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 entity.getNic(),
                 entity.getAddress(),
                 entity.getMobileNo(),
-                entity.getDateOfBirth().toString()
+                entity.getDateOfBirth().toString(),
+                entity.getAddedUserId()
         );
     }
 
@@ -116,9 +114,11 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
     @Override
     public Integer getCount(Connection connection) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM customer WHERE isDeleted = false";
-        ResultSet resultSet = SqlExecutor.execute(connection, sql);
-        return resultSet.next() ? resultSet.getInt(1) : 0;
+        String sql = "{CALL sp_get_customer_count(?)}";
+        CallableStatement callableStatement = connection.prepareCall(sql);
+        callableStatement.registerOutParameter(1, Types.INTEGER);
+        callableStatement.execute();
+        return (Integer) callableStatement.getObject(1);
     }
 
 
@@ -145,7 +145,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
         String sql = "SELECT COUNT(*) FROM customer where customerId = ? AND isDeleted = false";
         ResultSet resultSet = SqlExecutor.execute(connection, sql, id);
         // 0
-        resultSet.next() ;
+        resultSet.next();
         return resultSet.getInt(1) != 0; // Returns true if customers exists
     }
 
@@ -153,7 +153,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     public Boolean existsByEmail(String email, Connection connection) throws SQLException {
         String sql = "SELECT COUNT(*) FROM customer where email = ?";
         ResultSet resultSet = SqlExecutor.execute(connection, sql, email);
-        resultSet.next() ;
+        resultSet.next();
         return resultSet.getInt(1) != 0; // Returns true if customers exists
     }
 
@@ -163,5 +163,13 @@ public class CustomerRepositoryImpl implements CustomerRepository {
         ResultSet resultSet = SqlExecutor.execute(connection, sql, email, customerId);
         resultSet.next();
         return resultSet.getInt(1) != 0; // Returns true if another customer has email
+    }
+
+    @Override
+    public Boolean existsByMobileNumber(String mobileNo, Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM customer where mobileNo = ?";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, mobileNo);
+        resultSet.next();
+        return resultSet.getInt(1) != 0;
     }
 }

@@ -54,6 +54,16 @@ public class CustomerServiceImpl implements CustomerService {
             throw new MegaCityCabException(ErrorMessage.CUSTOMER_ALREADY_EXISTS);
         }
 
+        Boolean isMobileNumberAvailable = transactionManager.doReadOnly(connection ->
+                customerRepository.existsByMobileNumber(
+                        customerDTO.getMobileNo(),
+                        connection
+                ));
+
+        if (isMobileNumberAvailable) {
+            throw new MegaCityCabException(ErrorMessage.CUSTOMER_MOBILE_NUMBER_ALREADY_EXISTS);
+        }
+
         return transactionManager.doInTransaction(
                 connection -> customerRepository.save(
                         Customer.builder()
@@ -64,6 +74,7 @@ public class CustomerServiceImpl implements CustomerService {
                                 .dateOfBirth(customerDTO.getDateOfBirth())
                                 .mobileNo(customerDTO.getMobileNo())
                                 .email(customerDTO.getEmail())
+                                .addedUserId(customerDTO.getAddedUserId())
                                 .build(),
                         connection
                 ));
