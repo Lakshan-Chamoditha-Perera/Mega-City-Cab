@@ -62,7 +62,6 @@ public class AuthServiceImpl implements AuthService {
             }
 
             HttpSession session = request.getSession();
-            session.setAttribute("user", userEntity);
             session.setAttribute("userId", userEntity.getUserId());
             session.setAttribute("userEmail", userEntity.getEmail());
 
@@ -118,7 +117,6 @@ public class AuthServiceImpl implements AuthService {
 
             if (session != null) {
                 SecurityFilter.handleLogout(request);
-                session.invalidate();
             }
 
             response.sendRedirect(request.getContextPath() + LOGIN_URL + "?logout=success");
