@@ -4,9 +4,7 @@ import com.megacitycab.megacitycabservice.entity.custom.Driver;
 import com.megacitycab.megacitycabservice.repository.custom.DriverRepository;
 import com.megacitycab.megacitycabservice.util.SqlExecutor;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +12,7 @@ public class DriverRepositoryImpl implements DriverRepository {
 
     @Override
     public Boolean save(Driver driver, Connection connection) throws SQLException {
-        String sql = "INSERT INTO driver (firstName, lastName, licenseNumber, mobileNo, email) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO driver (firstName, lastName, licenseNumber, mobileNo, email, addedUserId) VALUES (?, ?, ?, ?, ?, ?)";
 
         return SqlExecutor.execute(
                 connection,
@@ -23,8 +21,9 @@ public class DriverRepositoryImpl implements DriverRepository {
                 driver.getLastName(),
                 driver.getLicenseNumber(),
                 driver.getMobileNo(),
-                driver.getEmail()
-            );
+                driver.getEmail(),
+                driver.getAddedUserId()
+        );
     }
 
     @Override
@@ -69,9 +68,11 @@ public class DriverRepositoryImpl implements DriverRepository {
 
     @Override
     public Integer getCount(Connection connection) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM driver WHERE deleted = false";
-        ResultSet resultSet = SqlExecutor.execute(connection, sql);
-        return resultSet.next() ? resultSet.getInt(1) : 0;
+        String sql = "{CALL sp_get_driver_count(?)}";
+        CallableStatement callableStatement = connection.prepareCall(sql);
+        callableStatement.registerOutParameter(1, Types.INTEGER);
+        callableStatement.execute();
+        return (Integer) callableStatement.getObject(1);
     }
 
     @Override
@@ -90,7 +91,7 @@ public class DriverRepositoryImpl implements DriverRepository {
     }
 
     @Override
-    public List <Driver> getAllDriversNotAssignedVehicle(Connection connection) throws SQLException {
+    public List<Driver> getAllDriversNotAssignedVehicle(Connection connection) throws SQLException {
         String sql = "SELECT * FROM driver d LEFT JOIN vehicle v ON d.driverId = v.driverId WHERE v.driverId IS NULL";
         ResultSet resultSet = SqlExecutor.execute(
                 connection,
@@ -144,7 +145,7 @@ public class DriverRepositoryImpl implements DriverRepository {
         String sql = "SELECT COUNT(*) FROM driver WHERE email = ?";
 
         ResultSet resultSet = SqlExecutor.execute(connection, sql, email);
-        resultSet.next() ;
+        resultSet.next();
         return resultSet.getInt(1) != 0;
     }
 
@@ -153,7 +154,7 @@ public class DriverRepositoryImpl implements DriverRepository {
         String sql = "SELECT COUNT(*) FROM driver WHERE mobileNo = ?";
 
         ResultSet resultSet = SqlExecutor.execute(connection, sql, mobileNo);
-        resultSet.next() ;
+        resultSet.next();
         return resultSet.getInt(1) != 0;
     }
 
@@ -162,7 +163,7 @@ public class DriverRepositoryImpl implements DriverRepository {
         String sql = "SELECT COUNT(*) FROM driver WHERE driverId = ?";
 
         ResultSet resultSet = SqlExecutor.execute(connection, sql, id);
-        resultSet.next() ;
+        resultSet.next();
         return resultSet.getInt(1) != 0;
     }
 
@@ -175,7 +176,7 @@ public class DriverRepositoryImpl implements DriverRepository {
     }
 
     @Override
-    public Boolean existsByMobileExceptId(String mobileNo, int driverId, Connection connection) throws SQLException{
+    public Boolean existsByMobileExceptId(String mobileNo, int driverId, Connection connection) throws SQLException {
         String sql = "SELECT COUNT(*) FROM driver WHERE mobileNo = ? AND driverId <> ?";
         ResultSet resultSet = SqlExecutor.execute(connection, sql, mobileNo, driverId);
         resultSet.next();

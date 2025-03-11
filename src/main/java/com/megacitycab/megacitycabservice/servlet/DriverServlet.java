@@ -119,6 +119,7 @@ public class DriverServlet extends HttpServlet {
                             .licenseNumber(request.getParameter("licenseNumber"))
                             .mobileNo(request.getParameter("mobileNo"))
                             .email(request.getParameter("email"))
+                            .addedUserId((Integer) request.getAttribute("userId"))
                             .build()
                     );
 

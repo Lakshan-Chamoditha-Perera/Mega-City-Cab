@@ -66,6 +66,7 @@ public class DriverServiceImpl implements DriverService {
                                 .licenseNumber(driverDTO.getLicenseNumber())
                                 .mobileNo(driverDTO.getMobileNo())
                                 .email(driverDTO.getEmail())
+                                .addedUserId(driverDTO.getAddedUserId())
                                 .build(),
                         connection
                 ));
