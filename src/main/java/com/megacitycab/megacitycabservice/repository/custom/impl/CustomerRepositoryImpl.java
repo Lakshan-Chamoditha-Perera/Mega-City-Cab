@@ -15,26 +15,6 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     @Override
     public Boolean save(Customer entity, Connection connection) throws SQLException {
         String sql = "INSERT INTO customer (firstName, lastName, email, nic, address, mobileNo, dateOfBirth, addedUserId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-//        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-//            statement.setString(1, entity.getFirstName());
-//            statement.setString(2, entity.getLastName());
-//            statement.setString(3, entity.getEmail());
-//            statement.setString(4, entity.getNic());
-//            statement.setString(5, entity.getAddress());
-//            statement.setString(6, entity.getMobileNo());
-//            statement.setString(7, entity.getDateOfBirth().toString());
-//            int affectedRows = statement.executeUpdate();
-//
-//            if (affectedRows > 0) {
-//                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-//                    if (generatedKeys.next()) {
-//                        entity.setCustomerId(generatedKeys.getInt(1));
-//                    }
-//                }
-//                return entity;
-//            }
-//            return null;
-//        }
 
         return SqlExecutor.execute(
                 connection,
@@ -104,11 +84,6 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     @Override
     public boolean delete(Integer id, Connection connection) throws SQLException {
         String sql = "UPDATE customer SET isDeleted = true WHERE customerId = ?";
-//        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-//            statement.setInt(1, id);
-//            int affectedRows = statement.executeUpdate();
-//            return affectedRows > 0;
-//        }
         return SqlExecutor.execute(connection, sql, id);
     }
 
@@ -144,9 +119,8 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     public Boolean existsById(Integer id, Connection connection) throws SQLException {
         String sql = "SELECT COUNT(*) FROM customer where customerId = ? AND isDeleted = false";
         ResultSet resultSet = SqlExecutor.execute(connection, sql, id);
-        // 0
         resultSet.next();
-        return resultSet.getInt(1) != 0; // Returns true if customers exists
+        return resultSet.getInt(1) != 0;
     }
 
     @Override
@@ -154,7 +128,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
         String sql = "SELECT COUNT(*) FROM customer where email = ?";
         ResultSet resultSet = SqlExecutor.execute(connection, sql, email);
         resultSet.next();
-        return resultSet.getInt(1) != 0; // Returns true if customers exists
+        return resultSet.getInt(1) != 0;
     }
 
     @Override
@@ -162,7 +136,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
         String sql = "SELECT COUNT(*) FROM customer WHERE email = ? AND customerId <> ?";
         ResultSet resultSet = SqlExecutor.execute(connection, sql, email, customerId);
         resultSet.next();
-        return resultSet.getInt(1) != 0; // Returns true if another customer has email
+        return resultSet.getInt(1) != 0;
     }
 
     @Override
