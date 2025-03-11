@@ -268,6 +268,63 @@
                 margin-top: 0.5rem;
             }
         }
+        .custom-help-icon {
+            font-size: 1.2rem;
+            color: #0d6efd;
+            padding: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .custom-help-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .custom-modal {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-modal .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 12px 12px 0 0;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #212529;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-modal .modal-title i {
+            font-size: 1.5rem;
+            color: #0d6efd;
+            margin-right: 0.5rem;
+        }
+
+        .custom-modal .modal-body {
+            padding: 1.5rem;
+        }
+
+        .custom-modal .modal-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            border-radius: 0 0 12px 12px;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .btn-close {
+            filter: invert(0.5);
+        }
+
+        .custom-modal .btn-close:hover {
+            filter: invert(0.7);
+        }
     </style>
 
     <div class="container-fluid">
@@ -399,9 +456,8 @@
                 <h1 class="section-title">
                     <i class="bi bi-people-fill me-2"></i>Manage Drivers
                 </h1>
-                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#driverGuidelinesModal">
-                    <i class="bi bi-question-circle me-2"></i> Help
-                </button>
+                <i class="bi bi-question-circle custom-help-icon" data-bs-toggle="modal"
+                   data-bs-target="#driverGuidelinesModal"></i>
             </div>
 
             <!-- Add/Edit Driver Form -->
@@ -538,7 +594,8 @@
     </div>
 </div>
 <!-- Driver Management Modal -->
-<div class="modal fade" id="driverGuidelinesModal" tabindex="-1" aria-labelledby="driverGuidelinesModalLabel" aria-hidden="true">
+<!-- Driver Management Modal -->
+<div class="modal fade custom-modal" id="driverGuidelinesModal" tabindex="-1" aria-labelledby="driverGuidelinesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <!-- Modal Header -->
@@ -554,18 +611,33 @@
                 <h4>Driver Management</h4>
                 <p>This section allows you to manage driver information for the Megacity Cab Service.</p>
 
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Ensure all driver details are accurate and up-to-date.
+                </div>
+
                 <h5>1. Add a New Driver</h5>
                 <ol>
-                    <li>Click "Add Driver" in Quick Actions or navigate to Drivers in the navigation bar.</li>
-                    <li>Complete all fields (First Name, Last Name, License Number, Mobile Number, Email).</li>
-                    <li><strong>Note:</strong> Mobile number and Email must be unique.</li>
-                    <li>Click "Save" to register the driver.</li>
+                    <li>Click <strong>"Add Driver"</strong> in Quick Actions or navigate to <strong>Drivers</strong> in the navigation bar.</li>
+                    <li>Fill in all required fields:
+                        <ul>
+                            <li><strong>First Name</strong></li>
+                            <li><strong>Last Name</strong></li>
+                            <li><strong>License Number</strong></li>
+                            <li><strong>Mobile No</strong></li>
+                            <li><strong>Email</strong></li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>"Save"</strong> to register the driver.</li>
                 </ol>
 
                 <h5>2. Update Driver Information</h5>
                 <ol>
-                    <li>Use the same process as customer updates.</li>
-                    <li>Select driver from the table, update details, and submit the form.</li>
+                    <li>Locate the driver in the table below the form.</li>
+                    <li>Click the <strong>"Update"</strong> button in the Actions column.</li>
+                    <li>The form will be populated with the driver's data.</li>
+                    <li>Make necessary changes and click <strong>"Update"</strong>.</li>
+                    <li>The table will refresh automatically with updated information.</li>
                 </ol>
             </div>
 

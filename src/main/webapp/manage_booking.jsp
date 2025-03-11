@@ -464,6 +464,63 @@
                 margin-top: 0.5rem;
             }
         }
+        .custom-help-icon {
+            font-size: 1.2rem;
+            color: #0d6efd;
+            padding: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .custom-help-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .custom-modal {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-modal .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 12px 12px 0 0;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #212529;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-modal .modal-title i {
+            font-size: 1.5rem;
+            color: #0d6efd;
+            margin-right: 0.5rem;
+        }
+
+        .custom-modal .modal-body {
+            padding: 1.5rem;
+        }
+
+        .custom-modal .modal-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            border-radius: 0 0 12px 12px;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .btn-close {
+            filter: invert(0.5);
+        }
+
+        .custom-modal .btn-close:hover {
+            filter: invert(0.7);
+        }
     </style>
 
     <div class="container-fluid">
@@ -596,12 +653,6 @@
                     <i class="bi bi-calendar-check"></i> Manage Bookings
                 </h1>
 
-
-                <!-- Help Button -->
-                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#bookingGuidelinesModal">
-                    <i class="bi bi-question-circle me-2"></i> Help
-                </button>
-
                 <!-- Action Buttons -->
                 <div class="d-flex gap-2">
                     <button id="show-view-button" class="btn btn-outline-primary">
@@ -610,6 +661,10 @@
                     <button id="show-form-button" class="btn btn-outline-success">
                         <i class="bi bi-plus-circle me-1"></i> Add New Booking
                     </button>
+
+                    <!-- Help Button (Moved to right corner) -->
+                    <i class="bi bi-question-circle custom-help-icon" data-bs-toggle="modal"
+                       data-bs-target="#bookingGuidelinesModal"></i>
                 </div>
             </div>
 
@@ -945,7 +1000,8 @@
     </div>
 </div>
 <!-- Booking Management Modal -->
-<div class="modal fade" id="bookingGuidelinesModal" tabindex="-1" aria-labelledby="bookingGuidelinesModalLabel" aria-hidden="true">
+<!-- Booking Management Modal -->
+<div class="modal fade custom-modal" id="bookingGuidelinesModal" tabindex="-1" aria-labelledby="bookingGuidelinesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <!-- Modal Header -->
@@ -961,21 +1017,32 @@
                 <h4>Booking Management</h4>
                 <p>This section allows you to manage bookings for the Megacity Cab Service.</p>
 
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Ensure all booking details are accurate and up-to-date.
+                </div>
+
                 <h5>1. Create a New Booking</h5>
                 <ol>
-                    <li>Click "New Booking" in Quick Actions or navigate to Bookings in the navigation bar.</li>
+                    <li>Click <strong>"New Booking"</strong> in Quick Actions or navigate to <strong>Bookings</strong> in the navigation bar.</li>
                     <li>Select a customer from the dropdown.</li>
-                    <li>Enter booking details (Pickup Location, Destination, Pickup Time).</li>
+                    <li>Enter booking details:
+                        <ul>
+                            <li><strong>Pickup Location</strong></li>
+                            <li><strong>Destination</strong></li>
+                            <li><strong>Pickup Time</strong></li>
+                        </ul>
+                    </li>
                     <li>The system will calculate distance and fare automatically.</li>
                     <li>Select vehicle(s) from the available fleet.</li>
-                    <li>Click "Add to Cart" to include the vehicle in the booking.</li>
+                    <li>Click <strong>"Add to Cart"</strong> to include the vehicle in the booking.</li>
                     <li>Once all vehicles are added, view the total price.</li>
-                    <li>Click "Confirm Booking" to finalize.</li>
+                    <li>Click <strong>"Confirm Booking"</strong> to finalize.</li>
                 </ol>
 
                 <h5>2. Manage Bookings</h5>
                 <ol>
-                    <li>Navigate to the Bookings section.</li>
+                    <li>Navigate to the <strong>Bookings</strong> section.</li>
                     <li>View all bookings in the list.</li>
                     <li>Update booking status (Pending, Confirmed, Canceled) as needed.</li>
                     <li>View vehicles assigned to each booking.</li>

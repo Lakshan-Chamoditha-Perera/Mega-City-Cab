@@ -15,9 +15,11 @@
         ::-webkit-scrollbar {
             display: none;
         }
+
         * {
             scrollbar-width: none;
         }
+
         :root {
             --primary-color: #0d6efd;
             --secondary-color: #6c757d;
@@ -196,6 +198,64 @@
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         }
+
+        .custom-help-icon {
+            font-size: 1.2rem;
+            color: #0d6efd;
+            padding: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .custom-help-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .custom-modal {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-modal .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 12px 12px 0 0;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #212529;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-modal .modal-title i {
+            font-size: 1.5rem;
+            color: #0d6efd;
+            margin-right: 0.5rem;
+        }
+
+        .custom-modal .modal-body {
+            padding: 1.5rem;
+        }
+
+        .custom-modal .modal-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            border-radius: 0 0 12px 12px;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .btn-close {
+            filter: invert(0.5);
+        }
+
+        .custom-modal .btn-close:hover {
+            filter: invert(0.7);
+        }
     </style>
 </head>
 <body class="">
@@ -349,7 +409,7 @@
 
     <script>
         // Set active nav item based on current path
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const currentPath = window.location.pathname;
             const navItems = {
                 'app': 'nav-dashboard',
@@ -397,9 +457,8 @@
                 <h1 class="section-title">
                     <i class="bi bi-people-fill me-2"></i>Manage Vehicles
                 </h1>
-                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#vehicleGuidelinesModal">
-                    <i class="bi bi-question-circle me-2"></i> Help
-                </button>
+                <i class="bi bi-question-circle custom-help-icon" data-bs-toggle="modal"
+                   data-bs-target="#vehicleGuidelinesModal"></i>
             </div>
 
             <!-- Add/Edit Vehicle Form -->
@@ -459,12 +518,12 @@
                             <label for="pricePerKm">Price per 1 Km</label>
                         </div>
                     </div>
-<%--                    <div class="col-md-6 col-lg-4">--%>
-<%--                        <div class="form-floating">--%>
-<%--                            <input type="date" class="form-control" id="createdAt" name="createdAt" required>--%>
-<%--                            <label for="createdAt">Created At</label>--%>
-<%--                        </div>--%>
-<%--                    </div>--%>
+                    <%--                    <div class="col-md-6 col-lg-4">--%>
+                    <%--                        <div class="form-floating">--%>
+                    <%--                            <input type="date" class="form-control" id="createdAt" name="createdAt" required>--%>
+                    <%--                            <label for="createdAt">Created At</label>--%>
+                    <%--                        </div>--%>
+                    <%--                    </div>--%>
 
                     <div class="col-md-6 col-lg-4">
                         <div class="form-floating">
@@ -558,7 +617,7 @@
                                     </c:choose>
                                 </td>
                                 <td>
-                                    ${vehicle.createdAt}
+                                        ${vehicle.createdAt}
                                 </td>
                                 <td>${vehicle.pricePerKm}</td>
                                 <td>
@@ -573,7 +632,7 @@
                                                 data-color="${vehicle.color}"
                                                 data-is-available="${vehicle.availability}"
                                                 data-driver-id="${vehicle.driverId}"
-<%--                                                data-created-at="${vehicle.createdAt}"--%>
+                                            <%--                                                data-created-at="${vehicle.createdAt}"--%>
                                                 data-price-per-km="${vehicle.pricePerKm}"
                                                 aria-label="Edit Vehicle">
                                             Edit
@@ -599,7 +658,9 @@
     </div>
 </div>
 <!-- Vehicle Management Modal -->
-<div class="modal fade" id="vehicleGuidelinesModal" tabindex="-1" aria-labelledby="vehicleGuidelinesModalLabel" aria-hidden="true">
+<!-- Vehicle Management Modal -->
+<div class="modal fade custom-modal" id="vehicleGuidelinesModal" tabindex="-1"
+     aria-labelledby="vehicleGuidelinesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <!-- Modal Header -->
@@ -615,12 +676,26 @@
                 <h4>Vehicle Management</h4>
                 <p>This section allows you to manage vehicle information for the Megacity Cab Service.</p>
 
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Ensure all vehicle details are accurate and up-to-date.
+                </div>
+
                 <h5>1. Add a New Vehicle</h5>
                 <ol>
-                    <li>Click "Add Vehicle" in Quick Actions or navigate to Vehicles in the navigation bar.</li>
-                    <li>Fill in vehicle details (License Plate, Model, Brand, Color).</li>
+                    <li>Click <strong>"Add Vehicle"</strong> in Quick Actions or navigate to <strong>Vehicles</strong>
+                        in the navigation bar.
+                    </li>
+                    <li>Fill in all required fields:
+                        <ul>
+                            <li><strong>License Plate</strong></li>
+                            <li><strong>Model</strong></li>
+                            <li><strong>Brand</strong></li>
+                            <li><strong>Color</strong></li>
+                        </ul>
+                    </li>
                     <li>Select a driver from the dropdown (only available drivers will be shown).</li>
-                    <li>Click "Save" to add the vehicle to your fleet.</li>
+                    <li>Click <strong>"Save"</strong> to add the vehicle to your fleet.</li>
                 </ol>
 
                 <h5>2. Important Notes</h5>
