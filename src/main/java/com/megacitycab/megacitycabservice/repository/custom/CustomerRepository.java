@@ -14,4 +14,7 @@ public interface CustomerRepository extends CrudRepository<Customer, Integer> {
     Boolean existsByEmail(String email, Connection connection) throws SQLException;
 
     Boolean existsByEmailExceptId(String email, int customerId, Connection connection) throws SQLException;
+
+    Boolean existsByMobileNumber(String mobileNo, Connection connection) throws SQLException;
+
 }
