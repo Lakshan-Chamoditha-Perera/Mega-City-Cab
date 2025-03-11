@@ -401,8 +401,11 @@
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h1 class="section-title">
-                    <i class="bi bi-people-fill"></i>Manage Customers
+                    <i class="bi bi-people-fill me-2"></i>Manage Customers
                 </h1>
+                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#customerGuidelinesModal">
+                    <i class="bi bi-question-circle me-2"></i> Help
+                </button>
             </div>
 
             <!-- Add/Edit Customer Form -->
@@ -556,8 +559,207 @@
         </div>
     </div>
 </div>
+<!-- Add this to your navigation bar or dashboard -->
+<button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#customerGuidelinesModal">
+    <i class="bi bi-question-circle"></i> Help
+</button>
+<!-- Guidelines Modal --><!-- Guidelines Modal -->
+<%--<div class="modal fade" id="guidelinesModal" tabindex="-1" aria-labelledby="guidelinesModalLabel" aria-hidden="true">--%>
+<%--    <div class="modal-dialog modal-lg">--%>
+<%--        <div class="modal-content">--%>
+<%--            <!-- Modal Header -->--%>
+<%--            <div class="modal-header">--%>
+<%--                <h5 class="modal-title" id="guidelinesModalLabel">--%>
+<%--                    <i class="bi bi-info-circle me-2"></i>Megacity Cab Service - System Guidelines--%>
+<%--                </h5>--%>
+<%--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>--%>
+<%--            </div>--%>
 
+<%--            <!-- Modal Body -->--%>
+<%--            <div class="modal-body">--%>
+<%--                <!-- Dashboard Overview Section -->--%>
+<%--                <div class="mb-4">--%>
+<%--                    <h4 class="section-title">--%>
+<%--                        <i class="bi bi-speedometer2"></i>Dashboard Overview--%>
+<%--                    </h4>--%>
+<%--                    <p>Welcome to the Megacity Cab Service admin panel. Here’s what’s happening today.</p>--%>
+<%--                    <div class="info-box alert-primary">--%>
+<%--                        <h5><i class="bi bi-calendar-check me-2"></i>Today: Wednesday, March 12, 2025</h5>--%>
+<%--                        <p class="mb-0">--%>
+<%--                            <i class="bi bi-clock me-2"></i>Current Time: <span id="currentTime"></span> |--%>
+<%--                            <i class="bi bi-lightning me-2"></i>System Status: <span class="badge bg-success">Online</span>--%>
+<%--                        </p>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+
+<%--                <!-- Accordion for Core System Functions -->--%>
+<%--                <div class="accordion" id="guidelinesAccordion">--%>
+<%--                    <!-- Customer Management Section -->--%>
+<%--                    <div class="accordion-item">--%>
+<%--                        <h2 class="accordion-header" id="customerHeading">--%>
+<%--                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#customerCollapse" aria-expanded="true" aria-controls="customerCollapse">--%>
+<%--                                <i class="bi bi-people me-2"></i>Customer Management--%>
+<%--                            </button>--%>
+<%--                        </h2>--%>
+<%--                        <div id="customerCollapse" class="accordion-collapse collapse show" aria-labelledby="customerHeading" data-bs-parent="#guidelinesAccordion">--%>
+<%--                            <div class="accordion-body">--%>
+<%--                                <p><strong>To register a new customer:</strong></p>--%>
+<%--                                <ol>--%>
+<%--                                    <li>Click "Add Customer" in Quick Actions or navigate to Customers in the navigation bar.</li>--%>
+<%--                                    <li>Fill in all required fields (First Name, Last Name, Address, NIC, Date of Birth, Mobile, Email).</li>--%>
+<%--                                    <li>Click "Save" to register the customer.</li>--%>
+<%--                                    <li>A success message will appear at the top of the form when successful.</li>--%>
+<%--                                </ol>--%>
+<%--                                <p><strong>To update customer information:</strong></p>--%>
+<%--                                <ol>--%>
+<%--                                    <li>Locate the customer in the table below the form.</li>--%>
+<%--                                    <li>Click the "Update" button in the Actions column.</li>--%>
+<%--                                    <li>The form will be populated with the customer's data.</li>--%>
+<%--                                    <li>Make necessary changes and click "Update".</li>--%>
+<%--                                    <li>The table will refresh automatically with updated information.</li>--%>
+<%--                                </ol>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+
+<%--                    <!-- Driver Management Section -->--%>
+<%--                    <div class="accordion-item">--%>
+<%--                        <h2 class="accordion-header" id="driverHeading">--%>
+<%--                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#driverCollapse" aria-expanded="false" aria-controls="driverCollapse">--%>
+<%--                                <i class="bi bi-person-badge me-2"></i>Driver Management--%>
+<%--                            </button>--%>
+<%--                        </h2>--%>
+<%--                        <div id="driverCollapse" class="accordion-collapse collapse" aria-labelledby="driverHeading" data-bs-parent="#guidelinesAccordion">--%>
+<%--                            <div class="accordion-body">--%>
+<%--                                <p><strong>To add a new driver:</strong></p>--%>
+<%--                                <ol>--%>
+<%--                                    <li>Click "Add Driver" in Quick Actions or navigate to Drivers in the navigation bar.</li>--%>
+<%--                                    <li>Complete all fields (First Name, Last Name, License Number, Mobile Number, Email).</li>--%>
+<%--                                    <li><strong>Note:</strong> Mobile number and Email must be unique.</li>--%>
+<%--                                    <li>Click "Save" to register the driver.</li>--%>
+<%--                                </ol>--%>
+<%--                                <p><strong>To update driver information:</strong></p>--%>
+<%--                                <ol>--%>
+<%--                                    <li>Use the same process as customer updates.</li>--%>
+<%--                                    <li>Select driver from the table, update details, and submit the form.</li>--%>
+<%--                                </ol>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+
+<%--                    <!-- Vehicle Management Section -->--%>
+<%--                    <div class="accordion-item">--%>
+<%--                        <h2 class="accordion-header" id="vehicleHeading">--%>
+<%--                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#vehicleCollapse" aria-expanded="false" aria-controls="vehicleCollapse">--%>
+<%--                                <i class="bi bi-car-front me-2"></i>Vehicle Management--%>
+<%--                            </button>--%>
+<%--                        </h2>--%>
+<%--                        <div id="vehicleCollapse" class="accordion-collapse collapse" aria-labelledby="vehicleHeading" data-bs-parent="#guidelinesAccordion">--%>
+<%--                            <div class="accordion-body">--%>
+<%--                                <p><strong>To add a new vehicle:</strong></p>--%>
+<%--                                <ol>--%>
+<%--                                    <li>Click "Add Vehicle" in Quick Actions or navigate to Vehicles in the navigation bar.</li>--%>
+<%--                                    <li>Fill in vehicle details (License Plate, Model, Brand, Color).</li>--%>
+<%--                                    <li>Select a driver from the dropdown (only available drivers will be shown).</li>--%>
+<%--                                    <li>Click "Save" to add the vehicle to your fleet.</li>--%>
+<%--                                </ol>--%>
+<%--                                <p><strong>Important:</strong> Each driver can only be assigned to one vehicle. The system will only display drivers who are not currently assigned.</p>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+
+<%--                    <!-- Booking Management Section -->--%>
+<%--                    <div class="accordion-item">--%>
+<%--                        <h2 class="accordion-header" id="bookingHeading">--%>
+<%--                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bookingCollapse" aria-expanded="false" aria-controls="bookingCollapse">--%>
+<%--                                <i class="bi bi-calendar-check me-2"></i>Booking Management--%>
+<%--                            </button>--%>
+<%--                        </h2>--%>
+<%--                        <div id="bookingCollapse" class="accordion-collapse collapse" aria-labelledby="bookingHeading" data-bs-parent="#guidelinesAccordion">--%>
+<%--                            <div class="accordion-body">--%>
+<%--                                <p><strong>To create a new booking:</strong></p>--%>
+<%--                                <ol>--%>
+<%--                                    <li>Click "New Booking" in Quick Actions or navigate to Bookings in the navigation bar.</li>--%>
+<%--                                    <li>Select a customer from the dropdown.</li>--%>
+<%--                                    <li>Enter booking details (Pickup Location, Destination, Pickup Time).</li>--%>
+<%--                                    <li>The system will calculate distance and fare automatically.</li>--%>
+<%--                                    <li>Select vehicle(s) from the available fleet.</li>--%>
+<%--                                    <li>Click "Add to Cart" to include the vehicle in the booking.</li>--%>
+<%--                                    <li>Once all vehicles are added, view the total price.</li>--%>
+<%--                                    <li>Click "Confirm Booking" to finalize.</li>--%>
+<%--                                </ol>--%>
+<%--                                <p><strong>To manage bookings:</strong></p>--%>
+<%--                                <ol>--%>
+<%--                                    <li>Navigate to the Bookings section.</li>--%>
+<%--                                    <li>View all bookings in the list.</li>--%>
+<%--                                    <li>Update booking status (Pending, Confirmed, Canceled) as needed.</li>--%>
+<%--                                    <li>View vehicles assigned to each booking.</li>--%>
+<%--                                </ol>--%>
+<%--                                <p><strong>Important notes:</strong></p>--%>
+<%--                                <ul>--%>
+<%--                                    <li>A vehicle can only be in one active booking at a time.</li>--%>
+<%--                                    <li>A booking can include multiple vehicles.</li>--%>
+<%--                                    <li>Total fare is calculated based on distance and vehicle rates.</li>--%>
+<%--                                </ul>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+<%--            </div>--%>
+
+<%--            <!-- Modal Footer -->--%>
+<%--            <div class="modal-footer">--%>
+<%--                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--    </div>--%>
+<%--</div>--%>
 <!-- Bootstrap JS -->
+<!-- Customer Management Modal -->
+<div class="modal fade" id="customerGuidelinesModal" tabindex="-1" aria-labelledby="customerGuidelinesModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerGuidelinesModalLabel">
+                    <i class="bi bi-people me-2"></i>Customer Management Guidelines
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <h4>Customer Management</h4>
+                <p>This section allows you to manage customer information for the Megacity Cab Service.</p>
+
+                <h5>1. Register a New Customer</h5>
+                <ol>
+                    <li>Click "Add Customer" in Quick Actions or navigate to Customers in the navigation bar.</li>
+                    <li>Fill in all required fields (First Name, Last Name, Address, NIC, Date of Birth, Mobile,
+                        Email).
+                    </li>
+                    <li>Click "Save" to register the customer.</li>
+                    <li>A success message will appear at the top of the form when successful.</li>
+                </ol>
+
+                <h5>2. Update Customer Information</h5>
+                <ol>
+                    <li>Locate the customer in the table below the form.</li>
+                    <li>Click the "Update" button in the Actions column.</li>
+                    <li>The form will be populated with the customer's data.</li>
+                    <li>Make necessary changes and click "Update".</li>
+                    <li>The table will refresh automatically with updated information.</li>
+                </ol>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
     function confirmDelete() {

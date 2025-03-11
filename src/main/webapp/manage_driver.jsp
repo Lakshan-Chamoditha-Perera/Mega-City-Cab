@@ -397,8 +397,11 @@
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h1 class="section-title">
-                    <i class="bi bi-people-fill"></i>Manage Drivers
+                    <i class="bi bi-people-fill me-2"></i>Manage Drivers
                 </h1>
+                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#driverGuidelinesModal">
+                    <i class="bi bi-question-circle me-2"></i> Help
+                </button>
             </div>
 
             <!-- Add/Edit Driver Form -->
@@ -534,7 +537,45 @@
         </div>
     </div>
 </div>
+<!-- Driver Management Modal -->
+<div class="modal fade" id="driverGuidelinesModal" tabindex="-1" aria-labelledby="driverGuidelinesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="driverGuidelinesModalLabel">
+                    <i class="bi bi-person-badge me-2"></i>Driver Management Guidelines
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
 
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <h4>Driver Management</h4>
+                <p>This section allows you to manage driver information for the Megacity Cab Service.</p>
+
+                <h5>1. Add a New Driver</h5>
+                <ol>
+                    <li>Click "Add Driver" in Quick Actions or navigate to Drivers in the navigation bar.</li>
+                    <li>Complete all fields (First Name, Last Name, License Number, Mobile Number, Email).</li>
+                    <li><strong>Note:</strong> Mobile number and Email must be unique.</li>
+                    <li>Click "Save" to register the driver.</li>
+                </ol>
+
+                <h5>2. Update Driver Information</h5>
+                <ol>
+                    <li>Use the same process as customer updates.</li>
+                    <li>Select driver from the table, update details, and submit the form.</li>
+                </ol>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Bootstrap JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>

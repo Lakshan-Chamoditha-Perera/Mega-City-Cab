@@ -591,17 +591,24 @@
     <div class="card p-4 mb-4">
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between mb-4">
+                <!-- Section Title -->
                 <h1 class="section-title">
-                    <i class="bi bi-calendar-check"></i>Manage Bookings
+                    <i class="bi bi-calendar-check"></i> Manage Bookings
                 </h1>
-                <div class="d-flex gap-2 mb-3">
+
+
+                <!-- Help Button -->
+                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#bookingGuidelinesModal">
+                    <i class="bi bi-question-circle me-2"></i> Help
+                </button>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2">
                     <button id="show-view-button" class="btn btn-outline-primary">
-                        <i class="bi bi-list-ul me-1"></i>
-                        All Bookings
+                        <i class="bi bi-list-ul me-1"></i> All Bookings
                     </button>
                     <button id="show-form-button" class="btn btn-outline-success">
-                        <i class="bi bi-plus-circle me-1"></i>
-                        Add New Booking
+                        <i class="bi bi-plus-circle me-1"></i> Add New Booking
                     </button>
                 </div>
             </div>
@@ -933,6 +940,58 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Booking Management Modal -->
+<div class="modal fade" id="bookingGuidelinesModal" tabindex="-1" aria-labelledby="bookingGuidelinesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookingGuidelinesModalLabel">
+                    <i class="bi bi-calendar-check me-2"></i>Booking Management Guidelines
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <h4>Booking Management</h4>
+                <p>This section allows you to manage bookings for the Megacity Cab Service.</p>
+
+                <h5>1. Create a New Booking</h5>
+                <ol>
+                    <li>Click "New Booking" in Quick Actions or navigate to Bookings in the navigation bar.</li>
+                    <li>Select a customer from the dropdown.</li>
+                    <li>Enter booking details (Pickup Location, Destination, Pickup Time).</li>
+                    <li>The system will calculate distance and fare automatically.</li>
+                    <li>Select vehicle(s) from the available fleet.</li>
+                    <li>Click "Add to Cart" to include the vehicle in the booking.</li>
+                    <li>Once all vehicles are added, view the total price.</li>
+                    <li>Click "Confirm Booking" to finalize.</li>
+                </ol>
+
+                <h5>2. Manage Bookings</h5>
+                <ol>
+                    <li>Navigate to the Bookings section.</li>
+                    <li>View all bookings in the list.</li>
+                    <li>Update booking status (Pending, Confirmed, Canceled) as needed.</li>
+                    <li>View vehicles assigned to each booking.</li>
+                </ol>
+
+                <h5>3. Important Notes</h5>
+                <ul>
+                    <li>A vehicle can only be in one active booking at a time.</li>
+                    <li>A booking can include multiple vehicles.</li>
+                    <li>Total fare is calculated based on distance and vehicle rates.</li>
+                </ul>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

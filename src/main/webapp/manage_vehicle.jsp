@@ -395,8 +395,11 @@
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h1 class="section-title">
-                    <i class="bi bi-car-front-fill"></i>Manage Vehicles
+                    <i class="bi bi-people-fill me-2"></i>Manage Vehicles
                 </h1>
+                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#vehicleGuidelinesModal">
+                    <i class="bi bi-question-circle me-2"></i> Help
+                </button>
             </div>
 
             <!-- Add/Edit Vehicle Form -->
@@ -591,6 +594,45 @@
                         </tbody>
                     </table>
                 </c:if>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Vehicle Management Modal -->
+<div class="modal fade" id="vehicleGuidelinesModal" tabindex="-1" aria-labelledby="vehicleGuidelinesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="vehicleGuidelinesModalLabel">
+                    <i class="bi bi-car-front me-2"></i>Vehicle Management Guidelines
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <h4>Vehicle Management</h4>
+                <p>This section allows you to manage vehicle information for the Megacity Cab Service.</p>
+
+                <h5>1. Add a New Vehicle</h5>
+                <ol>
+                    <li>Click "Add Vehicle" in Quick Actions or navigate to Vehicles in the navigation bar.</li>
+                    <li>Fill in vehicle details (License Plate, Model, Brand, Color).</li>
+                    <li>Select a driver from the dropdown (only available drivers will be shown).</li>
+                    <li>Click "Save" to add the vehicle to your fleet.</li>
+                </ol>
+
+                <h5>2. Important Notes</h5>
+                <ul>
+                    <li>Each driver can only be assigned to one vehicle.</li>
+                    <li>The system will only display drivers who are not currently assigned.</li>
+                </ul>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
