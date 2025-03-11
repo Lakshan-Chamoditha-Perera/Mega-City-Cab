@@ -22,7 +22,7 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
 
-      - name: Deploy to Tomcat (Staging)
-        run: |
-          scp target/*.war ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_SERVER }}:/opt/tomcat/webapps/mega-city-cab-service.war
-          ssh ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_SERVER }} "sudo systemctl restart tomcat"
+#      - name: Deploy to Tomcat (Staging)
+#        run: |
+#          scp target/*.war ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_SERVER }}:/opt/tomcat/webapps/mega-city-cab-service.war
+#          ssh ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_SERVER }} "sudo systemctl restart tomcat"

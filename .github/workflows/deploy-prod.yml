@@ -22,7 +22,7 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
 
-      - name: Deploy to Tomcat (Production)
-        run: |
-          scp target/*.war ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER }}:/opt/tomcat/webapps/mega-city-cab-service.war
-          ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER }} "sudo systemctl restart tomcat"
+#      - name: Deploy to Tomcat (Production)
+#        run: |
+#          scp target/*.war ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER }}:/opt/tomcat/webapps/mega-city-cab-service.war
+#          ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER }} "sudo systemctl restart tomcat"
