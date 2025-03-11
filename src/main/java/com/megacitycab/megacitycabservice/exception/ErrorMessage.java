@@ -27,6 +27,14 @@ public enum ErrorMessage {
     VEHICLE_HAS_BEEN_BOOKED("The selected vehicle has already been booked. Please choose another vehicle or check back later."),
     VEHICLE_ALREADY_BOOKED("The vehicle is already booked for the selected time slot. Please choose a different time or vehicle."),
 
+    // Vehicle validation errors
+    INVALID_LICENSE_PLATE("The provided license plate is invalid. Expected format: ABC-1234."),
+    INVALID_MODEL("The provided model is invalid. Models should only contain letters, numbers, and spaces."),
+    INVALID_BRAND("The provided brand is invalid. Brands should only contain letters and spaces."),
+    INVALID_COLOR("The provided color is invalid. Colors should only contain letters."),
+    INVALID_PASSENGER_COUNT("The provided passenger count is invalid. It must be a positive integer."),
+    INVALID_PRICE_PER_KM("The provided price per kilometer is invalid. It must be a positive number."),
+
     // Driver-related errors
     DRIVER_NOT_FOUND("The requested driver could not be found. Please verify the driver details and try again."),
     DRIVER_ALREADY_EXISTS("A driver with the provided details already exists in the system. Please use unique information."),
