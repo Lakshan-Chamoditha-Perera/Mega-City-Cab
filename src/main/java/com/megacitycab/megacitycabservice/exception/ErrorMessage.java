@@ -11,6 +11,15 @@ public enum ErrorMessage {
     CUSTOMER_ALREADY_EXISTS_FOR_EMAIL("The email address is already associated with another customer. Please use a different email address."),
     CUSTOMER_MOBILE_NUMBER_ALREADY_EXISTS("The mobile number is already registered to another customer. Please provide a unique mobile number."),
 
+    // Customer validation errors
+    INVALID_FIRST_NAME("The provided first name is invalid. Names should only contain letters and spaces."),
+    INVALID_LAST_NAME("The provided last name is invalid. Names should only contain letters and spaces."),
+    INVALID_ADDRESS("The provided address is invalid. Addresses should not contain special characters."),
+    INVALID_NIC("The provided NIC is invalid. Please enter a valid Sri Lankan NIC number."),
+    INVALID_DATE_OF_BIRTH("The provided date of birth is invalid. Please enter a valid date in the format YYYY-MM-DD."),
+    INVALID_MOBILE_NUMBER("The provided mobile number is invalid. Please enter a valid mobile number."),
+    INVALID_EMAIL("The provided email address is invalid. Please enter a valid email address."),
+
     // Vehicle-related errors
     VEHICLE_NOT_FOUND("The requested vehicle could not be found. Please verify the vehicle details and try again."),
     VEHICLE_ALREADY_EXISTS_FOR_LICENSE_PLATE("A vehicle with the provided license plate already exists. Please use a unique license plate."),
