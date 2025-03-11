@@ -1,6 +1,7 @@
 package com.megacitycab.megacitycabservice.repository.custom;
 
 import com.megacitycab.megacitycabservice.dto.custom.BookingDTO;
+import com.megacitycab.megacitycabservice.dto.custom.RevenueReportDTO;
 import com.megacitycab.megacitycabservice.entity.custom.Booking;
 
 import java.sql.Connection;
@@ -15,4 +16,17 @@ public interface BookingRepository extends CrudRepository<Booking, Integer> {
 
     Float getTotalProfit(Connection connection) throws SQLException;
 
+    Boolean existsBookingByBookingId(Connection connection, Integer bookingId) throws SQLException;
+
+    Boolean updateBookingStatus(Connection connection, int id, String status) throws SQLException;
+
+    int getBookingCountByStatus(Connection connection, String status) throws SQLException;
+
+    Double getTotalRevenue(Connection connection) throws SQLException;
+
+    List<RevenueReportDTO> getWeeklyRevenue(Connection connection) throws SQLException;
+
+    List<RevenueReportDTO> getMonthlyRevenue(Connection connection) throws SQLException;
+
+    List<RevenueReportDTO> getYearlyRevenue(Connection connection) throws SQLException;
 }

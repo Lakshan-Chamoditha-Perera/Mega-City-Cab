@@ -46,18 +46,46 @@ public class BookingServlet extends HttpServlet {
             List<BookingDTO> allBookings = bookingService.getBookingsWithCustomer();
             request.setAttribute("allBookings", allBookings);
 
+            for (int i = 0; i < allBookings.size(); i++) {
+                System.out.println(allBookings.get(i));
+            }
+
             request.getRequestDispatcher("/manage_booking.jsp").forward(request, response);
         } catch (Exception e) {
             response.sendRedirect(request.getContextPath() + "/error.jsp?message=Error fetching bookings page");
         }
     }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String action = request.getParameter("action");
 
         if ("SAVE".equals(action)) {
             handleBookingSave(request, response);
+        } else if ("UPDATE".equals(action)) {
+            handleBookingUpdate(request, response);
         } else {
-            response.sendRedirect(request.getContextPath() + "/vehicles?error=Invalid action");
+            response.sendRedirect(request.getContextPath() + "/bookings?error=Invalid action");
+        }
+    }
+
+    private void handleBookingUpdate(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            String bookingId = request.getParameter("bookingId");
+            String status = request.getParameter("status");
+            System.out.println("bookingId: " + bookingId + " status: " + status);
+
+            Boolean isUpdated = bookingService.updateBookingStatus(Integer.parseInt(bookingId), status);
+
+            if (isUpdated) {
+                response.sendRedirect(request.getContextPath() + "/bookings?success=Booking status updated successfully.");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/bookings?error=Failed to update booking status.");
+            }
+        } catch (MegaCityCabException e) {
+            response.sendRedirect(request.getContextPath() + "/bookings?error=" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=" + e.getMessage());
         }
     }
 
@@ -122,13 +150,13 @@ public class BookingServlet extends HttpServlet {
                     .discount(Float.parseFloat(discount))
                     .tax(Float.parseFloat(tax))
                     .vehicleBookingDetailsDTOSList(vehicleList)
+                    .addedUserId((Integer) request.getAttribute("userId"))
                     .build();
-
 
             Boolean added = bookingService.addBooking(build);
             if (added) {
                 response.sendRedirect(request.getContextPath() + "/bookings?success=Booking added successfully.");
-            }else{
+            } else {
                 response.sendRedirect(request.getContextPath() + "/bookings?error=Booking failed.");
             }
 
