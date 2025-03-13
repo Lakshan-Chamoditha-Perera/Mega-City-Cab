@@ -69,7 +69,7 @@ public class BookingRepositoryImpl implements BookingRepository {
     @Override
     public List<BookingDTO> getBookingsWithCustomer(Connection connection) throws SQLException {
         String sql = "SELECT b.bookingId, c.firstName, c.lastName, b.pickupTime, b.total, b.status, b.createdAt, b.distance,c.customerId " +
-                "FROM booking b JOIN customer c ON b.customerId = c.customerId";
+                "FROM booking b JOIN customer c ON b.customerId = c.customerId order by b.createdAt desc";
         List<BookingDTO> bookings = new ArrayList<>();
 
         try (ResultSet resultSet = SqlExecutor.execute(connection, sql)) {

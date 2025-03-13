@@ -2,6 +2,7 @@ package com.megacitycab.megacitycabservice.service.custom.impl;
 
 import com.megacitycab.megacitycabservice.dto.custom.*;
 import com.megacitycab.megacitycabservice.entity.custom.Booking;
+import com.megacitycab.megacitycabservice.entity.custom.Customer;
 import com.megacitycab.megacitycabservice.entity.custom.Vehicle;
 import com.megacitycab.megacitycabservice.entity.custom.VehicleBookingDetails;
 import com.megacitycab.megacitycabservice.exception.ErrorMessage;
@@ -10,13 +11,16 @@ import com.megacitycab.megacitycabservice.repository.RepositoryType;
 import com.megacitycab.megacitycabservice.repository.custom.*;
 import com.megacitycab.megacitycabservice.repository.factory.RepositoryFactory;
 import com.megacitycab.megacitycabservice.service.custom.BookingService;
+import com.megacitycab.megacitycabservice.util.EmailUtility;
 import com.megacitycab.megacitycabservice.util.TransactionManager;
 
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
@@ -37,7 +41,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Boolean addBooking(BookingDTO bookingDTO) throws MegaCityCabException, RuntimeException {
-
         Boolean isCustomerExists = transactionManager.doReadOnly(
                 connection -> customerRepository.existsById(bookingDTO.getCustomerId(), connection));
         if (!isCustomerExists) {
@@ -55,7 +58,8 @@ public class BookingServiceImpl implements BookingService {
                     throw new MegaCityCabException(ErrorMessage.VEHICLE_NOT_FOUND);
                 }
 
-                boolean isVehicleAvailable = vehicleRepository.findVehicleAvailabilityOnSpecificDate(connection, vehicleId, Date.valueOf(bookingDTO.getPickupTime().toLocalDate()));
+                boolean isVehicleAvailable = vehicleRepository.findVehicleAvailabilityOnSpecificDate(
+                        connection, vehicleId, Date.valueOf(bookingDTO.getPickupTime().toLocalDate()));
                 if (isVehicleAvailable) {
                     throw new MegaCityCabException(ErrorMessage.VEHICLE_NOT_AVAILABLE_FOR_BOOKING);
                 }
@@ -80,6 +84,7 @@ public class BookingServiceImpl implements BookingService {
 
         Boolean doneInTransaction = transactionManager.doInTransaction(connection -> {
             int bookingId = bookingRepository.saveAndGetGeneratedBookingId(connection, booking);
+            booking.setBookingId(bookingId);
 
             // Save vehicle booking details
             for (VehicleBookingDetailsDTO element : bookingDTO.getVehicleBookingDetailsDTOSList()) {
@@ -90,6 +95,38 @@ public class BookingServiceImpl implements BookingService {
             }
             return true;
         });
+
+        // Send email notification asynchronously if booking is successful
+        if (doneInTransaction) {
+            try {
+                // Fetch customer details for email
+                Customer customer = transactionManager.doReadOnly(
+                        connection -> customerRepository.findById(bookingDTO.getCustomerId(), connection));
+
+                if (customer !=null) {
+                    String customerEmail = customer.getEmail();
+                    String customerName = customer.getFirstName() != null ? customer.getFirstName() : "Customer";
+                    String bookingIdStr = String.valueOf(booking.getBookingId());
+                    String pickupTimeStr = bookingDTO.getPickupTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+                    EmailUtility.getInstance().sendEmailAsync(
+                            customerEmail,
+                            "Booking Confirmation - MegaCity Cab",
+                            "booking_creation_template.html",
+                            "USERNAME", customerName,
+                            "BOOKING_ID", bookingIdStr,
+                            "PICKUP_TIME", pickupTimeStr,
+                            "DESTINATION", bookingDTO.getDestination(),
+                            "TOTAL_PRICE", String.format("%.2f", calculatedTotalPrice)
+                    );
+//                    logger.info("Booking confirmation email queued for: " + customerEmail);
+                }
+            } catch (Exception e) {
+//                logger.log(Level.WARNING, "Failed to queue booking confirmation email: " + e.getMessage(), e);
+
+            }
+        }
+
         return doneInTransaction;
     }
 
