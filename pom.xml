@@ -6,7 +6,7 @@
 
     <groupId>com.megacitycab</groupId>
     <artifactId>mega-city-cab-service</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <name>Mega City Cab Service</name>
     <packaging>war</packaging>
 
