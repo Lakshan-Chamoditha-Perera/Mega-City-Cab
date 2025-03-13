@@ -4,6 +4,7 @@ import com.megacitycab.megacitycabservice.configuration.db.SingleDatabaseConnect
 import com.megacitycab.megacitycabservice.entity.custom.Vehicle;
 import org.junit.jupiter.api.*;
 
+import javax.naming.NamingException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -20,7 +21,7 @@ class VehicleRepositoryImplTest {
     private static Integer testVehicleId3;
 
     @BeforeAll
-    static void setUp() throws SQLException, ClassNotFoundException {
+    static void setUp() throws SQLException, ClassNotFoundException, NamingException {
         connection = SingleDatabaseConnection.getInstance().getConnection();
         vehicleRepository = new VehicleRepositoryImpl();
     }

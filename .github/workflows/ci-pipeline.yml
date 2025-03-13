@@ -1,78 +1,66 @@
-name: Build and Test with MySQL
+name: JavaEE CI/CD Pipeline
 
 on:
   push:
     branches:
-      - dev
+      - dev  # Adjust to the branches you want to trigger CI/CD on
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:8
         env:
           MYSQL_ROOT_PASSWORD: 1234
           MYSQL_DATABASE: megacity_test_db
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping -h 127.0.0.1 --silent" --health-interval=10s --health-timeout=5s --health-retries=3
-
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=5
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
 
+      # Set up Java 21
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'maven'
+          distribution: 'adoptopenjdk'
+          version: '21'
 
-      # ✅ Ensure application.properties file exists in the repo
-      - name: Create empty application.properties file (if not exists)
-        run: |
-          if [ ! -f src/main/resources/application.properties ]; then
-            echo "Creating empty application.properties"
-            touch src/main/resources/application.properties
-          else
-            echo "application.properties file already exists"
-          fi
+      # Cache Maven dependencies
+      - name: Cache Maven dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
-      # ✅ Create custom application.properties dynamically during CI
-      - name: Create application.properties with database details
-        run: |
-          echo "DATABASE_URL=jdbc:mysql://127.0.0.1:3306/megacity_test_db" > src/main/resources/application.properties
-          echo "DATABASE_USER=root" >> src/main/resources/application.properties
-          echo "DATABASE_PASSWORD=1234" >> src/main/resources/application.properties
-          cat src/main/resources/application.properties
-
-      # ✅ Wait for MySQL to be ready
-      - name: Wait for MySQL to start
-        run: |
-          until mysqladmin ping -h 127.0.0.1 --silent; do
-            echo "Waiting for MySQL..."
-            sleep 2
-          done
-          echo "MySQL is ready!"
-
-      # ✅ Import Database Schema
-      - name: Run SQL Script
-        run: |
-          mysql -h 127.0.0.1 -u root -p1234 megacity_test_db < src/main/resources/megacity_test_db.sql
-
-      # ✅ Set environment variables for test run
-      - name: Set up Environment Variables
+      # Set up environment variables
+      - name: Set up environment variables
         run: |
           echo "DATABASE_URL=jdbc:mysql://127.0.0.1:3306/megacity_test_db" >> $GITHUB_ENV
           echo "DATABASE_USER=root" >> $GITHUB_ENV
           echo "DATABASE_PASSWORD=1234" >> $GITHUB_ENV
 
-      # ✅ Run tests
-      - name: Run Tests
-        env:
-          DATABASE_URL: "jdbc:mysql://127.0.0.1:3306/megacity_test_db"
-          DATABASE_USER: "root"
-          DATABASE_PASSWORD: "1234"
-        run: mvn clean test
+      # Install dependencies (Maven build)
+      - name: Build with Maven
+        run: mvn clean install -DskipTests
+
+      # Run MySQL setup script (if any)
+      - name: Set up MySQL database
+        run: |
+          mysql -h 127.0.0.1 -u root -p1234 megacity_test_db < src/test/resources/megacity_test_db.sql
+
+      # Run tests
+      - name: Run tests
+        run: mvn test -DskipTests=false
+
+      # Archive test results
+      - name: Archive test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: target/test-classes/test-results/
