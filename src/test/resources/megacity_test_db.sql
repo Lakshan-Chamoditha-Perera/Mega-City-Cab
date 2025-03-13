@@ -288,7 +288,6 @@ BEGIN
     WHERE status = 'confirmed'
       AND deleted = FALSE;
 
-    -- Handle NULL result (e.g., no confirmed bookings)
     IF p_total_revenue IS NULL THEN
         SET p_total_revenue = 0.00;
     END IF;
@@ -318,7 +317,6 @@ DELIMITER ;
 
 DELIMITER //
 
-Drop PROCEDURE sp_get_monthly_revenue;
 
 CREATE PROCEDURE sp_get_monthly_revenue()
 BEGIN
@@ -384,15 +382,15 @@ VALUES (1, 'Nimal', 'Perera', '12 Galle Road, Colombo 03', '199012345V', '1990-0
 -- Insert into Driver table (10 drivers)
 INSERT INTO Driver (firstName, lastName, licenseNumber, mobileNo, email, availability, addedUserId)
 VALUES ('Asanka', 'Jayasinghe', 'B1234567', '0771112233', 'asanka.j@drivers.lk', TRUE, 1),
-       ('Priyantha', 'Kumara', 'B2345678', '0762223344', 'priyantha.k@drivers.lk', TRUE, 2),
+       ('Priyantha', 'Kumara', 'B2345678', '0762223344', 'priyantha.k@drivers.lk', TRUE, 1),
        ('Nuwan', 'Senanayake', 'B3456789', '0713334455', 'nuwan.s@drivers.lk', FALSE, 1),
-       ('Ranil', 'Pathirana', 'B4567890', '0784445566', 'ranil.p@drivers.lk', TRUE, 3),
-       ('Dilshan', 'Mendis', 'B5678901', '0775556677', 'dilshan.m@drivers.lk', TRUE, 2),
+       ('Ranil', 'Pathirana', 'B4567890', '0784445566', 'ranil.p@drivers.lk', TRUE, 1),
+       ('Dilshan', 'Mendis', 'B5678901', '0775556677', 'dilshan.m@drivers.lk', TRUE, 1),
        ('Suresh', 'Amarasinghe', 'B6789012', '0766667788', 'suresh.a@drivers.lk', FALSE, 1),
-       ('Thilina', 'Herath', 'B7890123', '0717778899', 'thilina.h@drivers.lk', TRUE, 3),
-       ('Malith', 'Wijesekara', 'B8901234', '0788889900', 'malith.w@drivers.lk', TRUE, 2),
+       ('Thilina', 'Herath', 'B7890123', '0717778899', 'thilina.h@drivers.lk', TRUE, 1),
+       ('Malith', 'Wijesekara', 'B8901234', '0788889900', 'malith.w@drivers.lk', TRUE, 1),
        ('Kasun', 'Liyanage', 'B9012345', '0779990011', 'kasun.l@drivers.lk', FALSE, 1),
-       ('Chathura', 'Ekanayake', 'B0123456', '0760001122', 'chathura.e@drivers.lk', TRUE, 3);
+       ('Chathura', 'Ekanayake', 'B0123456', '0760001122', 'chathura.e@drivers.lk', TRUE, 1);
 
 -- Insert into Vehicle table (10 vehicles)
 INSERT INTO Vehicle (licensePlate, model, brand, passengerCount, color, availability, pricePerKm, addedUserId, driverId)
@@ -434,3 +432,121 @@ VALUES (1, 1), -- Nimal to Airport with CAA-1234
        (8, 8), -- Saman to Bambalapitiya with CAH-9012
        (9, 9), -- Tharushi to Ja-Ela with CAI-3456
        (10, 10); -- Lakmal to Maradana with CAJ-7890
+
+-- Insert into Booking table (100 bookings)
+INSERT INTO Booking (customerId, pickupLocation, destination, pickupTime, status, distance, fare, discount, tax, total, addedUserId)
+VALUES
+-- Bookings for customerId 1
+(1, 'Colombo 03', 'Bandaranaike Intl Airport', '2025-03-01 07:00:00', 'confirmed', 30.0, 1500.00, 100.00, 50.00, 1450.00, 1),
+(1, 'Colombo 03', 'Galle Face Green', '2025-03-02 08:30:00', 'completed', 5.0, 250.00, 0.00, 15.00, 265.00, 1),
+(1, 'Colombo 03', 'Pettah Market', '2025-03-03 10:00:00', 'canceled', 3.0, 150.00, 0.00, 10.00, 160.00, 1),
+
+-- Bookings for customerId 2
+(2, 'Nugegoda', 'Colombo Fort', '2025-03-02 09:30:00', 'pending', 10.0, 500.00, 0.00, 25.00, 525.00, 2),
+(2, 'Nugegoda', 'Kottawa', '2025-03-04 11:00:00', 'confirmed', 8.0, 400.00, 0.00, 20.00, 420.00, 2),
+(2, 'Nugegoda', 'Maharagama', '2025-03-05 14:00:00', 'completed', 6.0, 300.00, 0.00, 15.00, 315.00, 2),
+
+-- Bookings for customerId 3
+(3, 'Galle', 'Hikkaduwa', '2025-03-03 14:00:00', 'confirmed', 20.0, 1000.00, 50.00, 30.00, 980.00, 1),
+(3, 'Galle', 'Unawatuna', '2025-03-06 16:00:00', 'completed', 15.0, 750.00, 0.00, 25.00, 775.00, 1),
+(3, 'Galle', 'Mirissa', '2025-03-07 18:00:00', 'canceled', 25.0, 1250.00, 100.00, 40.00, 1190.00, 1),
+
+-- Bookings for customerId 4
+(4, 'Kandy', 'Peradeniya', '2025-03-04 16:30:00', 'canceled', 8.0, 400.00, 0.00, 20.00, 420.00, 3),
+(4, 'Kandy', 'Katugastota', '2025-03-08 09:00:00', 'confirmed', 6.0, 300.00, 0.00, 15.00, 315.00, 3),
+(4, 'Kandy', 'Nuwara Eliya', '2025-03-09 12:00:00', 'pending', 50.0, 2500.00, 200.00, 100.00, 2400.00, 3),
+
+-- Bookings for customerId 5
+(5, 'Negombo', 'Katunayake', '2025-03-05 08:00:00', 'confirmed', 15.0, 750.00, 50.00, 25.00, 725.00, 2),
+(5, 'Negombo', 'Colombo City Center', '2025-03-10 10:00:00', 'completed', 30.0, 1500.00, 100.00, 50.00, 1450.00, 2),
+(5, 'Negombo', 'Pinnawala Elephant Orphanage', '2025-03-11 13:00:00', 'canceled', 40.0, 2000.00, 150.00, 75.00, 1925.00, 2),
+
+-- Bookings for customerId 6
+(6, 'Matara', 'Weligama', '2025-03-06 11:00:00', 'pending', 12.0, 600.00, 0.00, 30.00, 630.00, 1),
+(6, 'Matara', 'Dondra Head', '2025-03-12 15:00:00', 'confirmed', 10.0, 500.00, 0.00, 25.00, 525.00, 1),
+(6, 'Matara', 'Tangalle', '2025-03-13 17:00:00', 'completed', 25.0, 1250.00, 100.00, 40.00, 1190.00, 1),
+
+-- Bookings for customerId 7
+(7, 'Kurunegala', 'Dambulla', '2025-03-07 13:00:00', 'confirmed', 25.0, 1250.00, 100.00, 40.00, 1190.00, 3),
+(7, 'Kurunegala', 'Sigiriya', '2025-03-14 09:00:00', 'completed', 30.0, 1500.00, 100.00, 50.00, 1450.00, 3),
+(7, 'Kurunegala', 'Anuradhapura', '2025-03-15 11:00:00', 'canceled', 60.0, 3000.00, 200.00, 120.00, 2920.00, 3),
+
+-- Bookings for customerId 8
+(8, 'Colombo 07', 'Bambalapitiya', '2025-03-08 15:00:00', 'confirmed', 5.0, 250.00, 0.00, 15.00, 265.00, 2),
+(8, 'Colombo 07', 'Mount Lavinia', '2025-03-16 17:00:00', 'completed', 10.0, 500.00, 0.00, 25.00, 525.00, 2),
+(8, 'Colombo 07', 'Dehiwala', '2025-03-17 19:00:00', 'pending', 8.0, 400.00, 0.00, 20.00, 420.00, 2),
+
+-- Bookings for customerId 9
+(9, 'Gampaha', 'Ja-Ela', '2025-03-09 10:00:00', 'canceled', 10.0, 500.00, 50.00, 25.00, 475.00, 1),
+(9, 'Gampaha', 'Negombo', '2025-03-18 12:00:00', 'confirmed', 15.0, 750.00, 50.00, 25.00, 725.00, 1),
+(9, 'Gampaha', 'Kadawatha', '2025-03-19 14:00:00', 'completed', 20.0, 1000.00, 100.00, 30.00, 930.00, 1),
+
+-- Bookings for customerId 10
+(10, 'Borella', 'Maradana', '2025-03-10 17:00:00', 'confirmed', 7.0, 350.00, 0.00, 20.00, 370.00, 3),
+(10, 'Borella', 'Nugegoda', '2025-03-20 19:00:00', 'completed', 10.0, 500.00, 0.00, 25.00, 525.00, 3),
+(10, 'Borella', 'Rajagiriya', '2025-03-21 21:00:00', 'pending', 5.0, 250.00, 0.00, 15.00, 265.00, 3),
+
+-- Additional randomized bookings
+(1, 'Colombo 03', 'Mount Lavinia', '2025-03-22 08:00:00', 'confirmed', 12.0, 600.00, 0.00, 30.00, 630.00, 1),
+(2, 'Nugegoda', 'Piliyandala', '2025-03-23 09:00:00', 'completed', 7.0, 350.00, 0.00, 20.00, 370.00, 2),
+(3, 'Galle', 'Matara', '2025-03-24 10:00:00', 'canceled', 30.0, 1500.00, 100.00, 50.00, 1450.00, 1),
+(4, 'Kandy', 'Colombo', '2025-03-25 11:00:00', 'confirmed', 100.0, 5000.00, 300.00, 200.00, 4900.00, 3),
+(5, 'Negombo', 'Kandy', '2025-03-26 12:00:00', 'pending', 120.0, 6000.00, 400.00, 250.00, 5850.00, 2),
+(6, 'Matara', 'Colombo', '2025-03-27 13:00:00', 'completed', 150.0, 7500.00, 500.00, 300.00, 7300.00, 1),
+(7, 'Kurunegala', 'Colombo', '2025-03-28 14:00:00', 'confirmed', 130.0, 6500.00, 400.00, 250.00, 6350.00, 3),
+(8, 'Colombo 07', 'Galle', '2025-03-29 15:00:00', 'canceled', 110.0, 5500.00, 300.00, 200.00, 5400.00, 2),
+(9, 'Gampaha', 'Colombo', '2025-03-30 16:00:00', 'completed', 20.0, 1000.00, 100.00, 30.00, 930.00, 1),
+(10, 'Borella', 'Kandy', '2025-03-31 17:00:00', 'pending', 90.0, 4500.00, 200.00, 150.00, 4450.00, 3);
+
+
+
+-- Insert into Booking table (100 bookings spread across 2023, 2024, and 2025)
+INSERT INTO Booking (customerId, pickupLocation, destination, pickupTime, status, distance, fare, discount, tax, total, addedUserId)
+VALUES
+-- Bookings in 2023
+(1, 'Colombo 03', 'Bandaranaike Intl Airport', '2023-01-15 07:00:00', 'confirmed', 30.0, 1500.00, 100.00, 50.00, 1450.00, 1),
+(2, 'Nugegoda', 'Colombo Fort', '2023-02-20 09:30:00', 'pending', 10.0, 500.00, 0.00, 25.00, 525.00, 2),
+(3, 'Galle', 'Hikkaduwa', '2023-03-25 14:00:00', 'confirmed', 20.0, 1000.00, 50.00, 30.00, 980.00, 1),
+(4, 'Kandy', 'Peradeniya', '2023-04-10 16:30:00', 'canceled', 8.0, 400.00, 0.00, 20.00, 420.00, 3),
+(5, 'Negombo', 'Katunayake', '2023-05-05 08:00:00', 'confirmed', 15.0, 750.00, 50.00, 25.00, 725.00, 2),
+(6, 'Matara', 'Weligama', '2023-06-12 11:00:00', 'pending', 12.0, 600.00, 0.00, 30.00, 630.00, 1),
+(7, 'Kurunegala', 'Dambulla', '2023-07-18 13:00:00', 'confirmed', 25.0, 1250.00, 100.00, 40.00, 1190.00, 3),
+(8, 'Colombo 07', 'Bambalapitiya', '2023-08-22 15:00:00', 'confirmed', 5.0, 250.00, 0.00, 15.00, 265.00, 2),
+(9, 'Gampaha', 'Ja-Ela', '2023-09-30 10:00:00', 'canceled', 10.0, 500.00, 50.00, 25.00, 475.00, 1),
+(10, 'Borella', 'Maradana', '2023-10-05 17:00:00', 'confirmed', 7.0, 350.00, 0.00, 20.00, 370.00, 3),
+
+-- Bookings in 2024
+(1, 'Colombo 03', 'Mount Lavinia', '2024-01-10 08:00:00', 'confirmed', 12.0, 600.00, 0.00, 30.00, 630.00, 1),
+(2, 'Nugegoda', 'Piliyandala', '2024-02-15 09:00:00', 'completed', 7.0, 350.00, 0.00, 20.00, 370.00, 2),
+(3, 'Galle', 'Matara', '2024-03-20 10:00:00', 'canceled', 30.0, 1500.00, 100.00, 50.00, 1450.00, 1),
+(4, 'Kandy', 'Colombo', '2024-04-25 11:00:00', 'confirmed', 100.0, 5000.00, 300.00, 200.00, 4900.00, 3),
+(5, 'Negombo', 'Kandy', '2024-05-30 12:00:00', 'pending', 120.0, 6000.00, 400.00, 250.00, 5850.00, 2),
+(6, 'Matara', 'Colombo', '2024-06-05 13:00:00', 'completed', 150.0, 7500.00, 500.00, 300.00, 7300.00, 1),
+(7, 'Kurunegala', 'Colombo', '2024-07-10 14:00:00', 'confirmed', 130.0, 6500.00, 400.00, 250.00, 6350.00, 3),
+(8, 'Colombo 07', 'Galle', '2024-08-15 15:00:00', 'canceled', 110.0, 5500.00, 300.00, 200.00, 5400.00, 2),
+(9, 'Gampaha', 'Colombo', '2024-09-20 16:00:00', 'completed', 20.0, 1000.00, 100.00, 30.00, 930.00, 1),
+(10, 'Borella', 'Kandy', '2024-10-25 17:00:00', 'pending', 90.0, 4500.00, 200.00, 150.00, 4450.00, 3),
+
+-- Bookings in 2025
+(1, 'Colombo 03', 'Bandaranaike Intl Airport', '2025-01-01 07:00:00', 'confirmed', 30.0, 1500.00, 100.00, 50.00, 1450.00, 1),
+(2, 'Nugegoda', 'Colombo Fort', '2025-02-05 09:30:00', 'pending', 10.0, 500.00, 0.00, 25.00, 525.00, 2),
+(3, 'Galle', 'Hikkaduwa', '2025-03-10 14:00:00', 'confirmed', 20.0, 1000.00, 50.00, 30.00, 980.00, 1),
+(4, 'Kandy', 'Peradeniya', '2025-04-15 16:30:00', 'canceled', 8.0, 400.00, 0.00, 20.00, 420.00, 3),
+(5, 'Negombo', 'Katunayake', '2025-05-20 08:00:00', 'confirmed', 15.0, 750.00, 50.00, 25.00, 725.00, 2),
+(6, 'Matara', 'Weligama', '2025-06-25 11:00:00', 'pending', 12.0, 600.00, 0.00, 30.00, 630.00, 1),
+(7, 'Kurunegala', 'Dambulla', '2025-07-30 13:00:00', 'confirmed', 25.0, 1250.00, 100.00, 40.00, 1190.00, 3),
+(8, 'Colombo 07', 'Bambalapitiya', '2025-08-05 15:00:00', 'confirmed', 5.0, 250.00, 0.00, 15.00, 265.00, 2),
+(9, 'Gampaha', 'Ja-Ela', '2025-09-10 10:00:00', 'canceled', 10.0, 500.00, 50.00, 25.00, 475.00, 1),
+(10, 'Borella', 'Maradana', '2025-10-15 17:00:00', 'confirmed', 7.0, 350.00, 0.00, 20.00, 370.00, 3),
+
+-- Additional randomized bookings across 2023, 2024, and 2025
+(1, 'Colombo 03', 'Mount Lavinia', '2023-11-20 08:00:00', 'confirmed', 12.0, 600.00, 0.00, 30.00, 630.00, 1),
+(2, 'Nugegoda', 'Piliyandala', '2024-12-25 09:00:00', 'completed', 7.0, 350.00, 0.00, 20.00, 370.00, 2),
+(3, 'Galle', 'Matara', '2025-01-30 10:00:00', 'canceled', 30.0, 1500.00, 100.00, 50.00, 1450.00, 1),
+(4, 'Kandy', 'Colombo', '2023-02-15 11:00:00', 'confirmed', 100.0, 5000.00, 300.00, 200.00, 4900.00, 3),
+(5, 'Negombo', 'Kandy', '2024-03-20 12:00:00', 'pending', 120.0, 6000.00, 400.00, 250.00, 5850.00, 2),
+(6, 'Matara', 'Colombo', '2025-04-25 13:00:00', 'completed', 150.0, 7500.00, 500.00, 300.00, 7300.00, 1),
+(7, 'Kurunegala', 'Colombo', '2023-05-30 14:00:00', 'confirmed', 130.0, 6500.00, 400.00, 250.00, 6350.00, 3),
+(8, 'Colombo 07', 'Galle', '2024-06-05 15:00:00', 'canceled', 110.0, 5500.00, 300.00, 200.00, 5400.00, 2),
+(9, 'Gampaha', 'Colombo', '2025-07-10 16:00:00', 'completed', 20.0, 1000.00, 100.00, 30.00, 930.00, 1),
+(10, 'Borella', 'Kandy', '2023-08-15 17:00:00', 'pending', 90.0, 4500.00, 200.00, 150.00, 4450.00, 3);
