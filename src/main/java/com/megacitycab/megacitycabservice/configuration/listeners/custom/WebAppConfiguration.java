@@ -27,13 +27,27 @@ public class WebAppConfiguration {
     }
 
     private void loadProperties() {
-        try (InputStream baseInput = getClass().getClassLoader().getResourceAsStream("application.properties")) {
-            if (baseInput == null) {
-                throw new RuntimeException("Base properties file not found: application.properties");
+        try {
+            // First, try to load from environment variables
+            String databaseUrl = System.getenv("DATABASE_URL");
+            String databaseUser = System.getenv("DATABASE_USER");
+            String databasePassword = System.getenv("DATABASE_PASSWORD");
+
+            if (databaseUrl != null && databaseUser != null && databasePassword != null) {
+                properties.setProperty("DATABASE_URL", databaseUrl);
+                properties.setProperty("DATABASE_USER", databaseUser);
+                properties.setProperty("DATABASE_PASSWORD", databasePassword);
+            } else {
+                // Fallback to properties file if env variables are not set
+                try (InputStream baseInput = getClass().getClassLoader().getResourceAsStream("application.properties")) {
+                    if (baseInput == null) {
+                        throw new RuntimeException("Base properties file not found: application.properties");
+                    }
+                    properties.load(baseInput);
+                }
             }
-            properties.load(baseInput);
         } catch (Exception e) {
-            logger.warning(e.getMessage());
+            logger.warning("Error loading properties: " + e.getMessage());
         }
     }
 
