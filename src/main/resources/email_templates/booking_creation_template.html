@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Confirmation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .header { color: #333; }
+        .details { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="header">Booking Confirmation</h2>
+    <p>Dear {{USERNAME}},</p>
+    <p>Your booking with MegaCity Cab has been successfully created!</p>
+    <div class="details">
+        <p><strong>Booking ID:</strong> {{BOOKING_ID}}</p>
+        <p><strong>Pickup Time:</strong> {{PICKUP_TIME}}</p>
+        <p><strong>Destination:</strong> {{DESTINATION}}</p>
+        <p><strong>Total Price:</strong> ${{TOTAL_PRICE}}</p>
+    </div>
+    <p>Thank you for choosing MegaCity Cab. We look forward to serving you!</p>
+    <p>Best regards,<br>The MegaCity Cab Team</p>
+</div>
+</body>
+</html>

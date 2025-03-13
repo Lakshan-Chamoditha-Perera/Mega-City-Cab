@@ -45,10 +45,10 @@ CREATE TABLE Driver
     licenseNumber VARCHAR(50)  NOT NULL UNIQUE,
     mobileNo      VARCHAR(15)  NOT NULL UNIQUE,
     email         VARCHAR(255) NOT NULL UNIQUE,
-    availability BOOLEAN DEFAULT TRUE,
+    availability  BOOLEAN  DEFAULT TRUE,
     createdAt     DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted      BOOLEAN DEFAULT FALSE,
+    deleted       BOOLEAN  DEFAULT FALSE,
     addedUserId   INT,
     FOREIGN KEY (addedUserId) REFERENCES User (userId)
 );
@@ -62,11 +62,11 @@ CREATE TABLE Vehicle
     brand          VARCHAR(255) NOT NULL,
     passengerCount INT          NOT NULL CHECK (passengerCount > 0),
     color          VARCHAR(50)  NOT NULL,
-    availability BOOLEAN DEFAULT TRUE,
+    availability   BOOLEAN  DEFAULT TRUE,
     createdAt      DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt      DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted      BOOLEAN DEFAULT FALSE,
-    pricePerKm   FLOAT,
+    deleted        BOOLEAN  DEFAULT FALSE,
+    pricePerKm     FLOAT,
     addedUserId    INT,
     driverId       INT,
     FOREIGN KEY (addedUserId) REFERENCES User (userId),
@@ -88,7 +88,8 @@ CREATE TABLE Booking
     tax            DECIMAL(10, 2)                            DEFAULT 0 CHECK (tax >= 0),
     createdAt      DATETIME                                  DEFAULT CURRENT_TIMESTAMP,
     updatedAt      DATETIME                                  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted        BOOLEAN DEFAULT FALSE,
+    deleted        BOOLEAN                                   DEFAULT FALSE,
+    total          FLOAT,
     addedUserId    INT,
     FOREIGN KEY (addedUserId) REFERENCES User (userId),
     FOREIGN KEY (customerId) REFERENCES Customer (customerId)
@@ -107,4 +108,149 @@ CREATE TABLE VehicleBookingDetails
     FOREIGN KEY (vehicleId) REFERENCES Vehicle (vehicleId)
 );
 
-CREATE INDEX idx_customer_isDeleted ON customer (isDeleted);
+-- Indexes for optimization
+CREATE INDEX idx_customer_isDeleted ON Customer (isDeleted);
+CREATE INDEX idx_driver_mobileNo ON Driver (mobileNo);
+CREATE INDEX idx_vehicle_licensePlate ON Vehicle (licensePlate);
+CREATE INDEX idx_booking_status ON Booking (status);
+CREATE INDEX idx_booking_pickupTime ON Booking (pickupTime);
+
+-- Stored Procedures
+DELIMITER $$
+
+-- Procedure to get active drivers
+CREATE PROCEDURE GetActiveDrivers()
+BEGIN
+    SELECT * FROM Driver WHERE availability = TRUE AND deleted = FALSE;
+END $$
+
+-- Procedure to get available vehicles
+CREATE PROCEDURE GetAvailableVehicles()
+BEGIN
+    SELECT * FROM Vehicle WHERE availability = TRUE AND deleted = FALSE;
+END $$
+
+-- Procedure to get active customers
+CREATE PROCEDURE GetActiveCustomers()
+BEGIN
+    SELECT * FROM Customer WHERE isDeleted = FALSE;
+END $$
+
+DELIMITER ;
+
+-- Stored Procedure to Retrieve All Active Customers
+DELIMITER //
+CREATE PROCEDURE sp_get_all_customers()
+BEGIN
+    SELECT * FROM Customer WHERE isDeleted = FALSE;
+END //
+DELIMITER ;
+
+-- Stored Procedure to Retrieve a Customer by ID
+DELIMITER //
+CREATE PROCEDURE sp_get_customer_by_id(IN p_customerId INT)
+BEGIN
+    SELECT * FROM Customer WHERE customerId = p_customerId AND isDeleted = FALSE;
+END //
+DELIMITER ;
+
+-- Stored Procedure to Soft Delete a Customer
+DELIMITER //
+CREATE PROCEDURE sp_delete_customer(IN p_customerId INT)
+BEGIN
+    UPDATE Customer SET isDeleted = TRUE WHERE customerId = p_customerId;
+END //
+DELIMITER ;
+
+-- Stored Procedure to Update Customer Details
+DELIMITER //
+CREATE PROCEDURE sp_update_customer(
+    IN p_customerId INT,
+    IN p_firstName VARCHAR(40),
+    IN p_lastName VARCHAR(40),
+    IN p_email VARCHAR(255),
+    IN p_nic VARCHAR(20),
+    IN p_address VARCHAR(255),
+    IN p_mobileNo VARCHAR(15),
+    IN p_dateOfBirth DATE
+)
+BEGIN
+    UPDATE Customer
+    SET firstName   = p_firstName,
+        lastName    = p_lastName,
+        email       = p_email,
+        nic         = p_nic,
+        address     = p_address,
+        mobileNo    = p_mobileNo,
+        dateOfBirth = p_dateOfBirth
+    WHERE customerId = p_customerId
+      AND isDeleted = FALSE;
+END //
+DELIMITER ;
+
+-- Stored Procedure to Check If a Customer Exists by ID
+DELIMITER //
+CREATE PROCEDURE sp_exists_customer_by_id(IN p_customerId INT, OUT p_exists BOOLEAN)
+BEGIN
+    SELECT COUNT(*) > 0 INTO p_exists FROM Customer WHERE customerId = p_customerId AND isDeleted = FALSE;
+END //
+DELIMITER ;
+
+-- Stored Procedure to Check If a Customer Exists by Email
+DELIMITER //
+CREATE PROCEDURE sp_exists_customer_by_email(IN p_email VARCHAR(255), OUT p_exists BOOLEAN)
+BEGIN
+    SELECT COUNT(*) > 0 INTO p_exists FROM Customer WHERE email = p_email;
+END //
+DELIMITER ;
+
+-- Stored Procedure to Check If a Customer Exists by Email Except a Specific ID
+DELIMITER //
+CREATE PROCEDURE sp_exists_customer_by_email_except_id(
+    IN p_email VARCHAR(255),
+    IN p_customerId INT,
+    OUT p_exists BOOLEAN
+)
+BEGIN
+    SELECT COUNT(*) > 0 INTO p_exists FROM Customer WHERE email = p_email AND customerId <> p_customerId;
+END //
+DELIMITER ;
+
+
+# Procedure for get count ---------------------------------------------------------------------------------------------
+DELIMITER //
+CREATE PROCEDURE sp_get_customer_count(OUT p_count INT)
+BEGIN
+    SELECT COUNT(*) INTO p_count FROM Customer WHERE isDeleted = FALSE;
+END //
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_get_vehicle_count(OUT p_count INT)
+BEGIN
+    SELECT COUNT(*) INTO p_count FROM Vehicle WHERE deleted = FALSE;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_get_driver_count(OUT p_count INT)
+BEGIN
+    SELECT COUNT(*) INTO p_count FROM Driver WHERE deleted = FALSE;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_get_booking_count(OUT p_count INT)
+BEGIN
+    SELECT COUNT(*) INTO p_count FROM Booking WHERE deleted = FALSE;
+END //
+
+DELIMITER ;
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Stored Procedure for get total booking prices

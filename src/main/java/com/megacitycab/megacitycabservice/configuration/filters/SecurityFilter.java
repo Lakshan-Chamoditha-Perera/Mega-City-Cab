@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SecurityFilter implements Filter {
 
-    private static final int SESSION_TIMEOUT = 3600; // Session timeout in seconds
+    private static final int SESSION_TIMEOUT = 3600;
     private static final String SESSION_TOKEN = "session_token";
     private static final String TAB_ID = "tab_id";
     private static final String ACTIVE_TAB_ID = "active_tab_id";
@@ -32,22 +32,15 @@ public class SecurityFilter implements Filter {
             return;
         }
 
-        // Handle session timeout and validation
         Integer userId = null;
         if (session != null) {
             System.out.println("Session is already logged in");
 
-            // Check session inactivity
             long lastAccessedTime = session.getLastAccessedTime();
             long currentTime = System.currentTimeMillis();
-            long inactiveTime = (currentTime - lastAccessedTime) / 1000; // Convert to seconds
-
-//            System.out.println("Last accessed time: " + lastAccessedTime);
-//            System.out.println("Current time: " + currentTime);
-//            System.out.println("Inactive time: " + inactiveTime);
+            long inactiveTime = (currentTime - lastAccessedTime) / 1000;
 
             if (inactiveTime > SESSION_TIMEOUT) {
-                System.out.println("Session expired due to inactivity. Logging out user.");
                 cleanupSession(session);
                 httpResponse.sendRedirect(httpRequest.getContextPath() + "/auth/login?error=session_expired");
                 return;
@@ -56,39 +49,31 @@ public class SecurityFilter implements Filter {
             // Reset session timeout
             session.setMaxInactiveInterval(SESSION_TIMEOUT);
 
-            // Validate session token
             String storedToken = (String) session.getAttribute(SESSION_TOKEN);
             if (storedToken == null || !validateSessionToken(session, storedToken)) {
-                System.out.println("Invalid or missing session token. Logging out user.");
                 cleanupSession(session);
                 httpResponse.sendRedirect(httpRequest.getContextPath() + "/auth/login?error=session_invalid");
                 return;
             }
 
-            // Handle tab-based activity tracking
             userId = getUserIdFromSession(session);
             request.setAttribute("userId", userId);
             String currentTabId = (String) session.getAttribute(TAB_ID);
 
-            // If this is a new tab (no tab ID yet)
             if (currentTabId == null) {
                 currentTabId = UUID.randomUUID().toString();
                 session.setAttribute(TAB_ID, currentTabId);
 
-                // If this is the first tab for this user, mark it as active
                 if (!ACTIVE_USER_TABS.containsKey(userId)) {
                     ACTIVE_USER_TABS.put(userId, currentTabId);
                     session.setAttribute(ACTIVE_TAB_ID, currentTabId);
                 } else {
-                    // Otherwise, get the active tab ID for this user
                     session.setAttribute(ACTIVE_TAB_ID, ACTIVE_USER_TABS.get(userId));
                 }
             }
 
-            // Check if this tab is the active one
             boolean isActiveTab = currentTabId.equals(ACTIVE_USER_TABS.get(userId));
 
-            // If this is not an active tab and the request is a write operation
             if (!isActiveTab && isWriteOperation(httpRequest)) {
                 System.out.println("Attempt to perform action from non-active tab: " + currentTabId);
                 httpResponse.setContentType("application/json");
@@ -98,9 +83,7 @@ public class SecurityFilter implements Filter {
             }
         }
 
-        // Check if the user is authenticated
         boolean isAuthenticated = (session != null && session.getAttribute("userId") != null);
-        System.out.println("isAuthenticated: " + isAuthenticated);
 
         if (!isAuthenticated) {
             System.out.println("Security Filter - Not Authenticated. Redirecting to Login Page");
@@ -108,7 +91,6 @@ public class SecurityFilter implements Filter {
             return;
         }
 
-        // Proceed with the request
         chain.doFilter(request, response);
     }
 
