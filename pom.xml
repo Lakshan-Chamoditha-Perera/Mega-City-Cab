@@ -91,6 +91,28 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.3.0</version>
             </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>10.11.0</version>
+                <configuration>
+                    <url>${DATABASE_URL}</url>
+                    <user>${DATABASE_USER}</user>
+                    <password>${DATABASE_PASSWORD}</password>
+                    <locations>
+                        <location>filesystem:src/test/resources/db/migration</location>
+                    </locations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
 
     </build>
