@@ -56,7 +56,25 @@ public class DriverRepositoryImpl implements DriverRepository {
     }
 
     @Override
-    public Driver findById(Integer id, Connection connection) {
+    public Driver findById(Integer id, Connection connection) throws SQLException {
+        String sql = "SELECT * FROM driver WHERE driverId = ? AND deleted = false";
+
+        ResultSet resultSet = SqlExecutor.execute(
+                connection,
+                sql,
+                id
+        );
+
+        if (resultSet.next()) {
+            return Driver.builder()
+                    .driverId(resultSet.getInt("driverId"))
+                    .firstName(resultSet.getString("firstName"))
+                    .lastName(resultSet.getString("lastName"))
+                    .email(resultSet.getString("email"))
+                    .licenseNumber(resultSet.getString("licenseNumber"))
+                    .mobileNo(resultSet.getString("mobileNo"))
+                    .build();
+        }
         return null;
     }
 
