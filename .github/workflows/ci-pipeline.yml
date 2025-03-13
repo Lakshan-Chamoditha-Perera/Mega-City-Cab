@@ -10,18 +10,6 @@ jobs:
     name: Build and Test with MySQL
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: 1234
-          MYSQL_DATABASE: megacity_test_db
-          MYSQL_USER: root
-          MYSQL_PASSWORD: 1234
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=3
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -33,20 +21,23 @@ jobs:
           java-version: '21'
           cache: 'maven'
 
-      - name: Wait for MySQL to be ready
+      # Install MySQL manually
+      - name: Install MySQL
         run: |
-          for i in {1..30}; do
-            if mysqladmin ping -h "127.0.0.1" --silent; then
-              echo "MySQL is up!"
-              break
-            fi
-            echo "Waiting for MySQL..."
-            sleep 2
-          done
+          sudo systemctl start mysql
+          sudo mysql -e "CREATE DATABASE megacity_test_db;"
+          sudo mysql -e "CREATE USER 'root'@'%' IDENTIFIED BY '1234';"
+          sudo mysql -e "GRANT ALL PRIVILEGES ON megacity_test_db.* TO 'root'@'%';"
+          sudo mysql -e "FLUSH PRIVILEGES;"
 
+      # Verify MySQL is running
+      - name: Check MySQL Status
+        run: sudo systemctl status mysql || true
+
+      # Run SQL script
       - name: Run Database Migration Script
         run: |
-          mysql -h 127.0.0.1 -u root -p1234 megacity_test_db < src/main/resources/megacity_test_db.sql
+          mysql -u root -p1234 megacity_test_db < src/main/resources/megacity_test_db.sql
 
       - name: Run Tests
         run: mvn clean test
