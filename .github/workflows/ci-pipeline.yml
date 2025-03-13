@@ -47,9 +47,9 @@ jobs:
           echo "DATABASE_PASSWORD=1234" >> $GITHUB_ENV
 
       # Initialize MySQL database
-      - name: Initialize MySQL database
+      - name: Initialize MySQL database megacity_test_db
         run: |
-          mysql -h 127.0.0.1 -u root -p1234 megacity_test_db < src/test/resources/quick_test_db.sql || { echo "Failed to run quick_test_db.sql"; exit 1; }
+          mysql -h 127.0.0.1 -u root -p1234 megacity_test_db < src/test/resources/megacity_test_db.sql || { echo "Failed to run megacity_test_db.sql"; exit 1; }
 
       # Show tables in database
       - name: Show tables in database
