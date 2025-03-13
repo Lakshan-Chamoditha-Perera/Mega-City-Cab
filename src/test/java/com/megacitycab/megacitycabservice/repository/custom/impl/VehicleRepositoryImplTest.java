@@ -1,12 +1,10 @@
 package com.megacitycab.megacitycabservice.repository.custom.impl;
 
 import com.megacitycab.megacitycabservice.configuration.db.SingleDatabaseConnection;
-import com.megacitycab.megacitycabservice.dto.custom.VehicleDTO;
 import com.megacitycab.megacitycabservice.entity.custom.Vehicle;
 import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -39,7 +37,7 @@ class VehicleRepositoryImplTest {
                 .passengerCount(4)
                 .color("White")
                 .availability(true)
-                .driverId(35)
+                .driverId(49)
                 .addedUserId(1)
                 .pricePerKm(50.0f)
                 .build();
@@ -53,7 +51,7 @@ class VehicleRepositoryImplTest {
                 .passengerCount(4)
                 .color("Red")
                 .availability(true)
-                .driverId(2)
+                .driverId(50)
                 .addedUserId(1)
                 .pricePerKm(40.0f)
                 .build();
@@ -67,7 +65,7 @@ class VehicleRepositoryImplTest {
                 .passengerCount(4)
                 .color("Blue")
                 .availability(true)
-                .driverId(3)
+                .driverId(51)
                 .addedUserId(1)
                 .pricePerKm(60.0f)
                 .build();
@@ -106,7 +104,7 @@ class VehicleRepositoryImplTest {
                 .passengerCount(4)
                 .color("White")
                 .availability(true)
-                .driverId(1)
+                .driverId(49)
                 .addedUserId(1)
                 .pricePerKm(50.0f)
                 .build();
@@ -124,7 +122,7 @@ class VehicleRepositoryImplTest {
     void testFindAllVehicles() throws SQLException {
         List<Vehicle> vehicles = vehicleRepository.findAll(connection);
         assertFalse(vehicles.isEmpty(), "There should be at least one vehicle");
-        assertEquals(3, vehicles.size(), "There should be exactly 3 vehicles in the database");
+        assertEquals(4, vehicles.size(), "There should be exactly 3 vehicles in the database");
     }
 
     @Test

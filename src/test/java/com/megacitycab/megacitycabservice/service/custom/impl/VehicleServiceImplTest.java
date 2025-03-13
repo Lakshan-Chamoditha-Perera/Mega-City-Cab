@@ -36,7 +36,7 @@ class VehicleServiceImplTest {
                 .passengerCount(4) // Valid passenger count
                 .color("Red") // Valid color
                 .availability(true)
-                .driverId(27) // Valid driver ID (from the provided list)
+                .driverId(1) // Valid driver ID (from the provided list)
                 .addedUserId(1)
                 .pricePerKm(10.5f) // Valid price per km
                 .build();
@@ -66,7 +66,7 @@ class VehicleServiceImplTest {
                 .passengerCount(4)
                 .color("Red")
                 .availability(true)
-                .driverId(28) // Valid driver ID
+                .driverId(1) // Valid driver ID
                 .addedUserId(1)
                 .pricePerKm(10.5f)
                 .build();
@@ -90,7 +90,7 @@ class VehicleServiceImplTest {
                 .passengerCount(4)
                 .color("Red")
                 .availability(true)
-                .driverId(29) // Valid driver ID
+                .driverId(1) // Valid driver ID
                 .addedUserId(1)
                 .pricePerKm(10.5f)
                 .build();
@@ -114,7 +114,7 @@ class VehicleServiceImplTest {
                 .passengerCount(4)
                 .color("Red")
                 .availability(true)
-                .driverId(30) // Valid driver ID
+                .driverId(1) // Valid driver ID
                 .addedUserId(1)
                 .pricePerKm(10.5f)
                 .build();
@@ -138,7 +138,7 @@ class VehicleServiceImplTest {
                 .passengerCount(4)
                 .color("Red123") // Invalid color (contains numbers)
                 .availability(true)
-                .driverId(31) // Valid driver ID
+                .driverId(1) // Valid driver ID
                 .addedUserId(1)
                 .pricePerKm(10.5f)
                 .build();
@@ -162,7 +162,7 @@ class VehicleServiceImplTest {
                 .passengerCount(0) // Invalid passenger count (must be positive)
                 .color("Red")
                 .availability(true)
-                .driverId(27) // Valid driver ID
+                .driverId(1) // Valid driver ID
                 .addedUserId(1)
                 .pricePerKm(10.5f)
                 .build();
@@ -186,7 +186,7 @@ class VehicleServiceImplTest {
                 .passengerCount(4)
                 .color("Red")
                 .availability(true)
-                .driverId(28) // Valid driver ID
+                .driverId(1) // Valid driver ID
                 .addedUserId(1)
                 .pricePerKm(-10.5f) // Invalid price per km (must be positive)
                 .build();
@@ -221,7 +221,7 @@ class VehicleServiceImplTest {
                 .passengerCount(5) // Updated passenger count
                 .color("Blue") // Updated color
                 .availability(false) // Updated availability
-                .driverId(29) // Updated driver ID
+                .driverId(1) // Updated driver ID
                 .addedUserId(1)
                 .pricePerKm(15.0f) // Updated price per km
                 .build();
@@ -275,7 +275,7 @@ class VehicleServiceImplTest {
                 .passengerCount(4)
                 .color("Red")
                 .availability(true)
-                .driverId(27) // Valid driver ID
+                .driverId(1) // Valid driver ID
                 .addedUserId(1)
                 .pricePerKm(10.5f)
                 .build();
@@ -288,7 +288,7 @@ class VehicleServiceImplTest {
                 .passengerCount(5)
                 .color("Blue")
                 .availability(true)
-                .driverId(28) // Valid driver ID
+                .driverId(1) // Valid driver ID
                 .addedUserId(1)
                 .pricePerKm(12.0f)
                 .build();
@@ -301,7 +301,7 @@ class VehicleServiceImplTest {
                 .passengerCount(6)
                 .color("Green")
                 .availability(true)
-                .driverId(29) // Valid driver ID
+                .driverId(1) // Valid driver ID
                 .addedUserId(1)
                 .pricePerKm(14.5f)
                 .build();
@@ -314,7 +314,7 @@ class VehicleServiceImplTest {
                 .passengerCount(7)
                 .color("Yellow")
                 .availability(true)
-                .driverId(30) // Valid driver ID
+                .driverId(1) // Valid driver ID
                 .addedUserId(1)
                 .pricePerKm(16.0f)
                 .build();
@@ -327,7 +327,7 @@ class VehicleServiceImplTest {
                 .passengerCount(8)
                 .color("Black")
                 .availability(true)
-                .driverId(31) // Valid driver ID
+                .driverId(1) // Valid driver ID
                 .addedUserId(1)
                 .pricePerKm(18.5f)
                 .build();

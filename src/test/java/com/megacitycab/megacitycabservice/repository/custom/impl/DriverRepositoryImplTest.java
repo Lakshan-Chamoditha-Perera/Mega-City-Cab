@@ -15,7 +15,7 @@ class DriverRepositoryImplTest {
 
     static Connection connection;
     private static DriverRepositoryImpl driverRepository;
-    private static Integer testDriverId1=53;
+    private static Integer testDriverId1=18;
     private static Integer testDriverId2;
     private static Integer testDriverId3;
 
@@ -120,19 +120,19 @@ class DriverRepositoryImplTest {
     @DisplayName("Test Finding Drivers by ID")
     void testFindDriversById() throws SQLException {
         // Find Driver 1
-        Driver driver1 = driverRepository.findById(testDriverId1, connection);
+        Driver driver1 = driverRepository.findById(49, connection);
         assertNotNull(driver1, "Driver 1 should exist in DB");
         assertEquals("Chaminda", driver1.getFirstName(), "First name should match for Driver 1");
         assertEquals("Perera", driver1.getLastName(), "Last name should match for Driver 1");
 
         // Find Driver 2
-        Driver driver2 = driverRepository.findById(testDriverId2, connection);
+        Driver driver2 = driverRepository.findById(50, connection);
         assertNotNull(driver2, "Driver 2 should exist in DB");
         assertEquals("Nirosha", driver2.getFirstName(), "First name should match for Driver 2");
         assertEquals("Fernando", driver2.getLastName(), "Last name should match for Driver 2");
 
         // Find Driver 3
-        Driver driver3 = driverRepository.findById(testDriverId3, connection);
+        Driver driver3 = driverRepository.findById(51, connection);
         assertNotNull(driver3, "Driver 3 should exist in DB");
         assertEquals("Kamal", driver3.getFirstName(), "First name should match for Driver 3");
         assertEquals("Gunawardena", driver3.getLastName(), "Last name should match for Driver 3");
