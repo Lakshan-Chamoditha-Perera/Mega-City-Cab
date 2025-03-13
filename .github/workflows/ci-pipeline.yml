@@ -39,6 +39,7 @@ jobs:
           path: |
             target/surefire-reports/
             target/site/
+          if-no-files-found: warn
 
   code-quality:
     name: Code Quality Analysis
@@ -101,6 +102,7 @@ jobs:
         with:
           name: mega-city-cab-service-dev
           path: target/*.war
+          if-no-files-found: error
 
   simulate-dev-deploy:
     name: Simulate Dev Deployment
@@ -160,3 +162,4 @@ jobs:
         with:
           name: dev-deployment-report
           path: deployment-report/
+          if-no-files-found: error
