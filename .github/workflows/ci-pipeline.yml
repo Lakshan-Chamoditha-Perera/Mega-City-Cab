@@ -17,7 +17,7 @@ jobs:
           MYSQL_DATABASE: megacity_test_db
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="mysqladmin ping -h 127.0.0.1 --silent" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout Repository
@@ -30,19 +30,49 @@ jobs:
           java-version: '21'
           cache: 'maven'
 
-      # Wait for MySQL to be ready
+      # ✅ Ensure application.properties file exists in the repo
+      - name: Create empty application.properties file (if not exists)
+        run: |
+          if [ ! -f src/main/resources/application.properties ]; then
+            echo "Creating empty application.properties"
+            touch src/main/resources/application.properties
+          else
+            echo "application.properties file already exists"
+          fi
+
+      # ✅ Create custom application.properties dynamically during CI
+      - name: Create application.properties with database details
+        run: |
+          echo "DATABASE_URL=jdbc:mysql://127.0.0.1:3306/megacity_test_db" > src/main/resources/application.properties
+          echo "DATABASE_USER=root" >> src/main/resources/application.properties
+          echo "DATABASE_PASSWORD=1234" >> src/main/resources/application.properties
+          cat src/main/resources/application.properties
+
+      # ✅ Wait for MySQL to be ready
       - name: Wait for MySQL to start
         run: |
           until mysqladmin ping -h 127.0.0.1 --silent; do
-            echo "Waiting for MySQL to be available..."
+            echo "Waiting for MySQL..."
             sleep 2
           done
           echo "MySQL is ready!"
 
-      # Run Database Migration Script
-      - name: Import Database Schema
+      # ✅ Import Database Schema
+      - name: Run SQL Script
         run: |
           mysql -h 127.0.0.1 -u root -p1234 megacity_test_db < src/main/resources/megacity_test_db.sql
 
+      # ✅ Set environment variables for test run
+      - name: Set up Environment Variables
+        run: |
+          echo "DATABASE_URL=jdbc:mysql://127.0.0.1:3306/megacity_test_db" >> $GITHUB_ENV
+          echo "DATABASE_USER=root" >> $GITHUB_ENV
+          echo "DATABASE_PASSWORD=1234" >> $GITHUB_ENV
+
+      # ✅ Run tests
       - name: Run Tests
+        env:
+          DATABASE_URL: "jdbc:mysql://127.0.0.1:3306/megacity_test_db"
+          DATABASE_USER: "root"
+          DATABASE_PASSWORD: "1234"
         run: mvn clean test
