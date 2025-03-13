@@ -4,7 +4,6 @@ import com.megacitycab.megacitycabservice.configuration.db.SingleDatabaseConnect
 import com.megacitycab.megacitycabservice.entity.custom.Customer;
 import org.junit.jupiter.api.*;
 
-import javax.naming.NamingException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -20,7 +19,7 @@ class CustomerRepositoryImplTest {
     private static Integer testCustomerId = 103;
 
     @BeforeAll
-    static void setUp() throws SQLException, ClassNotFoundException, NamingException {
+    static void setUp() throws SQLException, ClassNotFoundException {
         connection = SingleDatabaseConnection.getInstance().getConnection();
         customerRepository = new CustomerRepositoryImpl();
     }

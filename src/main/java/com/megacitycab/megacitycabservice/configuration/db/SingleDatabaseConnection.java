@@ -1,24 +1,26 @@
 package com.megacitycab.megacitycabservice.configuration.db;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
+import com.megacitycab.megacitycabservice.configuration.listeners.custom.WebAppConfiguration;
+
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class SingleDatabaseConnection {
     private static SingleDatabaseConnection instance;
     private Connection connection;
 
-    private SingleDatabaseConnection() throws SQLException, NamingException {
-        // Lookup the DataSource object from the JNDI context
-        Context context = new InitialContext();
-        DataSource dataSource = (DataSource) context.lookup("java:comp/env/jdbc/megacityDataSource");
-        this.connection = dataSource.getConnection();
+    private SingleDatabaseConnection() throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        String url = WebAppConfiguration.getInstance().getProperty("DATABASE_URL");
+        String user = WebAppConfiguration.getInstance().getProperty("DATABASE_USER");
+        String password = WebAppConfiguration.getInstance().getProperty("DATABASE_PASSWORD");
+
+        this.connection = DriverManager.getConnection(url, user, password);
     }
 
-    public static SingleDatabaseConnection getInstance() throws SQLException, NamingException {
+    public static SingleDatabaseConnection getInstance() throws SQLException, ClassNotFoundException {
         if (instance == null) {
             instance = new SingleDatabaseConnection();
         }

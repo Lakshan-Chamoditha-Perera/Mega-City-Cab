@@ -4,7 +4,6 @@ import com.megacitycab.megacitycabservice.configuration.db.SingleDatabaseConnect
 import com.megacitycab.megacitycabservice.entity.custom.Driver;
 import org.junit.jupiter.api.*;
 
-import javax.naming.NamingException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -16,12 +15,12 @@ class DriverRepositoryImplTest {
 
     static Connection connection;
     private static DriverRepositoryImpl driverRepository;
-    private static Integer testDriverId1=18;
+    private static Integer testDriverId1 = 18;
     private static Integer testDriverId2;
     private static Integer testDriverId3;
 
     @BeforeAll
-    static void setUp() throws SQLException, ClassNotFoundException, NamingException {
+    static void setUp() throws SQLException, ClassNotFoundException {
         connection = SingleDatabaseConnection.getInstance().getConnection();
         driverRepository = new DriverRepositoryImpl();
     }
