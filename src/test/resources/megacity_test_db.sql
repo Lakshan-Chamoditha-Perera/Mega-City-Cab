@@ -351,8 +351,6 @@ END //
 
 DELIMITER ;
 
-# SAMPALE DATA ====================================
--- Insert into User table (3 users to add data)
 INSERT INTO User (username, passwordHash, email)
 VALUES ('admin_lk', 'hashed_pass_123', 'admin@megacity.lk'),
        ('user_colombo', 'hashed_pass_456', 'user1@megacity.lk'),
