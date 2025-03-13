@@ -116,25 +116,29 @@ CREATE INDEX idx_booking_status ON Booking (status);
 CREATE INDEX idx_booking_pickupTime ON Booking (pickupTime);
 
 -- Stored Procedures
-DELIMITER $$
-
+DELIMITER //
 -- Procedure to get active drivers
 CREATE PROCEDURE GetActiveDrivers()
 BEGIN
-SELECT * FROM Driver WHERE availability = TRUE AND deleted = FALSE;
-END $$
+    SELECT * FROM Driver WHERE availability = TRUE AND deleted = FALSE;
+END //
+DELIMITER ;
 
+DELIMITER //
 -- Procedure to get available vehicles
 CREATE PROCEDURE GetAvailableVehicles()
 BEGIN
-SELECT * FROM Vehicle WHERE availability = TRUE AND deleted = FALSE;
-END $$
+    SELECT * FROM Vehicle WHERE availability = TRUE AND deleted = FALSE;
+END //
+DELIMITER ;
+
+DELIMITER //
 
 -- Procedure to get active customers
 CREATE PROCEDURE GetActiveCustomers()
 BEGIN
-SELECT * FROM Customer WHERE isDeleted = FALSE;
-END $$
+    SELECT * FROM Customer WHERE isDeleted = FALSE;
+END //
 
 DELIMITER ;
 
@@ -142,7 +146,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_get_all_customers()
 BEGIN
-SELECT * FROM Customer WHERE isDeleted = FALSE;
+    SELECT * FROM Customer WHERE isDeleted = FALSE;
 END //
 DELIMITER ;
 
@@ -150,7 +154,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_get_customer_by_id(IN p_customerId INT)
 BEGIN
-SELECT * FROM Customer WHERE customerId = p_customerId AND isDeleted = FALSE;
+    SELECT * FROM Customer WHERE customerId = p_customerId AND isDeleted = FALSE;
 END //
 DELIMITER ;
 
@@ -158,7 +162,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_delete_customer(IN p_customerId INT)
 BEGIN
-UPDATE Customer SET isDeleted = TRUE WHERE customerId = p_customerId;
+    UPDATE Customer SET isDeleted = TRUE WHERE customerId = p_customerId;
 END //
 DELIMITER ;
 
@@ -175,16 +179,16 @@ CREATE PROCEDURE sp_update_customer(
     IN p_dateOfBirth DATE
 )
 BEGIN
-UPDATE Customer
-SET firstName   = p_firstName,
-    lastName    = p_lastName,
-    email       = p_email,
-    nic         = p_nic,
-    address     = p_address,
-    mobileNo    = p_mobileNo,
-    dateOfBirth = p_dateOfBirth
-WHERE customerId = p_customerId
-  AND isDeleted = FALSE;
+    UPDATE Customer
+    SET firstName   = p_firstName,
+        lastName    = p_lastName,
+        email       = p_email,
+        nic         = p_nic,
+        address     = p_address,
+        mobileNo    = p_mobileNo,
+        dateOfBirth = p_dateOfBirth
+    WHERE customerId = p_customerId
+      AND isDeleted = FALSE;
 END //
 DELIMITER ;
 
@@ -192,7 +196,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_exists_customer_by_id(IN p_customerId INT, OUT p_exists BOOLEAN)
 BEGIN
-SELECT COUNT(*) > 0 INTO p_exists FROM Customer WHERE customerId = p_customerId AND isDeleted = FALSE;
+    SELECT COUNT(*) > 0 INTO p_exists FROM Customer WHERE customerId = p_customerId AND isDeleted = FALSE;
 END //
 DELIMITER ;
 
@@ -200,7 +204,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_exists_customer_by_email(IN p_email VARCHAR(255), OUT p_exists BOOLEAN)
 BEGIN
-SELECT COUNT(*) > 0 INTO p_exists FROM Customer WHERE email = p_email;
+    SELECT COUNT(*) > 0 INTO p_exists FROM Customer WHERE email = p_email;
 END //
 DELIMITER ;
 
@@ -212,7 +216,7 @@ CREATE PROCEDURE sp_exists_customer_by_email_except_id(
     OUT p_exists BOOLEAN
 )
 BEGIN
-SELECT COUNT(*) > 0 INTO p_exists FROM Customer WHERE email = p_email AND customerId <> p_customerId;
+    SELECT COUNT(*) > 0 INTO p_exists FROM Customer WHERE email = p_email AND customerId <> p_customerId;
 END //
 DELIMITER ;
 
@@ -220,7 +224,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_get_customer_count(OUT p_count INT)
 BEGIN
-SELECT COUNT(*) INTO p_count FROM Customer WHERE isDeleted = FALSE;
+    SELECT COUNT(*) INTO p_count FROM Customer WHERE isDeleted = FALSE;
 END //
 DELIMITER ;
 
@@ -228,21 +232,21 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_get_vehicle_count(OUT p_count INT)
 BEGIN
-SELECT COUNT(*) INTO p_count FROM Vehicle WHERE deleted = FALSE;
+    SELECT COUNT(*) INTO p_count FROM Vehicle WHERE deleted = FALSE;
 END //
 DELIMITER ;
 
 DELIMITER //
 CREATE PROCEDURE sp_get_driver_count(OUT p_count INT)
 BEGIN
-SELECT COUNT(*) INTO p_count FROM Driver WHERE deleted = FALSE;
+    SELECT COUNT(*) INTO p_count FROM Driver WHERE deleted = FALSE;
 END //
 DELIMITER ;
 
 DELIMITER //
 CREATE PROCEDURE sp_get_booking_count(OUT p_count INT)
 BEGIN
-SELECT COUNT(*) INTO p_count FROM Booking WHERE deleted = FALSE;
+    SELECT COUNT(*) INTO p_count FROM Booking WHERE deleted = FALSE;
 END //
 DELIMITER ;
 
@@ -254,11 +258,11 @@ CREATE PROCEDURE sp_get_bookings_count_by_status(
     OUT p_count INT
 )
 BEGIN
-SELECT COUNT(*)
-INTO p_count
-FROM Booking
-WHERE status = p_status
-  AND deleted = FALSE;
+    SELECT COUNT(*)
+    INTO p_count
+    FROM Booking
+    WHERE status = p_status
+      AND deleted = FALSE;
 END //
 
 DELIMITER ;
@@ -267,10 +271,10 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_get_total_bookings_count(OUT p_count INT)
 BEGIN
-SELECT COUNT(*)
-INTO p_count
-FROM Booking
-WHERE deleted = FALSE;
+    SELECT COUNT(*)
+    INTO p_count
+    FROM Booking
+    WHERE deleted = FALSE;
 END //
 DELIMITER ;
 
@@ -282,15 +286,15 @@ CREATE PROCEDURE sp_get_total_revenue(
     OUT p_total_revenue DECIMAL(15, 2)
 )
 BEGIN
-SELECT SUM(total)
-INTO p_total_revenue
-FROM Booking
-WHERE status = 'confirmed'
-  AND deleted = FALSE;
+    SELECT SUM(total)
+    INTO p_total_revenue
+    FROM Booking
+    WHERE status = 'confirmed'
+      AND deleted = FALSE;
 
-IF p_total_revenue IS NULL THEN
+    IF p_total_revenue IS NULL THEN
         SET p_total_revenue = 0.00;
-END IF;
+    END IF;
 END //
 
 DELIMITER ;
@@ -301,16 +305,15 @@ DELIMITER //
 
 CREATE PROCEDURE sp_get_weekly_revenue()
 BEGIN
-SELECT
-    CONCAT(DATE_FORMAT(MIN(createdAt), '%Y-%m-%d'), ' to ', DATE_FORMAT(MAX(createdAt), '%Y-%m-%d')) AS period,
-    SUM(total) AS totalRevenue,
-    SUM(discount) AS totalDiscounts,
-    SUM(tax) AS totalTaxes,
-    SUM(total - discount + tax) AS netRevenue
-FROM booking
-WHERE YEARWEEK(createdAt) = YEARWEEK(CURDATE())
-  AND status = 'confirmed'
-GROUP BY YEARWEEK(createdAt);
+    SELECT CONCAT(DATE_FORMAT(MIN(createdAt), '%Y-%m-%d'), ' to ', DATE_FORMAT(MAX(createdAt), '%Y-%m-%d')) AS period,
+           SUM(total)                                                                                       AS totalRevenue,
+           SUM(discount)                                                                                    AS totalDiscounts,
+           SUM(tax)                                                                                         AS totalTaxes,
+           SUM(total - discount + tax)                                                                      AS netRevenue
+    FROM booking
+    WHERE YEARWEEK(createdAt) = YEARWEEK(CURDATE())
+      AND status = 'confirmed'
+    GROUP BY YEARWEEK(createdAt);
 END //
 
 DELIMITER ;
@@ -320,15 +323,14 @@ DELIMITER //
 
 CREATE PROCEDURE sp_get_monthly_revenue()
 BEGIN
-SELECT
-    DATE_FORMAT(MIN(createdAt), '%Y-%m') AS period,  -- Use MIN() to resolve grouping issue
-    SUM(total) AS totalRevenue,
-    SUM(discount) AS totalDiscounts,
-    SUM(tax) AS totalTaxes,
-    SUM(total - discount + tax) AS netRevenue
-FROM booking
-WHERE status = 'confirmed'
-GROUP BY YEAR(createdAt), MONTH(createdAt);
+    SELECT DATE_FORMAT(MIN(createdAt), '%Y-%m') AS period, -- Use MIN() to resolve grouping issue
+           SUM(total)                           AS totalRevenue,
+           SUM(discount)                        AS totalDiscounts,
+           SUM(tax)                             AS totalTaxes,
+           SUM(total - discount + tax)          AS netRevenue
+    FROM booking
+    WHERE status = 'confirmed'
+    GROUP BY YEAR(createdAt), MONTH(createdAt);
 END //
 
 DELIMITER ;
@@ -338,15 +340,14 @@ DELIMITER //
 
 CREATE PROCEDURE sp_get_yearly_revenue()
 BEGIN
-SELECT
-    YEAR(createdAt) AS period,
-    SUM(total) AS totalRevenue,
-    SUM(discount) AS totalDiscounts,
-    SUM(tax) AS totalTaxes,
-    SUM(total - discount + tax) AS netRevenue
-FROM booking
-WHERE status = 'confirmed'
-GROUP BY YEAR(createdAt);
+    SELECT YEAR(createdAt)             AS period,
+           SUM(total)                  AS totalRevenue,
+           SUM(discount)               AS totalDiscounts,
+           SUM(tax)                    AS totalTaxes,
+           SUM(total - discount + tax) AS netRevenue
+    FROM booking
+    WHERE status = 'confirmed'
+    GROUP BY YEAR(createdAt);
 END //
 
 DELIMITER ;
@@ -431,13 +432,16 @@ VALUES (1, 1), -- Nimal to Airport with CAA-1234
        (7, 7), -- Chaminda to Dambulla with CAG-5678
        (8, 8), -- Saman to Bambalapitiya with CAH-9012
        (9, 9), -- Tharushi to Ja-Ela with CAI-3456
-       (10, 10); -- Lakmal to Maradana with CAJ-7890
+       (10, 10);
+-- Lakmal to Maradana with CAJ-7890
 
 -- Insert into Booking table (100 bookings)
-INSERT INTO Booking (customerId, pickupLocation, destination, pickupTime, status, distance, fare, discount, tax, total, addedUserId)
+INSERT INTO Booking (customerId, pickupLocation, destination, pickupTime, status, distance, fare, discount, tax, total,
+                     addedUserId)
 VALUES
 -- Bookings for customerId 1
-(1, 'Colombo 03', 'Bandaranaike Intl Airport', '2025-03-01 07:00:00', 'confirmed', 30.0, 1500.00, 100.00, 50.00, 1450.00, 1),
+(1, 'Colombo 03', 'Bandaranaike Intl Airport', '2025-03-01 07:00:00', 'confirmed', 30.0, 1500.00, 100.00, 50.00,
+ 1450.00, 1),
 (1, 'Colombo 03', 'Galle Face Green', '2025-03-02 08:30:00', 'completed', 5.0, 250.00, 0.00, 15.00, 265.00, 1),
 (1, 'Colombo 03', 'Pettah Market', '2025-03-03 10:00:00', 'canceled', 3.0, 150.00, 0.00, 10.00, 160.00, 1),
 
@@ -459,7 +463,8 @@ VALUES
 -- Bookings for customerId 5
 (5, 'Negombo', 'Katunayake', '2025-03-05 08:00:00', 'confirmed', 15.0, 750.00, 50.00, 25.00, 725.00, 2),
 (5, 'Negombo', 'Colombo City Center', '2025-03-10 10:00:00', 'completed', 30.0, 1500.00, 100.00, 50.00, 1450.00, 2),
-(5, 'Negombo', 'Pinnawala Elephant Orphanage', '2025-03-11 13:00:00', 'canceled', 40.0, 2000.00, 150.00, 75.00, 1925.00, 2),
+(5, 'Negombo', 'Pinnawala Elephant Orphanage', '2025-03-11 13:00:00', 'canceled', 40.0, 2000.00, 150.00, 75.00, 1925.00,
+ 2),
 
 -- Bookings for customerId 6
 (6, 'Matara', 'Weligama', '2025-03-06 11:00:00', 'pending', 12.0, 600.00, 0.00, 30.00, 630.00, 1),
@@ -499,12 +504,13 @@ VALUES
 (10, 'Borella', 'Kandy', '2025-03-31 17:00:00', 'pending', 90.0, 4500.00, 200.00, 150.00, 4450.00, 3);
 
 
-
 -- Insert into Booking table (100 bookings spread across 2023, 2024, and 2025)
-INSERT INTO Booking (customerId, pickupLocation, destination, pickupTime, status, distance, fare, discount, tax, total, addedUserId)
+INSERT INTO Booking (customerId, pickupLocation, destination, pickupTime, status, distance, fare, discount, tax, total,
+                     addedUserId)
 VALUES
 -- Bookings in 2023
-(1, 'Colombo 03', 'Bandaranaike Intl Airport', '2023-01-15 07:00:00', 'confirmed', 30.0, 1500.00, 100.00, 50.00, 1450.00, 1),
+(1, 'Colombo 03', 'Bandaranaike Intl Airport', '2023-01-15 07:00:00', 'confirmed', 30.0, 1500.00, 100.00, 50.00,
+ 1450.00, 1),
 (2, 'Nugegoda', 'Colombo Fort', '2023-02-20 09:30:00', 'pending', 10.0, 500.00, 0.00, 25.00, 525.00, 2),
 (3, 'Galle', 'Hikkaduwa', '2023-03-25 14:00:00', 'confirmed', 20.0, 1000.00, 50.00, 30.00, 980.00, 1),
 (4, 'Kandy', 'Peradeniya', '2023-04-10 16:30:00', 'canceled', 8.0, 400.00, 0.00, 20.00, 420.00, 3),
@@ -528,7 +534,8 @@ VALUES
 (10, 'Borella', 'Kandy', '2024-10-25 17:00:00', 'pending', 90.0, 4500.00, 200.00, 150.00, 4450.00, 3),
 
 -- Bookings in 2025
-(1, 'Colombo 03', 'Bandaranaike Intl Airport', '2025-01-01 07:00:00', 'confirmed', 30.0, 1500.00, 100.00, 50.00, 1450.00, 1),
+(1, 'Colombo 03', 'Bandaranaike Intl Airport', '2025-01-01 07:00:00', 'confirmed', 30.0, 1500.00, 100.00, 50.00,
+ 1450.00, 1),
 (2, 'Nugegoda', 'Colombo Fort', '2025-02-05 09:30:00', 'pending', 10.0, 500.00, 0.00, 25.00, 525.00, 2),
 (3, 'Galle', 'Hikkaduwa', '2025-03-10 14:00:00', 'confirmed', 20.0, 1000.00, 50.00, 30.00, 980.00, 1),
 (4, 'Kandy', 'Peradeniya', '2025-04-15 16:30:00', 'canceled', 8.0, 400.00, 0.00, 20.00, 420.00, 3),

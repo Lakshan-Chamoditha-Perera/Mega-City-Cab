@@ -116,25 +116,29 @@ CREATE INDEX idx_booking_status ON Booking (status);
 CREATE INDEX idx_booking_pickupTime ON Booking (pickupTime);
 
 -- Stored Procedures
-DELIMITER $$
-
+DELIMITER //
 -- Procedure to get active drivers
 CREATE PROCEDURE GetActiveDrivers()
 BEGIN
     SELECT * FROM Driver WHERE availability = TRUE AND deleted = FALSE;
-END $$
+END //
+DELIMITER ;
 
+DELIMITER //
 -- Procedure to get available vehicles
 CREATE PROCEDURE GetAvailableVehicles()
 BEGIN
     SELECT * FROM Vehicle WHERE availability = TRUE AND deleted = FALSE;
-END $$
+END //
+DELIMITER ;
+
+DELIMITER //
 
 -- Procedure to get active customers
 CREATE PROCEDURE GetActiveCustomers()
 BEGIN
     SELECT * FROM Customer WHERE isDeleted = FALSE;
-END $$
+END //
 
 DELIMITER ;
 
@@ -301,12 +305,11 @@ DELIMITER //
 
 CREATE PROCEDURE sp_get_weekly_revenue()
 BEGIN
-    SELECT
-        CONCAT(DATE_FORMAT(MIN(createdAt), '%Y-%m-%d'), ' to ', DATE_FORMAT(MAX(createdAt), '%Y-%m-%d')) AS period,
-        SUM(total) AS totalRevenue,
-        SUM(discount) AS totalDiscounts,
-        SUM(tax) AS totalTaxes,
-        SUM(total - discount + tax) AS netRevenue
+    SELECT CONCAT(DATE_FORMAT(MIN(createdAt), '%Y-%m-%d'), ' to ', DATE_FORMAT(MAX(createdAt), '%Y-%m-%d')) AS period,
+           SUM(total)                                                                                       AS totalRevenue,
+           SUM(discount)                                                                                    AS totalDiscounts,
+           SUM(tax)                                                                                         AS totalTaxes,
+           SUM(total - discount + tax)                                                                      AS netRevenue
     FROM booking
     WHERE YEARWEEK(createdAt) = YEARWEEK(CURDATE())
       AND status = 'confirmed'
@@ -320,12 +323,11 @@ DELIMITER //
 
 CREATE PROCEDURE sp_get_monthly_revenue()
 BEGIN
-    SELECT
-        DATE_FORMAT(MIN(createdAt), '%Y-%m') AS period,  -- Use MIN() to resolve grouping issue
-        SUM(total) AS totalRevenue,
-        SUM(discount) AS totalDiscounts,
-        SUM(tax) AS totalTaxes,
-        SUM(total - discount + tax) AS netRevenue
+    SELECT DATE_FORMAT(MIN(createdAt), '%Y-%m') AS period, -- Use MIN() to resolve grouping issue
+           SUM(total)                           AS totalRevenue,
+           SUM(discount)                        AS totalDiscounts,
+           SUM(tax)                             AS totalTaxes,
+           SUM(total - discount + tax)          AS netRevenue
     FROM booking
     WHERE status = 'confirmed'
     GROUP BY YEAR(createdAt), MONTH(createdAt);
@@ -338,12 +340,11 @@ DELIMITER //
 
 CREATE PROCEDURE sp_get_yearly_revenue()
 BEGIN
-    SELECT
-        YEAR(createdAt) AS period,
-        SUM(total) AS totalRevenue,
-        SUM(discount) AS totalDiscounts,
-        SUM(tax) AS totalTaxes,
-        SUM(total - discount + tax) AS netRevenue
+    SELECT YEAR(createdAt)             AS period,
+           SUM(total)                  AS totalRevenue,
+           SUM(discount)               AS totalDiscounts,
+           SUM(tax)                    AS totalTaxes,
+           SUM(total - discount + tax) AS netRevenue
     FROM booking
     WHERE status = 'confirmed'
     GROUP BY YEAR(createdAt);
@@ -351,6 +352,8 @@ END //
 
 DELIMITER ;
 
+# SAMPALE DATA ====================================
+-- Insert into User table (3 users to add data)
 INSERT INTO User (username, passwordHash, email)
 VALUES ('admin_lk', 'hashed_pass_123', 'admin@megacity.lk'),
        ('user_colombo', 'hashed_pass_456', 'user1@megacity.lk'),
