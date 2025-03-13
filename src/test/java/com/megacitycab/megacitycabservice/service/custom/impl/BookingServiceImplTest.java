@@ -35,7 +35,7 @@ class BookingServiceImplTest {
     void testAddBooking() throws MegaCityCabException {
         // Create a BookingDTO with sample data
         BookingDTO bookingDTO = new BookingDTO();
-        bookingDTO.setCustomerId(30); // Assuming customer with ID 1 exists
+        bookingDTO.setCustomerId(4); // Assuming customer with ID 1 exists
         bookingDTO.setPickupTime(LocalDateTime.now());
         bookingDTO.setDestination("Central Park");
         bookingDTO.setPickupLocation("Times Square");
@@ -44,11 +44,12 @@ class BookingServiceImplTest {
         bookingDTO.setFare(50.0f);
         bookingDTO.setDiscount(5.0f);
         bookingDTO.setTax(2.5f);
+        bookingDTO.setAddedUserId(1);
 
         // Add vehicle booking details
         List<VehicleBookingDetailsDTO> vehicleBookingDetails = new ArrayList<>();
         VehicleBookingDetailsDTO vehicleDetail = new VehicleBookingDetailsDTO();
-        vehicleDetail.setVehicleId(17); // Assuming vehicle with ID 1 exists
+        vehicleDetail.setVehicleId(3); // Assuming vehicle with ID 1 exists
         vehicleBookingDetails.add(vehicleDetail);
         bookingDTO.setVehicleBookingDetailsDTOSList(vehicleBookingDetails);
 
@@ -58,8 +59,9 @@ class BookingServiceImplTest {
 
         // Fetch the booking to get ID for further tests
         List<BookingDTO> bookings = bookingService.getBookingsWithCustomer();
+        System.out.println(bookings);
         testBookingId = bookings.stream()
-                .filter(booking -> booking.getCustomerId() == 1)
+                .filter(booking -> booking.getCustomerId() == 4)
                 .findFirst()
                 .map(BookingDTO::getBookingId)
                 .orElse(null);
@@ -111,7 +113,7 @@ class BookingServiceImplTest {
         MegaCityCabException exception = assertThrows(MegaCityCabException.class, () -> {
             bookingService.addBooking(bookingDTO);
         });
-        assertEquals(ErrorMessage.CUSTOMER_NOT_FOUND, exception.getMessage(), "Exception message should match");
+        assertEquals(ErrorMessage.CUSTOMER_NOT_FOUND.getMessage(), exception.getMessage(), "Exception message should match");
     }
 
     @Test
@@ -120,7 +122,7 @@ class BookingServiceImplTest {
     void testAddBookingWithUnavailableVehicle() {
         // Create a BookingDTO with a vehicle that is unavailable
         BookingDTO bookingDTO = new BookingDTO();
-        bookingDTO.setCustomerId(33); // Assuming customer with ID 1 exists
+        bookingDTO.setCustomerId(4); // Assuming customer with ID 1 exists
         bookingDTO.setPickupTime(LocalDateTime.now());
         bookingDTO.setDestination("Central Park");
         bookingDTO.setPickupLocation("Times Square");
@@ -129,11 +131,12 @@ class BookingServiceImplTest {
         bookingDTO.setFare(50.0f);
         bookingDTO.setDiscount(5.0f);
         bookingDTO.setTax(2.5f);
+        bookingDTO.setAddedUserId(1);
 
         // Add vehicle booking details with an unavailable vehicle
         List<VehicleBookingDetailsDTO> vehicleBookingDetails = new ArrayList<>();
         VehicleBookingDetailsDTO vehicleDetail = new VehicleBookingDetailsDTO();
-        vehicleDetail.setVehicleId(2); // Assuming vehicle with ID 2 is unavailable
+        vehicleDetail.setVehicleId(3); // Assuming vehicle with ID 2 is unavailable
         vehicleBookingDetails.add(vehicleDetail);
         bookingDTO.setVehicleBookingDetailsDTOSList(vehicleBookingDetails);
 
@@ -141,7 +144,7 @@ class BookingServiceImplTest {
         MegaCityCabException exception = assertThrows(MegaCityCabException.class, () -> {
             bookingService.addBooking(bookingDTO);
         });
-        assertEquals(ErrorMessage.VEHICLE_NOT_AVAILABLE_FOR_BOOKING, exception.getMessage(), "Exception message should match");
+        assertEquals(ErrorMessage.VEHICLE_NOT_AVAILABLE_FOR_BOOKING.getMessage(), exception.getMessage(), "Exception message should match");
     }
 
 }

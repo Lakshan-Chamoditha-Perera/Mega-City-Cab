@@ -31,6 +31,8 @@
         body {
             background-color: var(--background-color);
             min-height: 100vh;
+            padding: 0 10.33vw;
+
         }
 
         .card {
@@ -136,9 +138,69 @@
         .table-hover tbody tr:hover {
             background-color: var(--hover-bg-color);
         }
+
+
+
+        .pagination-container {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .pagination-info {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .pagination .page-link {
+            color: var(--primary-color);
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .pagination .page-link:hover {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+
+        /* Items per page selector styling */
+        .items-per-page-container {
+            margin-bottom: 1rem;
+        }
+
+        .items-per-page-container label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .items-per-page-container .form-select {
+            border-color: #dee2e6;
+        }
+
+        .items-per-page-container .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
     </style>
 </head>
-<body class="py-4">
+<body class="">
 
 <!-- navbar.jsp -->
 <nav class="navbar navbar-expand-lg sticky-top">
@@ -206,6 +268,63 @@
                 margin-top: 0.5rem;
             }
         }
+        .custom-help-icon {
+            font-size: 1.2rem;
+            color: #0d6efd;
+            padding: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .custom-help-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .custom-modal {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-modal .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 12px 12px 0 0;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #212529;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-modal .modal-title i {
+            font-size: 1.5rem;
+            color: #0d6efd;
+            margin-right: 0.5rem;
+        }
+
+        .custom-modal .modal-body {
+            padding: 1.5rem;
+        }
+
+        .custom-modal .modal-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            border-radius: 0 0 12px 12px;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .btn-close {
+            filter: invert(0.5);
+        }
+
+        .custom-modal .btn-close:hover {
+            filter: invert(0.7);
+        }
     </style>
 
     <div class="container-fluid">
@@ -268,7 +387,7 @@
 
             <!-- Auth Buttons -->
             <div class="auth-buttons">
-                <% if (session.getAttribute("user") == null) { %>
+                <% if (session.getAttribute("userId") == null) { %>
                 <form action="${pageContext.request.contextPath}/login" method="get">
                     <button type="submit" class="btn btn-outline-primary">
                         <i class="bi bi-box-arrow-in-right"></i>
@@ -276,7 +395,7 @@
                     </button>
                 </form>
                 <% } else { %>
-                <form action="${pageContext.request.contextPath}/logout" method="get">
+                <form action="${pageContext.request.contextPath}/auth/logout" method="post">
                     <button type="submit" class="btn btn-outline-danger">
                         <i class="bi bi-box-arrow-right"></i>
                         Logout
@@ -335,8 +454,10 @@
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h1 class="section-title">
-                    <i class="bi bi-people-fill"></i>Manage Drivers
+                    <i class="bi bi-people-fill me-2"></i>Manage Drivers
                 </h1>
+                <i class="bi bi-question-circle custom-help-icon" data-bs-toggle="modal"
+                   data-bs-target="#driverGuidelinesModal"></i>
             </div>
 
             <!-- Add/Edit Driver Form -->
@@ -403,6 +524,14 @@
                 <i class="bi bi-table me-2"></i>
                 Driver List
             </h2>
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-secondary me-2" onclick="printDriversList()">
+                    <i class="bi bi-printer"></i> Print
+                </button>
+                <button class="btn btn-success" onclick="exportToCSV()">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Export as CSV
+                </button>
+            </div>
             <div class="table-container">
                 <c:if test="${empty drivers}">
                     <div class="alert alert-info">
@@ -410,7 +539,7 @@
                     </div>
                 </c:if>
                 <c:if test="${not empty drivers}">
-                    <table class="table table-hover driver-table mb-0">
+                    <table id="driverTable" class="table table-hover driver-table mb-0">
                         <thead>
                         <tr>
                             <th>ID</th>
@@ -464,7 +593,61 @@
         </div>
     </div>
 </div>
+<!-- Driver Management Modal -->
+<!-- Driver Management Modal -->
+<div class="modal fade custom-modal" id="driverGuidelinesModal" tabindex="-1" aria-labelledby="driverGuidelinesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="driverGuidelinesModalLabel">
+                    <i class="bi bi-person-badge me-2"></i>Driver Management Guidelines
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
 
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <h4>Driver Management</h4>
+                <p>This section allows you to manage driver information for the Megacity Cab Service.</p>
+
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Ensure all driver details are accurate and up-to-date.
+                </div>
+
+                <h5>1. Add a New Driver</h5>
+                <ol>
+                    <li>Click <strong>"Add Driver"</strong> in Quick Actions or navigate to <strong>Drivers</strong> in the navigation bar.</li>
+                    <li>Fill in all required fields:
+                        <ul>
+                            <li><strong>First Name</strong></li>
+                            <li><strong>Last Name</strong></li>
+                            <li><strong>License Number</strong></li>
+                            <li><strong>Mobile No</strong></li>
+                            <li><strong>Email</strong></li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>"Save"</strong> to register the driver.</li>
+                </ol>
+
+                <h5>2. Update Driver Information</h5>
+                <ol>
+                    <li>Locate the driver in the table below the form.</li>
+                    <li>Click the <strong>"Update"</strong> button in the Actions column.</li>
+                    <li>The form will be populated with the driver's data.</li>
+                    <li>Make necessary changes and click <strong>"Update"</strong>.</li>
+                    <li>The table will refresh automatically with updated information.</li>
+                </ol>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Bootstrap JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -505,6 +688,161 @@
         // Change the button text back to "Add Driver"
         document.getElementById('submitButtonText').textContent = 'Add Driver';
     });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const itemsPerPage = 10;
+        let currentPage = 1;
+
+        const tableBody = document.querySelector('.driver-table tbody');
+        if (!tableBody) return;
+
+        const tableRows = Array.from(tableBody.querySelectorAll('tr'));
+        const totalPages = Math.ceil(tableRows.length / itemsPerPage);
+
+        function displayTableRows() {
+            tableRows.forEach(row => {
+                row.style.display = 'none';
+            });
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, tableRows.length);
+
+            for (let i = startIndex; i < endIndex; i++) {
+                tableRows[i].style.display = '';
+            }
+
+            document.getElementById('pagination-info').textContent =
+                `Showing ${startIndex + 1} to ${endIndex} of ${tableRows.length} customers`;
+
+            document.querySelectorAll('.page-item').forEach((item, index) => {
+                if (index === 0) {
+                    item.classList.toggle('disabled', currentPage === 1);
+                } else if (index === document.querySelectorAll('.page-item').length - 1) { // Next button
+                    item.classList.toggle('disabled', currentPage === totalPages);
+                } else { // Page number buttons
+                    const pageNum = parseInt(item.querySelector('.page-link').textContent);
+                    item.classList.toggle('active', pageNum === currentPage);
+                }
+            });
+        }
+
+        function createPagination() {
+            const paginationContainer = document.createElement('div');
+            paginationContainer.className = 'pagination-container d-flex justify-content-between align-items-center mt-3';
+
+            const paginationInfo = document.createElement('div');
+            paginationInfo.id = 'pagination-info';
+            paginationInfo.className = 'pagination-info';
+
+            const paginationNav = document.createElement('nav');
+            paginationNav.setAttribute('aria-label', 'Driver table navigation');
+
+            const paginationList = document.createElement('ul');
+            paginationList.className = 'pagination pagination-sm mb-0';
+
+            const prevItem = document.createElement('li');
+            prevItem.className = 'page-item disabled';
+            const prevLink = document.createElement('a');
+            prevLink.className = 'page-link';
+            prevLink.href = '#';
+            prevLink.setAttribute('aria-label', 'Previous');
+            prevLink.innerHTML = '<span aria-hidden="true">&laquo;</span>';
+            prevItem.appendChild(prevLink);
+            paginationList.appendChild(prevItem);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = 'page-item' + (i === 1 ? ' active' : '');
+                const pageLink = document.createElement('a');
+                pageLink.className = 'page-link';
+                pageLink.href = '#';
+                pageLink.textContent = i;
+                pageItem.appendChild(pageLink);
+                paginationList.appendChild(pageItem);
+            }
+
+            const nextItem = document.createElement('li');
+            nextItem.className = 'page-item' + (totalPages === 1 ? ' disabled' : '');
+            const nextLink = document.createElement('a');
+            nextLink.className = 'page-link';
+            nextLink.href = '#';
+            nextLink.setAttribute('aria-label', 'Next');
+            nextLink.innerHTML = '<span aria-hidden="true">&raquo;</span>';
+            nextItem.appendChild(nextLink);
+            paginationList.appendChild(nextItem);
+
+            paginationNav.appendChild(paginationList);
+            paginationContainer.appendChild(paginationInfo);
+            paginationContainer.appendChild(paginationNav);
+
+            const tableContainer = document.querySelector('.table-container');
+            tableContainer.appendChild(paginationContainer);
+
+            prevLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayTableRows();
+                }
+            });
+
+            nextLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayTableRows();
+                }
+            });
+            document.querySelectorAll('.page-item:not(:first-child):not(:last-child) .page-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    currentPage = parseInt(this.textContent);
+                    displayTableRows();
+                });
+            });
+        }
+
+        if (tableRows.length > 0) {
+            createPagination();
+            displayTableRows();
+        }
+        document.getElementById('driverForm').addEventListener('submit', function () {
+            currentPage = 1;
+        });
+    });
+
+    function printDriversList() {
+        const printContents = document.getElementById('driverTable').outerHTML;
+        const originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        window.location.reload();
+    }
+
+    function exportToCSV() {
+        const table = document.getElementById('driverTable');
+        const rows = table.querySelectorAll('tr');
+        let csvContent = '';
+
+        rows.forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('th, td').forEach(cell => {
+                if (!cell.querySelector('button')) {
+                    rowData.push(cell.innerText);
+                }
+            });
+            csvContent += rowData.join(',') + '\n';
+        });
+
+        const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'drivers.csv';
+        link.click();
+    }
 </script>
 </body>
 </html>

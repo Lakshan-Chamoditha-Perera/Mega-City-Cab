@@ -95,7 +95,6 @@
 <div class="error-container">
     <div class="error-card">
         <%
-            // Get error details
             String errorTitle = "Unexpected Error";
             String errorMessage = "An unexpected error occurred while processing your request.";
             String errorCode = "500";
@@ -104,7 +103,6 @@
             String errorColor = "danger";
             String errorSuggestion = "Our team has been notified and is working to fix the issue.";
 
-            // Override with request attributes if available
             if (request.getAttribute("errorTitle") != null) {
                 errorTitle = (String) request.getAttribute("errorTitle");
             }
@@ -118,7 +116,6 @@
                 errorId = (String) request.getAttribute("errorId");
             }
 
-            // Set appropriate icon and message based on error code
             if ("401".equals(errorCode)) {
                 errorIcon = "bi-shield-lock";
                 errorColor = "warning";
@@ -133,18 +130,15 @@
                 errorSuggestion = "The page you are looking for might have been removed or is temporarily unavailable.";
             }
 
-            // Get countdown value (default: 10)
             int countdown = 10;
             if (request.getAttribute("countdown") != null) {
                 try {
                     countdown = Integer.parseInt(request.getAttribute("countdown").toString());
                 } catch (NumberFormatException e) {
-                    // Use default if parsing fails
                 }
             }
 
-            // Get return URL (default: dashboard)
-            String returnUrl = request.getContextPath() + "/app";
+            String returnUrl = request.getContextPath() + "/home";
             if (request.getAttribute("returnUrl") != null) {
                 returnUrl = (String) request.getAttribute("returnUrl");
             }
@@ -207,7 +201,6 @@
                         java.io.StringWriter sw = new java.io.StringWriter();
                         java.io.PrintWriter pw = new java.io.PrintWriter(sw);
                         exception.printStackTrace(pw);
-//                        out.println(sw.toString());
                     %></pre>
                 </div>
             </div>
@@ -238,11 +231,7 @@
             setTimeout(updateCountdown, 1000);
         }
     }
-
-    // Start countdown
     setTimeout(updateCountdown, 1000);
-
-    // Log error to console
     console.error('Error <%= errorCode %>: <%= errorMessage %> (<%= errorId %>)');
 </script>
 </body>

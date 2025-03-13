@@ -5,10 +5,7 @@ import com.megacitycab.megacitycabservice.entity.custom.Vehicle;
 import com.megacitycab.megacitycabservice.repository.custom.VehicleRepository;
 import com.megacitycab.megacitycabservice.util.SqlExecutor;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +14,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     @Override
     public Boolean save(Vehicle entity, Connection connection) throws SQLException {
-        String sql = "INSERT INTO vehicle (licensePlate, model, brand, passengerCount, color, availability, driverId) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO vehicle (licensePlate, model, brand, passengerCount, color, availability, driverId, addedUserId, pricePerKm) VALUES (?,?,?,?,?,?,?,?,?)";
 
-        return SqlExecutor.execute(
+        boolean isSaved = SqlExecutor.execute(
                 connection,
                 sql,
                 entity.getLicensePlate(),
@@ -28,10 +25,13 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 entity.getPassengerCount(),
                 entity.getColor(),
                 entity.getAvailability(),
-                entity.getDriverId()
+                entity.getDriverId(),
+                entity.getAddedUserId(),
+                entity.getPricePerKm()
         );
-
+        return isSaved;
     }
+
 
     @Override
     public List<Vehicle> findAll(Connection connection) {
@@ -72,9 +72,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     @Override
     public Integer getCount(Connection connection) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM vehicle WHERE deleted = false";
-        ResultSet resultSet = SqlExecutor.execute(connection, sql);
-        return resultSet.next() ? resultSet.getInt(1) : 0;
+        String sql = "{CALL sp_get_vehicle_count(?)}";
+        CallableStatement callableStatement = connection.prepareCall(sql);
+        callableStatement.registerOutParameter(1, Types.INTEGER);
+        callableStatement.execute();
+
+        return (Integer) callableStatement.getObject(1);
     }
 
     @Override
@@ -115,7 +118,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     @Override
     public Boolean update(Vehicle vehicle, Connection connection) throws SQLException {
-        String sql = "UPDATE vehicle SET licensePlate = ?, model = ?, brand = ?, passengerCount = ?, color = ?, driverId = ? WHERE vehicleId = ? ";
+        String sql = "UPDATE vehicle SET licensePlate = ?, model = ?, brand = ?, passengerCount = ?, color = ?, driverId = ?, availability = ?, pricePerKm = ?  WHERE vehicleId = ? ";
         return SqlExecutor.execute(
                 connection,
                 sql,
@@ -125,6 +128,8 @@ public class VehicleRepositoryImpl implements VehicleRepository {
                 vehicle.getPassengerCount(),
                 vehicle.getColor(),
                 vehicle.getDriverId(),
+                vehicle.getAvailability(),
+                vehicle.getPricePerKm(),
                 vehicle.getVehicleId()
         );
     }

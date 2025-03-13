@@ -72,6 +72,7 @@ public class CustomerServlet extends HttpServlet {
                             .mobileNo(request.getParameter("mobileNo"))
                             .email(request.getParameter("email"))
                             .nic(request.getParameter("nic"))
+                            .addedUserId((Integer) request.getAttribute("userId"))
                             .build());
 
             System.out.println(success);
@@ -121,6 +122,7 @@ public class CustomerServlet extends HttpServlet {
                             .mobileNo(request.getParameter("mobileNo"))
                             .email(request.getParameter("email"))
                             .nic(request.getParameter("nic"))
+                            .addedUserId((Integer) request.getAttribute("userId"))
                             .build());
             if (success) {
                 response.sendRedirect(request.getContextPath() + "/customers?success=Customer successfully saved");

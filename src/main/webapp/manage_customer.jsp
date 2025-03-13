@@ -9,12 +9,14 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
     <style>
 
         ::-webkit-scrollbar {
             display: none;
         }
+
         * {
             scrollbar-width: none;
         }
@@ -32,6 +34,7 @@
         body {
             background-color: var(--background-color);
             min-height: 100vh;
+            padding: 0 10.33vw;
         }
 
         .card {
@@ -137,12 +140,130 @@
         .table-hover tbody tr:hover {
             background-color: var(--hover-bg-color);
         }
+
+        /* Pagination styling */
+
+        .pagination-container {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .pagination-info {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .pagination .page-link {
+            color: var(--primary-color);
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .pagination .page-link:hover {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+
+        /* Items per page selector styling */
+        .items-per-page-container {
+            margin-bottom: 1rem;
+        }
+
+        .items-per-page-container label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .items-per-page-container .form-select {
+            border-color: #dee2e6;
+        }
+
+        .items-per-page-container .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .custom-help-icon {
+            font-size: 1.2rem;
+            color: #0d6efd;
+            padding: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .custom-help-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .custom-modal {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-modal .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 12px 12px 0 0;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #212529;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-modal .modal-title i {
+            font-size: 1.5rem;
+            color: #0d6efd;
+            margin-right: 0.5rem;
+        }
+
+        .custom-modal .modal-body {
+            padding: 1.5rem;
+        }
+
+        .custom-modal .modal-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            border-radius: 0 0 12px 12px;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .btn-close {
+            filter: invert(0.5);
+
+        }
+
+        .custom-modal .btn-close:hover {
+            filter: invert(0.7);
+        }
     </style>
 </head>
-<body class="py-4">
+<body class="">
 
 
-<!-- navbar.jsp -->
 <nav class="navbar navbar-expand-lg sticky-top">
     <style>
         .navbar {
@@ -211,19 +332,16 @@
     </style>
 
     <div class="container-fluid">
-        <!-- Logo and Brand -->
         <a class="navbar-brand" href="#" onclick="navigate('app')">
             <i class="bi bi-car-front-fill"></i>
             Megacity Cab Service
         </a>
 
-        <!-- Mobile Toggle Button -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
                 aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
             <i class="bi bi-list"></i>
         </button>
 
-        <!-- Navigation Items -->
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
@@ -268,9 +386,8 @@
                 </li>
             </ul>
 
-            <!-- Auth Buttons -->
             <div class="auth-buttons">
-                <% if (session.getAttribute("user") == null) { %>
+                <% if (session.getAttribute("userId") == null) { %>
                 <form action="${pageContext.request.contextPath}/login" method="get">
                     <button type="submit" class="btn btn-outline-primary">
                         <i class="bi bi-box-arrow-in-right"></i>
@@ -278,7 +395,7 @@
                     </button>
                 </form>
                 <% } else { %>
-                <form action="${pageContext.request.contextPath}/logout" method="get">
+                <form action="${pageContext.request.contextPath}/auth/logout" method="post">
                     <button type="submit" class="btn btn-outline-danger">
                         <i class="bi bi-box-arrow-right"></i>
                         Logout
@@ -290,8 +407,7 @@
     </div>
 
     <script>
-        // Set active nav item based on current path
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const currentPath = window.location.pathname;
             const navItems = {
                 'app': 'nav-dashboard',
@@ -301,12 +417,10 @@
                 'bookings': 'nav-bookings'
             };
 
-            // Remove all active classes first
             Object.values(navItems).forEach(id => {
                 document.getElementById(id)?.classList.remove('active');
             });
 
-            // Add active class to current nav item
             for (const [path, id] of Object.entries(navItems)) {
                 if (currentPath.includes(path)) {
                     document.getElementById(id)?.classList.add('active');
@@ -338,8 +452,10 @@
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h1 class="section-title">
-                    <i class="bi bi-people-fill"></i>Manage Customers
+                    <i class="bi bi-people-fill me-2"></i>Manage Customers
                 </h1>
+                <i class="bi bi-question-circle custom-help-icon" data-bs-toggle="modal"
+                   data-bs-target="#customerGuidelinesModal"></i>
             </div>
 
             <!-- Add/Edit Customer Form -->
@@ -349,19 +465,22 @@
                 <div class="row g-3">
                     <div class="col-md-6 col-lg-4">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required>
+                            <input type="text" class="form-control" id="firstName" name="firstName"
+                                   placeholder="First Name" required>
                             <label for="firstName">First Name</label>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required>
+                            <input type="text" class="form-control" id="lastName" name="lastName"
+                                   placeholder="Last Name" required>
                             <label for="lastName">Last Name</label>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="address" name="address" placeholder="Address" required>
+                            <input type="text" class="form-control" id="address" name="address" placeholder="Address"
+                                   required>
                             <label for="address">Address</label>
                         </div>
                     </div>
@@ -379,13 +498,15 @@
                     </div>
                     <div class="col-md-6 col-lg-4">
                         <div class="form-floating">
-                            <input type="tel" class="form-control" id="mobileNo" name="mobileNo" placeholder="Mobile No" required>
+                            <input type="tel" class="form-control" id="mobileNo" name="mobileNo" placeholder="Mobile No"
+                                   required>
                             <label for="mobileNo">Mobile No</label>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4">
                         <div class="form-floating">
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Email"
+                                   required>
                             <label for="email">Email</label>
                         </div>
                     </div>
@@ -405,13 +526,20 @@
         </div>
     </div>
 
-    <!-- Customer List Section -->
     <div class="card p-4">
         <div class="card-body">
             <h2 class="section-title">
                 <i class="bi bi-table me-2"></i>
                 Customer List
             </h2>
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-secondary me-2" onclick="printCustomerList()">
+                    <i class="bi bi-printer"></i> Print
+                </button>
+                <button class="btn btn-success" onclick="exportToCSV()">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Export as CSV
+                </button>
+            </div>
             <div class="table-container">
                 <c:if test="${empty customers}">
                     <div class="alert alert-info">
@@ -419,7 +547,7 @@
                     </div>
                 </c:if>
                 <c:if test="${not empty customers}">
-                    <table class="table table-hover customer-table mb-0">
+                    <table class="table table-hover customer-table mb-0" id="customerTable">
                         <thead>
                         <tr>
                             <th>ID</th>
@@ -464,7 +592,9 @@
                                               onsubmit="return confirmDelete();" style="display:inline;">
                                             <input type="hidden" name="action" value="DELETE">
                                             <input type="hidden" name="customerId" value="${vehicle.customerId}">
-                                            <button type="submit" class="btn btn-sm btn-danger" aria-label="Delete Customer">Delete</button>
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                    aria-label="Delete Customer">Delete
+                                            </button>
                                         </form>
                                     </div>
                                 </td>
@@ -478,15 +608,65 @@
     </div>
 </div>
 
-<!-- Bootstrap JS -->
+<div class="modal fade custom-modal" id="customerGuidelinesModal" tabindex="-1" aria-labelledby="customerGuidelinesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerGuidelinesModalLabel">
+                    <i class="bi bi-people me-2"></i>Customer Management Guidelines
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <h4>Customer Management</h4>
+                <p>This section allows you to manage customer information for the Megacity Cab Service.</p>
+
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Ensure all customer details are accurate and up-to-date.
+                </div>
+
+                <h5>1. Register a New Customer</h5>
+                <ol>
+                    <li>Click <strong>"Add Customer"</strong> in Quick Actions or navigate to <strong>Customers</strong> in the navigation bar.</li>
+                    <li>Fill in all required fields:
+                        <ul>
+                            <li><strong>First Name</strong></li>
+                            <li><strong>Last Name</strong></li>
+                            <li><strong>Address</strong></li>
+                            <li><strong>NIC</strong></li>
+                            <li><strong>Date of Birth</strong></li>
+                            <li><strong>Mobile No</strong></li>
+                            <li><strong>Email</strong></li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>"Save"</strong> to register the customer.</li>
+                    <li>A success message will appear at the top of the form when successful.</li>
+                </ol>
+
+                <h5>2. Update Customer Information</h5>
+                <ol>
+                    <li>Locate the customer in the table below the form.</li>
+                    <li>Click the <strong>"Update"</strong> button in the Actions column.</li>
+                    <li>The form will be populated with the customer's data.</li>
+                    <li>Make necessary changes and click <strong>"Update"</strong>.</li>
+                    <li>The table will refresh automatically with updated information.</li>
+                </ol>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Function to confirm deletion
     function confirmDelete() {
         return confirm('Are you sure you want to delete this customer?');
     }
 
-    // Edit Button Functionality
     document.addEventListener('click', function (event) {
         if (event.target.classList.contains('edit-button')) {
             const button = event.target;
@@ -508,7 +688,6 @@
         }
     });
 
-    // Reset Button Functionality
     document.getElementById('resetButton').addEventListener('click', function () {
         // Clear the form
         document.getElementById('customerForm').reset();
@@ -520,6 +699,167 @@
         // Change the button text back to "Add Customer"
         document.getElementById('submitButtonText').textContent = 'Add Customer';
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Pagination configuration
+        const itemsPerPage = 10;
+        let currentPage = 1;
+
+        const tableBody = document.querySelector('.customer-table tbody');
+        if (!tableBody) return; // Exit if table doesn't exist
+
+        const tableRows = Array.from(tableBody.querySelectorAll('tr'));
+        const totalPages = Math.ceil(tableRows.length / itemsPerPage);
+
+        // Function to display rows for current page
+        function displayTableRows() {
+            // Hide all rows first
+            tableRows.forEach(row => {
+                row.style.display = 'none';
+            });
+
+            // Calculate which rows to show
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, tableRows.length);
+
+            // Show only rows for current page
+            for (let i = startIndex; i < endIndex; i++) {
+                tableRows[i].style.display = '';
+            }
+
+            // Update pagination info text
+            document.getElementById('pagination-info').textContent =
+                `Showing ${startIndex + 1} to ${endIndex} of ${tableRows.length} customers`;
+
+            document.querySelectorAll('.page-item').forEach((item, index) => {
+                if (index === 0) {
+                    item.classList.toggle('disabled', currentPage === 1);
+                } else if (index === document.querySelectorAll('.page-item').length - 1) { // Next button
+                    item.classList.toggle('disabled', currentPage === totalPages);
+                } else { // Page number buttons
+                    const pageNum = parseInt(item.querySelector('.page-link').textContent);
+                    item.classList.toggle('active', pageNum === currentPage);
+                }
+            });
+        }
+
+        function createPagination() {
+            const paginationContainer = document.createElement('div');
+            paginationContainer.className = 'pagination-container d-flex justify-content-between align-items-center mt-3';
+
+            const paginationInfo = document.createElement('div');
+            paginationInfo.id = 'pagination-info';
+            paginationInfo.className = 'pagination-info';
+
+            const paginationNav = document.createElement('nav');
+            paginationNav.setAttribute('aria-label', 'Customer table navigation');
+
+            const paginationList = document.createElement('ul');
+            paginationList.className = 'pagination pagination-sm mb-0';
+
+            const prevItem = document.createElement('li');
+            prevItem.className = 'page-item disabled';
+            const prevLink = document.createElement('a');
+            prevLink.className = 'page-link';
+            prevLink.href = '#';
+            prevLink.setAttribute('aria-label', 'Previous');
+            prevLink.innerHTML = '<span aria-hidden="true">&laquo;</span>';
+            prevItem.appendChild(prevLink);
+            paginationList.appendChild(prevItem);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = 'page-item' + (i === 1 ? ' active' : '');
+                const pageLink = document.createElement('a');
+                pageLink.className = 'page-link';
+                pageLink.href = '#';
+                pageLink.textContent = i;
+                pageItem.appendChild(pageLink);
+                paginationList.appendChild(pageItem);
+            }
+
+            const nextItem = document.createElement('li');
+            nextItem.className = 'page-item' + (totalPages === 1 ? ' disabled' : '');
+            const nextLink = document.createElement('a');
+            nextLink.className = 'page-link';
+            nextLink.href = '#';
+            nextLink.setAttribute('aria-label', 'Next');
+            nextLink.innerHTML = '<span aria-hidden="true">&raquo;</span>';
+            nextItem.appendChild(nextLink);
+            paginationList.appendChild(nextItem);
+
+            paginationNav.appendChild(paginationList);
+            paginationContainer.appendChild(paginationInfo);
+            paginationContainer.appendChild(paginationNav);
+
+            const tableContainer = document.querySelector('.table-container');
+            tableContainer.appendChild(paginationContainer);
+
+            prevLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayTableRows();
+                }
+            });
+
+            nextLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayTableRows();
+                }
+            });
+            document.querySelectorAll('.page-item:not(:first-child):not(:last-child) .page-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    currentPage = parseInt(this.textContent);
+                    displayTableRows();
+                });
+            });
+        }
+
+        if (tableRows.length > 0) {
+            createPagination();
+            displayTableRows();
+        }
+        document.getElementById('customerForm').addEventListener('submit', function () {
+            currentPage = 1;
+        });
+    });
+
+    function printCustomerList() {
+        const printContents = document.getElementById('customerTable').outerHTML;
+        const originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        window.location.reload(); // Reload to restore the page
+    }
+
+    // Function to export the customer list as CSV
+    function exportToCSV() {
+        const table = document.getElementById('customerTable');
+        const rows = table.querySelectorAll('tr');
+        let csvContent = '';
+
+        rows.forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('th, td').forEach(cell => {
+                if (!cell.querySelector('button')) { // Exclude action buttons
+                    rowData.push(cell.innerText);
+                }
+            });
+            csvContent += rowData.join(',') + '\n';
+        });
+
+        const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'customers.csv';
+        link.click();
+    }
 </script>
 </body>
 </html>

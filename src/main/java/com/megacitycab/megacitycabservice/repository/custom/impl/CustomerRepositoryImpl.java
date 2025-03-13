@@ -4,10 +4,7 @@ import com.megacitycab.megacitycabservice.entity.custom.Customer;
 import com.megacitycab.megacitycabservice.repository.custom.CustomerRepository;
 import com.megacitycab.megacitycabservice.util.SqlExecutor;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -17,27 +14,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
     @Override
     public Boolean save(Customer entity, Connection connection) throws SQLException {
-        String sql = "INSERT INTO customer (firstName, lastName, email, nic, address, mobileNo, dateOfBirth) VALUES (?, ?, ?, ?, ?, ?, ?)";
-//        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-//            statement.setString(1, entity.getFirstName());
-//            statement.setString(2, entity.getLastName());
-//            statement.setString(3, entity.getEmail());
-//            statement.setString(4, entity.getNic());
-//            statement.setString(5, entity.getAddress());
-//            statement.setString(6, entity.getMobileNo());
-//            statement.setString(7, entity.getDateOfBirth().toString());
-//            int affectedRows = statement.executeUpdate();
-//
-//            if (affectedRows > 0) {
-//                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-//                    if (generatedKeys.next()) {
-//                        entity.setCustomerId(generatedKeys.getInt(1));
-//                    }
-//                }
-//                return entity;
-//            }
-//            return null;
-//        }
+        String sql = "INSERT INTO customer (firstName, lastName, email, nic, address, mobileNo, dateOfBirth, addedUserId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         return SqlExecutor.execute(
                 connection,
@@ -48,7 +25,8 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 entity.getNic(),
                 entity.getAddress(),
                 entity.getMobileNo(),
-                entity.getDateOfBirth().toString()
+                entity.getDateOfBirth().toString(),
+                entity.getAddedUserId()
         );
     }
 
@@ -106,19 +84,16 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     @Override
     public boolean delete(Integer id, Connection connection) throws SQLException {
         String sql = "UPDATE customer SET isDeleted = true WHERE customerId = ?";
-//        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-//            statement.setInt(1, id);
-//            int affectedRows = statement.executeUpdate();
-//            return affectedRows > 0;
-//        }
         return SqlExecutor.execute(connection, sql, id);
     }
 
     @Override
     public Integer getCount(Connection connection) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM customer WHERE isDeleted = false";
-        ResultSet resultSet = SqlExecutor.execute(connection, sql);
-        return resultSet.next() ? resultSet.getInt(1) : 0;
+        String sql = "{CALL sp_get_customer_count(?)}";
+        CallableStatement callableStatement = connection.prepareCall(sql);
+        callableStatement.registerOutParameter(1, Types.INTEGER);
+        callableStatement.execute();
+        return (Integer) callableStatement.getObject(1);
     }
 
 
@@ -144,17 +119,16 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     public Boolean existsById(Integer id, Connection connection) throws SQLException {
         String sql = "SELECT COUNT(*) FROM customer where customerId = ? AND isDeleted = false";
         ResultSet resultSet = SqlExecutor.execute(connection, sql, id);
-        // 0
-        resultSet.next() ;
-        return resultSet.getInt(1) != 0; // Returns true if customers exists
+        resultSet.next();
+        return resultSet.getInt(1) != 0;
     }
 
     @Override
     public Boolean existsByEmail(String email, Connection connection) throws SQLException {
         String sql = "SELECT COUNT(*) FROM customer where email = ?";
         ResultSet resultSet = SqlExecutor.execute(connection, sql, email);
-        resultSet.next() ;
-        return resultSet.getInt(1) != 0; // Returns true if customers exists
+        resultSet.next();
+        return resultSet.getInt(1) != 0;
     }
 
     @Override
@@ -162,6 +136,14 @@ public class CustomerRepositoryImpl implements CustomerRepository {
         String sql = "SELECT COUNT(*) FROM customer WHERE email = ? AND customerId <> ?";
         ResultSet resultSet = SqlExecutor.execute(connection, sql, email, customerId);
         resultSet.next();
-        return resultSet.getInt(1) != 0; // Returns true if another customer has email
+        return resultSet.getInt(1) != 0;
+    }
+
+    @Override
+    public Boolean existsByMobileNumber(String mobileNo, Connection connection) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM customer where mobileNo = ?";
+        ResultSet resultSet = SqlExecutor.execute(connection, sql, mobileNo);
+        resultSet.next();
+        return resultSet.getInt(1) != 0;
     }
 }

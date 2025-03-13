@@ -6,18 +6,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Bookings</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
           rel="stylesheet">
     <style>
         ::-webkit-scrollbar {
             display: none;
         }
+
         * {
             scrollbar-width: none;
         }
+
         :root {
             --primary-color: #0d6efd;
             --secondary-color: #6c757d;
@@ -31,6 +31,7 @@
         body {
             background-color: var(--background-color);
             min-height: 100vh;
+            padding: 0 10.33vw;
         }
 
         .card {
@@ -180,13 +181,6 @@
             gap: 0.5rem;
         }
 
-        /* Activity Card Styles */
-        .activity-card {
-            background: white;
-            border-radius: 1rem;
-            padding: 1rem;
-        }
-
         .activity-item {
             display: flex;
             align-items: center;
@@ -200,7 +194,7 @@
         }
 
         .activity-item:hover {
-            background-color: var(--hover-bg-color);
+            background-color: rgba(13, 110, 253, 0.05);
         }
 
         .activity-icon {
@@ -212,30 +206,48 @@
             justify-content: center;
             margin-right: 1rem;
             font-size: 1.2rem;
-        }
-
-        .activity-icon.bg-primary {
             background-color: rgba(13, 110, 253, 0.1);
-            color: var(--primary-color);
+            color: #0d6efd;
         }
 
-        .activity-details h6 {
-            margin: 0;
-            color: #212529;
-            font-size: 1rem;
-            font-weight: 600;
+        .activity-details {
+            flex: 1;
         }
 
-        .activity-details p {
-            margin: 0;
-            color: var(--secondary-color);
+        .activity-details .d-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-dropdown {
+            width: 120px; /* Fixed width for consistency */
+            padding: 0.25rem 0.5rem;
             font-size: 0.875rem;
+            border: 1px solid #ddd;
+            border-radius: 0.375rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .activity-details p strong {
-            color: #212529;
+        .status-dropdown:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
         }
 
+        /* Update button styling */
+        .update-status-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .update-status-btn:hover {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        /* Badge styling */
         .badge {
             padding: 0.25rem 0.5rem;
             border-radius: 0.5rem;
@@ -244,20 +256,149 @@
         }
 
         .badge.bg-warning {
-            background-color: var(--warning-color);
+            background-color: #ffc107;
             color: #000;
         }
 
         .badge.bg-success {
-            background-color: var(--success-color);
+            background-color: #198754;
             color: #fff;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .activity-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: rgba(13, 110, 253, 0.03);
+        }
+
+        .activity-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5rem;
+            font-size: 1.5rem;
+            background-color: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+            flex-shrink: 0;
+        }
+
+        .activity-details {
+            flex: 1;
+            min-width: 0; /* Prevents overflow */
+        }
+
+        .activity-details h6 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .activity-details .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .activity-details .info-grid strong {
+            color: #212529;
+            font-weight: 500;
+        }
+
+        .activity-details .badge {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 1rem;
+            text-transform: capitalize;
+        }
+
+        .badge.bg-pending {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .badge.bg-confirmed {
+            background-color: #198754;
+            color: #fff;
+        }
+
+        .badge.bg-canceled {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-left: 1rem;
+        }
+
+        .status-dropdown {
+            width: 130px;
+            padding: 0.4rem 0.5rem;
+            font-size: 0.9rem;
+            border-radius: 0.5rem;
+        }
+
+        .update-status-btn {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.9rem;
+            border-radius: 0.5rem;
+        }
+
+        .view-vehicles-btn {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.9rem;
+            border-radius: 0.5rem;
+        }
+
+        .modal-content {
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            background-color: #0d6efd;
+            color: white;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+
+        .modal-body .list-group-item {
+            border: none;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.95rem;
+        }
+
+        .modal-body .list-group-item:last-child {
+            border-bottom: none;
         }
     </style>
 </head>
-<body class="py-4">
-
-
-<!-- navbar.jsp -->
+<body class="">
 <nav class="navbar navbar-expand-lg sticky-top">
     <style>
         .navbar {
@@ -323,6 +464,63 @@
                 margin-top: 0.5rem;
             }
         }
+        .custom-help-icon {
+            font-size: 1.2rem;
+            color: #0d6efd;
+            padding: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .custom-help-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .custom-modal {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-modal .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 12px 12px 0 0;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #212529;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-modal .modal-title i {
+            font-size: 1.5rem;
+            color: #0d6efd;
+            margin-right: 0.5rem;
+        }
+
+        .custom-modal .modal-body {
+            padding: 1.5rem;
+        }
+
+        .custom-modal .modal-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            border-radius: 0 0 12px 12px;
+            padding: 1rem 1.5rem;
+        }
+
+        .custom-modal .btn-close {
+            filter: invert(0.5);
+        }
+
+        .custom-modal .btn-close:hover {
+            filter: invert(0.7);
+        }
     </style>
 
     <div class="container-fluid">
@@ -385,7 +583,7 @@
 
             <!-- Auth Buttons -->
             <div class="auth-buttons">
-                <% if (session.getAttribute("user") == null) { %>
+                <% if (session.getAttribute("userId") == null) { %>
                 <form action="${pageContext.request.contextPath}/login" method="get">
                     <button type="submit" class="btn btn-outline-primary">
                         <i class="bi bi-box-arrow-in-right"></i>
@@ -393,7 +591,7 @@
                     </button>
                 </form>
                 <% } else { %>
-                <form action="${pageContext.request.contextPath}/logout" method="get">
+                <form action="${pageContext.request.contextPath}/auth/logout" method="post">
                     <button type="submit" class="btn btn-outline-danger">
                         <i class="bi bi-box-arrow-right"></i>
                         Logout
@@ -431,8 +629,6 @@
         });
     </script>
 </nav>
-
-
 <div class="container my-4">
     <!-- Success and Error Messages -->
     <c:if test="${param.success != null}">
@@ -452,18 +648,23 @@
     <div class="card p-4 mb-4">
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between mb-4">
+                <!-- Section Title -->
                 <h1 class="section-title">
-                    <i class="bi bi-calendar-check"></i>Manage Bookings
+                    <i class="bi bi-calendar-check"></i> Manage Bookings
                 </h1>
-                <div class="d-flex gap-2 mb-3">
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2">
                     <button id="show-view-button" class="btn btn-outline-primary">
-                        <i class="bi bi-list-ul me-1"></i>
-                        Show All Bookings
+                        <i class="bi bi-list-ul me-1"></i> All Bookings
                     </button>
                     <button id="show-form-button" class="btn btn-outline-success">
-                        <i class="bi bi-plus-circle me-1"></i>
-                        Show Booking Form
+                        <i class="bi bi-plus-circle me-1"></i> Add New Booking
                     </button>
+
+                    <!-- Help Button (Moved to right corner) -->
+                    <i class="bi bi-question-circle custom-help-icon" data-bs-toggle="modal"
+                       data-bs-target="#bookingGuidelinesModal"></i>
                 </div>
             </div>
 
@@ -702,20 +903,53 @@
                                 </div>
                                 <div class="activity-details">
                                     <h6>Booking #${booking.bookingId}</h6>
-                                    <p>
-                                        <strong>Customer:</strong> ${booking.customerName} |
-                                        <strong>Date:</strong> ${booking.pickupTime} |
-                                        <strong>Status:</strong>
-                                        <span class="badge bg-${booking.status == 'pending' ? 'warning' : 'success'}">
-                                                ${booking.status}
-                                        </span>
-                                    </p>
-                                    <!-- Button to trigger the modal -->
-                                    <button class="btn btn-sm btn-outline-primary mt-2" data-bs-toggle="modal"
-                                            data-bs-target="#vehicleModal${booking.bookingId}">
-                                        <i class="bi bi-car-front me-1"></i>
-                                        View Vehicles
-                                    </button>
+                                    <div class="info-grid">
+                                        <div>
+                                            <strong>Customer:</strong> ${booking.customerName}
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong class="text-secondary">📅 Booked Date:</strong>
+                                            <span class="fw-bold">${booking.createdAt}</span>
+                                        </div>
+                                        <div>
+                                            <strong class="text-secondary">🚗 Pickup Date:</strong>
+                                            <span class="fw-bold text-success">${booking.pickupTime}</span>
+                                        </div>
+
+                                        <div>
+                                            <strong>Status:</strong>
+                                            <span class="badge bg-${booking.status == 'pending' ? 'pending' : booking.status == 'confirmed' ? 'confirmed' : 'canceled'}">
+                                                    ${booking.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <button class="btn btn-sm btn-outline-primary view-vehicles-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#vehicleModal${booking.bookingId}">
+                                            <i class="bi bi-car-front me-1"></i> View Vehicles
+                                        </button>
+                                        <form action="${pageContext.request.contextPath}/bookings" method="post"
+                                              class="action-buttons">
+                                            <input type="hidden" name="bookingId" value="${booking.bookingId}">
+                                            <input type="hidden" name="action" value="UPDATE">
+                                            <select class="form-select status-dropdown" name="status">
+                                                <option value="pending" ${booking.status == 'pending' ? 'selected' : ''}>
+                                                    Pending
+                                                </option>
+                                                <option value="confirmed" ${booking.status == 'confirmed' ? 'selected' : ''}>
+                                                    Confirmed
+                                                </option>
+                                                <option value="canceled" ${booking.status == 'canceled' ? 'selected' : ''}>
+                                                    Canceled
+                                                </option>
+                                            </select>
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-success update-status-btn">
+                                                <i class="bi bi-check-circle me-1"></i> Update
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
 
@@ -732,22 +966,21 @@
                                                     aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <!-- Vehicle Details for the Booking -->
                                             <c:if test="${not empty booking.vehicleList}">
                                                 <ul class="list-group">
-                                                    <c:forEach var="vehicle"
-                                                               items="${booking.vehicleList}">
+                                                    <c:forEach var="vehicle" items="${booking.vehicleList}">
                                                         <li class="list-group-item">
                                                             <strong>Vehicle ID:</strong> ${vehicle.vehicleId} <br>
-                                                            <strong>Type:</strong> ${vehicle.brand} <br>
+                                                            <strong>Brand:</strong> ${vehicle.brand} <br>
                                                             <strong>Model:</strong> ${vehicle.model} <br>
-                                                            <strong>License Plate:</strong> ${vehicle.licensePlate}
+                                                            <strong>License Plate:</strong> ${vehicle.licensePlate} <br>
+                                                            <strong>Color:</strong> ${vehicle.color}
                                                         </li>
                                                     </c:forEach>
                                                 </ul>
                                             </c:if>
                                             <c:if test="${empty booking.vehicleList}">
-                                                <p>No vehicles assigned to this booking.</p>
+                                                <p class="text-muted">No vehicles assigned to this booking.</p>
                                             </c:if>
                                         </div>
                                         <div class="modal-footer">
@@ -762,6 +995,70 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Booking Management Modal -->
+<!-- Booking Management Modal -->
+<div class="modal fade custom-modal" id="bookingGuidelinesModal" tabindex="-1" aria-labelledby="bookingGuidelinesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookingGuidelinesModalLabel">
+                    <i class="bi bi-calendar-check me-2"></i>Booking Management Guidelines
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <h4>Booking Management</h4>
+                <p>This section allows you to manage bookings for the Megacity Cab Service.</p>
+
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Ensure all booking details are accurate and up-to-date.
+                </div>
+
+                <h5>1. Create a New Booking</h5>
+                <ol>
+                    <li>Click <strong>"New Booking"</strong> in Quick Actions or navigate to <strong>Bookings</strong> in the navigation bar.</li>
+                    <li>Select a customer from the dropdown.</li>
+                    <li>Enter booking details:
+                        <ul>
+                            <li><strong>Pickup Location</strong></li>
+                            <li><strong>Destination</strong></li>
+                            <li><strong>Pickup Time</strong></li>
+                        </ul>
+                    </li>
+                    <li>The system will calculate distance and fare automatically.</li>
+                    <li>Select vehicle(s) from the available fleet.</li>
+                    <li>Click <strong>"Add to Cart"</strong> to include the vehicle in the booking.</li>
+                    <li>Once all vehicles are added, view the total price.</li>
+                    <li>Click <strong>"Confirm Booking"</strong> to finalize.</li>
+                </ol>
+
+                <h5>2. Manage Bookings</h5>
+                <ol>
+                    <li>Navigate to the <strong>Bookings</strong> section.</li>
+                    <li>View all bookings in the list.</li>
+                    <li>Update booking status (Pending, Confirmed, Canceled) as needed.</li>
+                    <li>View vehicles assigned to each booking.</li>
+                </ol>
+
+                <h5>3. Important Notes</h5>
+                <ul>
+                    <li>A vehicle can only be in one active booking at a time.</li>
+                    <li>A booking can include multiple vehicles.</li>
+                    <li>Total fare is calculated based on distance and vehicle rates.</li>
+                </ul>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -804,307 +1101,8 @@
         }
     }
 
-    // Initialize the buttons when the DOM is fully loaded
     document.addEventListener("DOMContentLoaded", initializeButtons);
 </script>
-
-<%--<script>--%>
-<%--    document.addEventListener("DOMContentLoaded", function () {--%>
-<%--        // Store customer details in an object--%>
-<%--        const customersData = {--%>
-<%--            <c:forEach var="customer" items="${customers}">--%>
-<%--            "${customer.customerId}": {--%>
-<%--                mobile: "${customer.mobileNo}",--%>
-<%--                email: "${customer.email}"--%>
-<%--            }--%>
-<%--            <c:if test="${not customer.equals(customers[customers.size()-1])}">, </c:if>--%>
-<%--            </c:forEach>--%>
-<%--        };--%>
-
-<%--        // Function to update customer details--%>
-<%--        function updateCustomerDetails() {--%>
-<%--            const customerId = document.getElementById("customerId").value;--%>
-<%--            const mobileField = document.getElementById("mobileNo");--%>
-<%--            const emailField = document.getElementById("customerEmail");--%>
-
-<%--            if (customerId && customersData[customerId]) {--%>
-<%--                mobileField.value = customersData[customerId].mobile;--%>
-<%--                emailField.value = customersData[customerId].email;--%>
-<%--            } else {--%>
-<%--                mobileField.value = "";--%>
-<%--                emailField.value = "";--%>
-<%--            }--%>
-<%--        }--%>
-
-<%--        // Bind change event listener to customer select element--%>
-<%--        document.getElementById("customerId").addEventListener("change", updateCustomerDetails);--%>
-<%--    });--%>
-<%--</script>--%>
-
-<%--<script>--%>
-<%--    document.addEventListener("DOMContentLoaded", () => {--%>
-<%--        // Vehicle data from server-side--%>
-<%--        const vehiclesData = {--%>
-<%--            <c:forEach var="vehicle" items="${vehicles}">--%>
-<%--            "${vehicle.vehicleId}": {--%>
-<%--                licensePlate: "${vehicle.licensePlate}",--%>
-<%--                model: "${vehicle.model}",--%>
-<%--                brand: "${vehicle.brand}",--%>
-<%--                color: "${vehicle.color}",--%>
-<%--                pricePerKm: ${vehicle.pricePerKm},--%>
-<%--                availability: ${vehicle.availability},--%>
-<%--                driverId: "${vehicle.driverId}",--%>
-<%--                driverName: "${vehicle.driverName}"--%>
-<%--            }<c:if test="${not vehicle.equals(vehicles[vehicles.size()-1])}">, </c:if>--%>
-<%--            </c:forEach>--%>
-<%--        };--%>
-
-<%--        // State--%>
-<%--        const cart = [];--%>
-
-<%--        // DOM Elements--%>
-<%--        const elements = {--%>
-<%--            vehicleId: document.getElementById("vehicleId"),--%>
-<%--            vehicleModel: document.getElementById("vehicleModel"),--%>
-<%--            vehicleBrand: document.getElementById("vehicleBrand"),--%>
-<%--            vehicleColor: document.getElementById("vehicleColor"),--%>
-<%--            pricePerKm: document.getElementById("pricePerKm"),--%>
-<%--            vehicleAvailability: document.getElementById("vehicleAvailability"),--%>
-<%--            driverName: document.getElementById("driverName"),--%>
-<%--            addToCartButton: document.getElementById("addToCartButton"),--%>
-<%--            distance: document.getElementById("distance"),--%>
-<%--            totalPrice: document.getElementById("totalPrice"),--%>
-<%--            cartTableBody: document.getElementById("cartTableBody")--%>
-<%--        };--%>
-
-<%--        // Update vehicle details in form--%>
-<%--        function updateVehicleDetails() {--%>
-<%--            const vehicleId = elements.vehicleId.value;--%>
-<%--            const vehicle = vehiclesData[vehicleId];--%>
-
-<%--            if (vehicleId && vehicle) {--%>
-<%--                elements.vehicleModel.value = vehicle.model;--%>
-<%--                elements.vehicleBrand.value = vehicle.brand;--%>
-<%--                elements.vehicleColor.value = vehicle.color;--%>
-<%--                elements.pricePerKm.value = vehicle.pricePerKm.toFixed(2);--%>
-<%--                elements.vehicleAvailability.value = vehicle.availability ? "Available" : "Not Available";--%>
-<%--                elements.driverName.value = (!vehicle.driverId || vehicle.driverId === "0" || !vehicle.driverName)--%>
-<%--                    ? "No Driver"--%>
-<%--                    : vehicle.driverName;--%>
-<%--                elements.addToCartButton.disabled = !vehicle.availability;--%>
-<%--            } else {--%>
-<%--                clearVehicleDetails();--%>
-<%--            }--%>
-<%--        }--%>
-
-<%--        // Clear vehicle details--%>
-<%--        function clearVehicleDetails() {--%>
-<%--            elements.vehicleModel.value = "";--%>
-<%--            elements.vehicleBrand.value = "";--%>
-<%--            elements.vehicleColor.value = "";--%>
-<%--            elements.pricePerKm.value = "";--%>
-<%--            elements.vehicleAvailability.value = "";--%>
-<%--            elements.driverName.value = "";--%>
-<%--            elements.addToCartButton.disabled = true;--%>
-<%--        }--%>
-
-<%--        // Add vehicle to cart--%>
-<%--        function addToCart() {--%>
-<%--            try {--%>
-<%--                const vehicleId = elements.vehicleId.value;--%>
-<%--                const vehicle = vehiclesData[vehicleId];--%>
-<%--                const distance = parseFloat(elements.distance.value) || 0;--%>
-
-<%--                // Validation--%>
-<%--                if (!distance || distance <= 0) {--%>
-<%--                    alert("Please enter a valid distance greater than 0");--%>
-<%--                    return;--%>
-<%--                }--%>
-<%--                if (!vehicle) {--%>
-<%--                    alert("Please select a valid vehicle.");--%>
-<%--                    return;--%>
-<%--                }--%>
-<%--                if (!vehicle.availability) {--%>
-<%--                    alert("This vehicle is not available.");--%>
-<%--                    return;--%>
-<%--                }--%>
-<%--                if (cart.some(item => item.vehicleId === vehicleId)) {--%>
-<%--                    alert("This vehicle is already in the cart.");--%>
-<%--                    return;--%>
-<%--                }--%>
-
-<%--                // Add to cart--%>
-<%--                cart.push({--%>
-<%--                    vehicleId,--%>
-<%--                    licensePlate: vehicle.licensePlate,--%>
-<%--                    model: vehicle.model,--%>
-<%--                    brand: vehicle.brand,--%>
-<%--                    pricePerKm: vehicle.pricePerKm,--%>
-<%--                    driverName: vehicle.driverName || "No Driver",--%>
-<%--                    driverId: vehicle.driverId,--%>
-<%--                    distance--%>
-<%--                });--%>
-
-<%--                updateCartTable();--%>
-<%--                updateTotalPrice();--%>
-<%--            } catch (error) {--%>
-<%--                console.error("Error adding to cart:", error);--%>
-<%--                alert("An error occurred while adding to cart.");--%>
-<%--            }--%>
-<%--        }--%>
-
-<%--        // Update total price--%>
-<%--        function updateTotalPrice() {--%>
-<%--            const total = cart.reduce((sum, item) => sum + (item.pricePerKm * item.distance), 0);--%>
-<%--            elements.totalPrice.value = total.toFixed(2);--%>
-<%--        }--%>
-
-<%--        // Update cart table--%>
-<%--        function updateCartTable() {--%>
-<%--            elements.cartTableBody.innerHTML = "";--%>
-
-<%--            cart.forEach((item, index) => {--%>
-<%--                const row = document.createElement("tr");--%>
-
-<%--                // License Plate--%>
-<%--                row.appendChild(createTableCell(item.licensePlate));--%>
-
-<%--                // Model--%>
-<%--                row.appendChild(createTableCell(item.model));--%>
-
-<%--                // Price per km--%>
-<%--                row.appendChild(createTableCell(item.pricePerKm.toFixed(2)));--%>
-
-<%--                // Driver Name--%>
-<%--                row.appendChild(createTableCell(item.driverName));--%>
-
-<%--                // Remove button--%>
-<%--                const actionsCell = document.createElement("td");--%>
-<%--                const removeButton = document.createElement("button");--%>
-<%--                removeButton.textContent = "Remove";--%>
-<%--                removeButton.className = "btn btn-danger btn-sm";--%>
-<%--                removeButton.addEventListener("click", () => {--%>
-<%--                    cart.splice(index, 1);--%>
-<%--                    updateCartTable();--%>
-<%--                    updateTotalPrice();--%>
-<%--                });--%>
-<%--                actionsCell.appendChild(removeButton);--%>
-<%--                row.appendChild(actionsCell);--%>
-
-<%--                elements.cartTableBody.appendChild(row);--%>
-<%--            });--%>
-<%--        }--%>
-
-<%--        // Helper function to create table cell--%>
-<%--        function createTableCell(text) {--%>
-<%--            const cell = document.createElement("td");--%>
-<%--            cell.textContent = text;--%>
-<%--            return cell;--%>
-<%--        }--%>
-
-<%--        // Event Listeners--%>
-<%--        elements.vehicleId.addEventListener("change", updateVehicleDetails);--%>
-<%--        elements.addToCartButton.addEventListener("click", addToCart);--%>
-
-<%--        // Initial setup--%>
-<%--        updateVehicleDetails();--%>
-<%--        console.table(vehiclesData);--%>
-<%--    });--%>
-<%--</script>--%>
-
-<%--<script>--%>
-<%--    document.addEventListener("DOMContentLoaded", () => {--%>
-<%--        // Assuming this is part of your existing code structure--%>
-<%--        const cart = []; // Your cart array from previous code--%>
-
-<%--        // DOM Elements--%>
-<%--        const elements = {--%>
-<%--            form: document.getElementById("bookingForm"), // Added form reference--%>
-<%--            resetButton: document.getElementById("resetButton"),--%>
-<%--            submitButton: document.getElementById("submitButton"),--%>
-<%--            submitButtonText: document.getElementById("submitButtonText"),--%>
-<%--            cartTableBody: document.getElementById("cartTableBody") // Assuming this exists--%>
-<%--        };--%>
-
-<%--        // Hidden input to store cart data--%>
-<%--        let cartInput = document.getElementById("cartData");--%>
-<%--        if (!cartInput) {--%>
-<%--            cartInput = document.createElement("input");--%>
-<%--            cartInput.type = "hidden";--%>
-<%--            cartInput.id = "cartData";--%>
-<%--            cartInput.name = "cartData";--%>
-<%--            elements.form.appendChild(cartInput);--%>
-<%--        }--%>
-
-<%--        // Function to validate cart before submission--%>
-<%--        function validateCart() {--%>
-<%--            if (cart.length === 0) {--%>
-<%--                alert("Cannot submit booking: Cart is empty. Please add at least one vehicle.");--%>
-<%--                return false;--%>
-<%--            }--%>
-
-<%--            for (const item of cart) {--%>
-<%--                if (!item.vehicleId || !item.licensePlate || !item.pricePerKm || !item.distance) {--%>
-<%--                    alert("Invalid cart item: Missing required information.");--%>
-<%--                    return false;--%>
-<%--                }--%>
-
-<%--                if (item.distance <= 0 || isNaN(item.distance)) {--%>
-<%--                    alert("Invalid distance: Distance must be greater than 0 for all items.");--%>
-<%--                    return false;--%>
-<%--                }--%>
-
-<%--                if (item.pricePerKm <= 0 || isNaN(item.pricePerKm)) {--%>
-<%--                    alert("Invalid price: Price per KM must be greater than 0 for all items.");--%>
-<%--                    return false;--%>
-<%--                }--%>
-<%--            }--%>
-
-<%--            return true;--%>
-<%--        }--%>
-
-<%--        // Handle form submission--%>
-<%--        function handleSubmit(event) {--%>
-<%--            // Don't prevent default - let form submit naturally--%>
-<%--            elements.submitButton.disabled = true;--%>
-<%--            elements.submitButtonText.textContent = "Processing...";--%>
-
-<%--            if (!validateCart()) {--%>
-<%--                event.preventDefault(); // Only prevent if validation fails--%>
-<%--                resetButtonState();--%>
-<%--                return;--%>
-<%--            }--%>
-
-<%--            // Update hidden input with cart data--%>
-<%--            cartInput.value = JSON.stringify(cart);--%>
-<%--        }--%>
-
-<%--        // Reset button state--%>
-<%--        function resetButtonState() {--%>
-<%--            elements.submitButton.disabled = false;--%>
-<%--            elements.submitButtonText.textContent = "Confirm Booking";--%>
-<%--        }--%>
-
-<%--        // Reset form--%>
-<%--        function resetForm() {--%>
-<%--            cart.length = 0;--%>
-<%--            if (elements.cartTableBody) {--%>
-<%--                elements.cartTableBody.innerHTML = "";--%>
-<%--            }--%>
-<%--            elements.form.reset();--%>
-<%--            cartInput.value = "";--%>
-<%--            resetButtonState();--%>
-<%--        }--%>
-
-<%--        // Event Listeners--%>
-<%--        elements.form.addEventListener("submit", handleSubmit); // Changed to form submit--%>
-<%--        elements.resetButton.addEventListener("click", () => {--%>
-<%--            if (confirm("Are you sure you want to reset the form? This will clear your cart.")) {--%>
-<%--                resetForm();--%>
-<%--            }--%>
-<%--        });--%>
-<%--    });--%>
-<%--</script>--%>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -1133,17 +1131,13 @@
             </c:forEach>
         };
 
-        // State
         const cart = [];
 
-        // DOM Elements
         const elements = {
-            // Customer elements
             customerId: document.getElementById("customerId"),
             mobileNo: document.getElementById("mobileNo"),
             customerEmail: document.getElementById("customerEmail"),
 
-            // Vehicle elements
             vehicleId: document.getElementById("vehicleId"),
             vehicleModel: document.getElementById("vehicleModel"),
             vehicleBrand: document.getElementById("vehicleBrand"),
@@ -1156,18 +1150,15 @@
             totalPrice: document.getElementById("totalPrice"),
             cartTableBody: document.getElementById("cartTableBody"),
 
-            // Form elements
             form: document.getElementById("bookingForm"),
             resetButton: document.getElementById("resetButton"),
             submitButton: document.getElementById("submitButton"),
             submitButtonText: document.getElementById("submitButtonText")
         };
 
-        // Hidden inputs for cart data and vehicle IDs
         let cartInput = document.getElementById("cartData") || createHiddenInput("cartData");
         let vehicleIdsInput = document.getElementById("vehicleIds") || createHiddenInput("vehicleIds");
 
-        // Helper Functions
         function createHiddenInput(name) {
             const input = document.createElement("input");
             input.type = "hidden";
@@ -1183,7 +1174,6 @@
             return cell;
         }
 
-        // Customer Functions
         function updateCustomerDetails() {
             const customerId = elements.customerId.value;
             const customer = customersData[customerId];
@@ -1192,7 +1182,6 @@
             elements.customerEmail.value = customer ? customer.email : "";
         }
 
-        // Vehicle Functions
         function updateVehicleDetails() {
             const vehicleId = elements.vehicleId.value;
             const vehicle = vehiclesData[vehicleId];
@@ -1300,11 +1289,9 @@
 
         function updateVehicleIds() {
             const vehicleIds = cart.map(item => item.vehicleId);
-            vehicleIdsInput.value = JSON.stringify(vehicleIds); // Convert array to string
+            vehicleIdsInput.value = JSON.stringify(vehicleIds);
         }
 
-
-        // Form Functions
         function validateSubmission() {
             if (cart.length === 0) {
                 alert("Cannot submit booking: Cart is empty. Please add at least one vehicle.");
@@ -1373,14 +1360,27 @@
             }
         });
 
-        // Initial Setup
         updateCustomerDetails();
         updateVehicleDetails();
         console.table({customers: customersData, vehicles: vehiclesData});
     });
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const statusForms = document.querySelectorAll('.activity-item form');
+        statusForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                const submitButton = this.querySelector('.update-status-btn');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Updating...';
 
-
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<i class="bi bi-check-circle me-1"></i> Update';
+                }, 2000);
+            });
+        });
+    });
+</script>
 </body>
-
 </html>

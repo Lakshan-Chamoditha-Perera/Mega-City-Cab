@@ -1,5 +1,6 @@
 package com.megacitycab.megacitycabservice.util;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -25,10 +26,8 @@ public abstract class SqlExecutor {
         setPreparedStatementParameters(preparedStatement, args);
 
         if (isSelectQuery(sql)) {
-//            System.out.println("Executing SELECT query.");
             return (T) preparedStatement.executeQuery();
         } else {
-//            System.out.println("Executing UPDATE/INSERT/DELETE query.");
             int rowsAffected = preparedStatement.executeUpdate();
             return (T) (Boolean) (rowsAffected > 0);
         }
@@ -88,7 +87,7 @@ public abstract class SqlExecutor {
         if (arg == null) {
             return "NULL";
         } else if (arg instanceof String || arg instanceof Character) {
-            return "'" + arg.toString() + "'";
+            return "'" + arg + "'";
         } else {
             return arg.toString();
         }

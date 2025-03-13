@@ -7,12 +7,15 @@ import com.megacitycab.megacitycabservice.repository.RepositoryType;
 import com.megacitycab.megacitycabservice.repository.custom.UserRepository;
 import com.megacitycab.megacitycabservice.repository.factory.RepositoryFactory;
 import com.megacitycab.megacitycabservice.service.custom.AuthService;
+import com.megacitycab.megacitycabservice.util.EmailUtility;
 import com.megacitycab.megacitycabservice.util.TransactionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -21,17 +24,18 @@ import java.util.logging.Logger;
 public class AuthServiceImpl implements AuthService {
 
     private static final Logger logger = Logger.getLogger(AuthServiceImpl.class.getName());
-
     private static final String LOGIN_URL = "/auth/login";
     private static final String REGISTER_URL = "/auth/register";
     private static final String DASHBOARD_URL = "/home";
 
     private final TransactionManager transactionManager;
     private final UserRepository userRepository;
+    private final EmailUtility emailUtility;
 
     public AuthServiceImpl(TransactionManager transactionManager) {
         this.transactionManager = transactionManager;
         this.userRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.USER);
+        this.emailUtility = EmailUtility.getInstance();
     }
 
     @Override
@@ -43,37 +47,50 @@ public class AuthServiceImpl implements AuthService {
             String password = request.getParameter("password");
 
             if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/auth/login?error=invalid_input");
+                response.sendRedirect(request.getContextPath() + LOGIN_URL + "?error=invalid_input");
                 return;
             }
 
-            Optional<User> user = transactionManager.doReadOnly(connection -> userRepository.findByEmail(email, connection));
+            Optional<User> user = transactionManager.doReadOnly(connection ->
+                    userRepository.findByEmail(email, connection));
 
             if (user.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/auth/login?error=user_not_found");
+                response.sendRedirect(request.getContextPath() + LOGIN_URL + "?error=user_not_found");
                 return;
             }
 
             User userEntity = user.get();
 
             if (!userEntity.getPasswordHash().equals(password)) {
-                response.sendRedirect(request.getContextPath() + "/auth/login?error=invalid_credentials");
+                response.sendRedirect(request.getContextPath() + LOGIN_URL + "?error=invalid_credentials");
                 return;
             }
 
             HttpSession session = request.getSession();
-            session.setAttribute("user", userEntity);
             session.setAttribute("userId", userEntity.getUserId());
             session.setAttribute("userEmail", userEntity.getEmail());
 
             String sessionToken = UUID.randomUUID().toString();
             session.setAttribute("session_token", sessionToken);
 
-            response.sendRedirect(request.getContextPath() + "/home");
+            String loginTime = LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String username = userEntity.getUsername() != null ? userEntity.getUsername() : email;
+
+            emailUtility.sendEmailAsync(
+                    userEntity.getEmail(),
+                    "Successful Login to MegaCity Cab Service",
+                    "login_email_template.html",
+                    "USERNAME", username,
+                    "LOGIN_TIME", loginTime
+            );
+            logger.info("Login notification email queued for: " + email);
+
+            response.sendRedirect(request.getContextPath() + DASHBOARD_URL);
 
         } catch (Exception e) {
-            logger.severe("Error during login: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/auth/login?error=system_error");
+            logger.log(Level.SEVERE, "Error during login: " + e.getMessage(), e);
+            response.sendRedirect(request.getContextPath() + LOGIN_URL + "?error=system_error");
         }
     }
 
@@ -118,7 +135,6 @@ public class AuthServiceImpl implements AuthService {
 
             if (session != null) {
                 SecurityFilter.handleLogout(request);
-                session.invalidate();
             }
 
             response.sendRedirect(request.getContextPath() + LOGIN_URL + "?logout=success");
