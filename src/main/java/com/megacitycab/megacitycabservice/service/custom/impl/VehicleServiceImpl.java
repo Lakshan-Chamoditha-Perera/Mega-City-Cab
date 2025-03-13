@@ -23,13 +23,11 @@ public class VehicleServiceImpl implements VehicleService {
     private final TransactionManager transactionManager;
     private final VehicleRepository vehicleRepository;
     private final DriverRepository driverRepository;
-    private final VehicleBookingDetailsRepository vehicleBookingDetailsRepository;
 
     public VehicleServiceImpl(TransactionManager transactionManager) {
         this.transactionManager = transactionManager;
         vehicleRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.VEHICLE);
         driverRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.DRIVER);
-        vehicleBookingDetailsRepository = RepositoryFactory.getInstance().getRepository(RepositoryType.VEHICLE_BOOKING_DETAILS);
     }
 
     @Override
