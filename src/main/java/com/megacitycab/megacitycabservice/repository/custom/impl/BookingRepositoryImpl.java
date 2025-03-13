@@ -56,10 +56,8 @@ public class BookingRepositoryImpl implements BookingRepository {
         statement.setDouble(9, booking.getTotalPrice());
         statement.setInt(10, booking.getAddedUserId());
 
-        // Execute the update
         statement.executeUpdate();
 
-        // Retrieve generated keys (the ID)
         ResultSet generatedKeys = statement.getGeneratedKeys();
         if (generatedKeys.next()) {
             return generatedKeys.getInt(1); // Return the generated booking ID
@@ -70,13 +68,12 @@ public class BookingRepositoryImpl implements BookingRepository {
 
     @Override
     public List<BookingDTO> getBookingsWithCustomer(Connection connection) throws SQLException {
-        String sql = "SELECT b.bookingId, c.firstName, c.lastName, b.pickupTime, b.total, b.status, b.createdAt, b.distance " +
+        String sql = "SELECT b.bookingId, c.firstName, c.lastName, b.pickupTime, b.total, b.status, b.createdAt, b.distance,c.customerId " +
                 "FROM booking b JOIN customer c ON b.customerId = c.customerId";
         List<BookingDTO> bookings = new ArrayList<>();
 
         try (ResultSet resultSet = SqlExecutor.execute(connection, sql)) {
             while (resultSet.next()) {
-                // Create a BookingDTO object using the Builder pattern
                 BookingDTO bookingDTO = BookingDTO.builder()
                         .bookingId(resultSet.getInt("bookingId"))
                         .customerName(resultSet.getString("firstName") + " " + resultSet.getString("lastName"))
@@ -85,9 +82,8 @@ public class BookingRepositoryImpl implements BookingRepository {
                         .total(resultSet.getFloat("total"))
                         .status(resultSet.getString("status"))
                         .distance(resultSet.getDouble("distance"))
+                        .customerId(resultSet.getInt("customerId"))
                         .build();
-
-                // Add the BookingDTO to the list
                 bookings.add(bookingDTO);
             }
         }
