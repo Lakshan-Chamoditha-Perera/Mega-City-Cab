@@ -1,5 +1,3 @@
--- Drop the database if it exists (use with caution)
-DROP DATABASE IF EXISTS megacity_test_db;
 
 -- Create the Database
 CREATE DATABASE IF NOT EXISTS megacity_test_db;
