@@ -14,6 +14,7 @@ public class WebAppConfiguration {
         loadProperties();
     }
 
+
     public static WebAppConfiguration getInstance() {
         if (instance == null) {
             synchronized (WebAppConfiguration.class) {
