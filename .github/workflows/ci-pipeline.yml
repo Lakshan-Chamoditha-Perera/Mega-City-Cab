@@ -63,14 +63,14 @@ jobs:
           mysql -h 127.0.0.1 -u root -p1234 megacity_test_db -e "SHOW TABLES;" || { echo "Failed to show tables"; exit 1; }
 
       - name: Build without tests with Maven
-        run: mvn clean install -DskipTests
+        run: mvn clean install
         env:
           DATABASE_URL: ${{ env.DATABASE_URL }}
           DATABASE_USER: ${{ env.DATABASE_USER }}
           DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
 
       - name: Upload build artifacts
-        if: success()  # Only run if build succeeds
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
