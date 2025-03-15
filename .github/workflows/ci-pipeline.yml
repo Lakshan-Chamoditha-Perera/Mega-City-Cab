@@ -72,27 +72,13 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-      - name: Create and merge PR to staging
+      - name: Create PR to staging
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Try to create PR if it doesn't exist
           PR_URL=$(gh pr create --base staging --head dev --title "Promote dev to staging" --body "Automated PR: Promoting changes from dev to staging." --fill 2>&1) || echo "PR already exists or cannot be created"
-          
-          # Get PR number regardless of whether it was just created or already existed
-          PR_NUMBER=$(gh pr list --base staging --head dev --json number --jq '.[0].number')
-          
-          if [ -n "$PR_NUMBER" ]; then
-            echo "PR #$PR_NUMBER exists, proceeding with merge"
-            # Merge the PR
-            gh pr merge $PR_NUMBER --merge --delete-branch=false
-          else
-            echo "No PR exists between dev and staging. Attempting direct merge."
-            # Direct merge as fallback
-            git checkout staging
-            git merge origin/dev -m "Direct merge from dev to staging"
-            git push origin staging
-          fi
+
 
   build:
     needs: create-pr-to-staging  # Only runs if PR is created
