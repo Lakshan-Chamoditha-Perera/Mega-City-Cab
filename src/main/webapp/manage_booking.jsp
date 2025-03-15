@@ -464,6 +464,7 @@
                 margin-top: 0.5rem;
             }
         }
+
         .custom-help-icon {
             font-size: 1.2rem;
             color: #0d6efd;
@@ -893,6 +894,7 @@
                     </div>
                 </div>
             </form>
+
             <div id="all-bookings-view">
                 <div>
                     <div class="activity-card">
@@ -1000,8 +1002,8 @@
     </div>
 </div>
 <!-- Booking Management Modal -->
-<!-- Booking Management Modal -->
-<div class="modal fade custom-modal" id="bookingGuidelinesModal" tabindex="-1" aria-labelledby="bookingGuidelinesModalLabel" aria-hidden="true">
+<div class="modal fade custom-modal" id="bookingGuidelinesModal" tabindex="-1"
+     aria-labelledby="bookingGuidelinesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <!-- Modal Header -->
@@ -1024,7 +1026,9 @@
 
                 <h5>1. Create a New Booking</h5>
                 <ol>
-                    <li>Click <strong>"New Booking"</strong> in Quick Actions or navigate to <strong>Bookings</strong> in the navigation bar.</li>
+                    <li>Click <strong>"New Booking"</strong> in Quick Actions or navigate to <strong>Bookings</strong>
+                        in the navigation bar.
+                    </li>
                     <li>Select a customer from the dropdown.</li>
                     <li>Enter booking details:
                         <ul>
@@ -1066,6 +1070,265 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ITEMS_PER_PAGE = 10;
+        const bookingsContainer = document.querySelector('.activity-card');
+        const allBookingItems = Array.from(document.querySelectorAll('.activity-item'));
+        const paginationContainer = document.createElement('div');
+        paginationContainer.className = 'pagination-container d-flex justify-content-center mt-4';
+        bookingsContainer.parentNode.insertBefore(paginationContainer, bookingsContainer.nextSibling);
+
+        const filterContainer = document.createElement('div');
+        filterContainer.className = 'filter-container mb-3';
+        filterContainer.innerHTML = `
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="input-group">
+          <span class="input-group-text">Search</span>
+          <input type="text" id="search-input" class="form-control" placeholder="Customer name, booking ID...">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="input-group">
+          <span class="input-group-text">Status</span>
+          <select id="status-filter" class="form-select">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="canceled">Canceled</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="input-group">
+          <span class="input-group-text">Date Range</span>
+          <input type="date" id="date-from" class="form-control">
+          <input type="date" id="date-to" class="form-control">
+        </div>
+      </div>
+      <div class="col-md-1">
+        <button id="reset-filters" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-x-circle"></i>
+        </button>
+      </div>
+    </div>
+  `;
+        bookingsContainer.parentNode.insertBefore(filterContainer, bookingsContainer);
+
+        // State
+        let currentPage = 1;
+        let filteredItems = [...allBookingItems];
+
+        // Filter bookings based on search criteria
+        function filterBookings() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const statusFilter = document.getElementById('status-filter').value;
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+
+            filteredItems = allBookingItems.filter(item => {
+                const bookingText = item.textContent.toLowerCase();
+                const statusMatch = statusFilter === '' ||
+                    item.querySelector('.badge').textContent.trim().toLowerCase() === statusFilter;
+
+                // Date filtering logic
+                let dateMatch = true;
+                if (dateFrom || dateTo) {
+                    const pickupDateElement = item.querySelector('[class*="text-success"]');
+                    if (pickupDateElement) {
+                        const pickupDateStr = pickupDateElement.textContent.trim();
+                        const pickupDate = new Date(pickupDateStr);
+
+                        if (dateFrom && new Date(dateFrom) > pickupDate) {
+                            dateMatch = false;
+                        }
+
+                        if (dateTo && new Date(dateTo) < pickupDate) {
+                            dateMatch = false;
+                        }
+                    }
+                }
+
+                return bookingText.includes(searchTerm) && statusMatch && dateMatch;
+            });
+
+            currentPage = 1;
+            renderBookings();
+            renderPagination();
+        }
+
+        // Render bookings for current page
+        function renderBookings() {
+            // Hide all bookings first
+            allBookingItems.forEach(item => {
+                item.style.display = 'none';
+            });
+
+            // Calculate start and end index for current page
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredItems.length);
+
+            // Show only the bookings for current page
+            for (let i = startIndex; i < endIndex; i++) {
+                filteredItems[i].style.display = 'flex';
+            }
+
+            // Show empty state if no results
+            if (filteredItems.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state text-center py-4';
+                emptyState.innerHTML = `
+        <i class="bi bi-search text-muted" style="font-size: 2rem;"></i>
+        <p class="mt-2 mb-0">No bookings match your filters</p>
+      `;
+
+                // Remove any existing empty state
+                const existingEmptyState = bookingsContainer.querySelector('.empty-state');
+                if (existingEmptyState) {
+                    existingEmptyState.remove();
+                }
+
+                bookingsContainer.appendChild(emptyState);
+            } else {
+                // Remove empty state if exists
+                const existingEmptyState = bookingsContainer.querySelector('.empty-state');
+                if (existingEmptyState) {
+                    existingEmptyState.remove();
+                }
+            }
+        }
+
+        // Render pagination controls
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+
+            // Clear existing pagination
+            paginationContainer.innerHTML = '';
+
+            if (totalPages <= 1) {
+                return;
+            }
+
+            const paginationNav = document.createElement('nav');
+            paginationNav.setAttribute('aria-label', 'Bookings pagination');
+
+            const paginationList = document.createElement('ul');
+            paginationList.className = 'pagination';
+
+            // Previous button
+            const prevItem = document.createElement('li');
+            prevItem.className = `page-item ${currentPage == 1 ? 'disabled' : ''}`;
+            prevItem.innerHTML = `<a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>`;
+            prevItem.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderBookings();
+                    renderPagination();
+                }
+            });
+            paginationList.appendChild(prevItem);
+
+            // Page numbers
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+            // Adjust start if we're near the end
+            if (endPage - startPage + 1 < maxButtons) {
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item ${i == currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                pageItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentPage = i;
+                    renderBookings();
+                    renderPagination();
+                    // Scroll to top of bookings container
+                    bookingsContainer.scrollIntoView({behavior: 'smooth'});
+                });
+                paginationList.appendChild(pageItem);
+            }
+
+            // Next button
+            const nextItem = document.createElement('li');
+            nextItem.className = `page-item ${currentPage == totalPages ? 'disabled' : ''}`;
+            nextItem.innerHTML = `<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>`;
+            nextItem.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderBookings();
+                    renderPagination();
+                }
+            });
+            paginationList.appendChild(nextItem);
+
+            paginationNav.appendChild(paginationList);
+            paginationContainer.appendChild(paginationNav);
+
+            // Add pagination info
+            const paginationInfo = document.createElement('div');
+            paginationInfo.className = 'pagination-info ms-3 d-flex align-items-center';
+            paginationInfo.innerHTML = `Showing ${filteredItems.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0}-${Math.min(currentPage * ITEMS_PER_PAGE, filteredItems.length)} of ${filteredItems.length} bookings`;
+            paginationContainer.appendChild(paginationInfo);
+        }
+
+        // Add event listeners
+        document.getElementById('search-input').addEventListener('input', filterBookings);
+        document.getElementById('status-filter').addEventListener('change', filterBookings);
+        document.getElementById('date-from').addEventListener('change', filterBookings);
+        document.getElementById('date-to').addEventListener('change', filterBookings);
+        document.getElementById('reset-filters').addEventListener('click', () => {
+            document.getElementById('search-input').value = '';
+            document.getElementById('status-filter').value = '';
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
+            filteredItems = [...allBookingItems];
+            currentPage = 1;
+            renderBookings();
+            renderPagination();
+        });
+
+        // Initialize
+        renderBookings();
+        renderPagination();
+
+        // Add CSS styles
+        const style = document.createElement('style');
+        style.textContent = `
+    .activity-item {
+      display: flex;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border: 1px solid #e9ecef;
+      border-radius: 0.5rem;
+      background-color: #fff;
+    }
+    .pagination-container {
+      margin-bottom: 2rem;
+    }
+    .filter-container {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .empty-state {
+      width: 100%;
+      padding: 2rem;
+      border: 1px dashed #dee2e6;
+      border-radius: 0.5rem;
+      color: #6c757d;
+    }
+  `;
+        document.head.appendChild(style);
+    });
+
     // Function to toggle visibility of the "View All Bookings" section and the booking form
     function toggleView(viewId, formId) {
         const viewSection = document.getElementById(viewId);
