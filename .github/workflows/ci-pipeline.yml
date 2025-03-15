@@ -58,19 +58,6 @@ jobs:
           DATABASE_USER: ${{ env.DATABASE_USER }}
           DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
 
-      - name: Generate test reports
-        run: |
-          mvn surefire-report:report
-          mkdir -p test-results
-          cp target/site/surefire-report.html test-results/
-          cp -r target/surefire-reports/* test-results/
-
-      - name: Archive test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: test-results
-
   create-pr-to-staging:
     needs: test  # Only runs if the test job succeeds
     runs-on: ubuntu-latest
