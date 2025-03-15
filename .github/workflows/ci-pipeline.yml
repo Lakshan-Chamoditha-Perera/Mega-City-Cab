@@ -3,7 +3,7 @@ name: JavaEE CI/CD Pipeline
 on:
   push:
     branches:
-      - dev 
+      - dev
 
 jobs:
   test:
@@ -59,20 +59,32 @@ jobs:
           DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
 
   create-pr:
-    needs: test  # Only runs if the test job succeeds
+    needs: test  # Runs only if tests pass
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create Pull Request to dev
+      - name: Authenticate with GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Create or Update PR from Dev to Staging
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr create --base dev --head ${{ github.ref_name }} --title "Merge ${{ github.ref_name }} into dev" --body "Automated PR: Merging feature branch into dev." || echo "PR already exists."
+          PR_NUMBER=$(gh pr list --base staging --head dev --json number --jq '.[0].number')
+          if [[ -n "$PR_NUMBER" ]]; then
+            echo "PR already exists. Updating title and body."
+            gh pr edit "$PR_NUMBER" --title "Merge dev into staging" --body "Automated PR: Merging dev into staging after tests passed."
+          else
+            gh pr create --base staging --head dev --title "Merge dev into staging" --body "Automated PR: Merging dev into staging after tests passed."
+          fi
 
   build:
-    needs: create-pr  # Only runs if PR is created
+    needs: create-pr  # Runs only if PR is created/updated
     runs-on: ubuntu-latest
 
     steps:
