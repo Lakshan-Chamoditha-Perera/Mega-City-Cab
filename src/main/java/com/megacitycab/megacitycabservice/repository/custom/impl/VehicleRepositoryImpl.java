@@ -138,7 +138,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public Boolean findVehicleAvailabilityOnSpecificDate(Connection connection, Integer vehicleId, Date date) throws SQLException {
         String sql = """
                     SELECT b.pickupTime, vbd.vehicleId
-                                FROM vehiclebookingdetails vbd
+                                FROM vehicle_booking_details vbd
                                          JOIN booking b ON vbd.bookingId = b.bookingId
                                 WHERE vbd.vehicleId = ?
                                   AND b.status = 'confirmed'
@@ -168,7 +168,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     public Boolean hasPendingOrConfirmedBookings(Integer id, Connection connection) throws SQLException {
         String sql = """
                 SELECT 1
-                FROM vehiclebookingdetails vbd
+                FROM vehicle_booking_details vbd
                          LEFT JOIN booking b ON b.bookingId = vbd.bookingId
                 WHERE vbd.vehicleId = ?
                   AND b.status IN ('pending', 'confirmed')

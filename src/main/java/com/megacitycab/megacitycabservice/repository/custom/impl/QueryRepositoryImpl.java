@@ -14,7 +14,7 @@ public class QueryRepositoryImpl implements QueryRepository {
 
     @Override
     public List<VehicleDTO> getVehiclesByBookingId(Connection connection, Integer bookingId) throws SQLException {
-        String sql = "SELECT * FROM vehicle v LEFT JOIN vehiclebookingdetails vbd ON v.vehicleId = vbd.vehicleId WHERE vbd.bookingId = ?";
+        String sql = "SELECT * FROM vehicle v LEFT JOIN vehicle_booking_details vbd ON v.vehicleId = vbd.vehicleId WHERE vbd.bookingId = ?";
         ResultSet resultSet = SqlExecutor.execute(
                 connection,
                 sql,

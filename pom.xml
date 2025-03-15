@@ -6,7 +6,7 @@
 
     <groupId>com.megacitycab</groupId>
     <artifactId>mega-city-cab-service</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <name>Mega City Cab Service</name>
     <packaging>war</packaging>
 
@@ -86,7 +86,13 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.3.0</version>
+            </plugin>
         </plugins>
+
     </build>
 
 </project>

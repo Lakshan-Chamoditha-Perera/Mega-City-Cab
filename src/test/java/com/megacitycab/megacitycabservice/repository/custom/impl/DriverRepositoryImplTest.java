@@ -15,7 +15,7 @@ class DriverRepositoryImplTest {
 
     static Connection connection;
     private static DriverRepositoryImpl driverRepository;
-    private static Integer testDriverId1=18;
+    private static Integer testDriverId1 = 18;
     private static Integer testDriverId2;
     private static Integer testDriverId3;
 

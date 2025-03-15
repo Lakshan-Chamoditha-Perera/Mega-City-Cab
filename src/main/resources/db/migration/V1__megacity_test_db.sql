@@ -120,7 +120,7 @@ DELIMITER //
 -- Procedure to get active drivers
 CREATE PROCEDURE GetActiveDrivers()
 BEGIN
-    SELECT * FROM driver WHERE availability = TRUE AND deleted = FALSE;
+SELECT * FROM driver WHERE availability = TRUE AND deleted = FALSE;
 END //
 DELIMITER ;
 
@@ -128,7 +128,7 @@ DELIMITER //
 -- Procedure to get available vehicles
 CREATE PROCEDURE GetAvailableVehicles()
 BEGIN
-    SELECT * FROM vehicle WHERE availability = TRUE AND deleted = FALSE;
+SELECT * FROM vehicle WHERE availability = TRUE AND deleted = FALSE;
 END //
 DELIMITER ;
 
@@ -137,7 +137,7 @@ DELIMITER //
 -- Procedure to get active customers
 CREATE PROCEDURE GetActiveCustomers()
 BEGIN
-    SELECT * FROM customer WHERE isDeleted = FALSE;
+SELECT * FROM customer WHERE isDeleted = FALSE;
 END //
 
 DELIMITER ;
@@ -146,7 +146,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_get_all_customers()
 BEGIN
-    SELECT * FROM customer WHERE isDeleted = FALSE;
+SELECT * FROM customer WHERE isDeleted = FALSE;
 END //
 DELIMITER ;
 
@@ -154,7 +154,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_get_customer_by_id(IN p_customerId INT)
 BEGIN
-    SELECT * FROM customer WHERE customerId = p_customerId AND isDeleted = FALSE;
+SELECT * FROM customer WHERE customerId = p_customerId AND isDeleted = FALSE;
 END //
 DELIMITER ;
 
@@ -162,7 +162,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_delete_customer(IN p_customerId INT)
 BEGIN
-    UPDATE customer SET isDeleted = TRUE WHERE customerId = p_customerId;
+UPDATE customer SET isDeleted = TRUE WHERE customerId = p_customerId;
 END //
 DELIMITER ;
 
@@ -179,16 +179,16 @@ CREATE PROCEDURE sp_update_customer(
     IN p_dateOfBirth DATE
 )
 BEGIN
-    UPDATE customer
-    SET firstName   = p_firstName,
-        lastName    = p_lastName,
-        email       = p_email,
-        nic         = p_nic,
-        address     = p_address,
-        mobileNo    = p_mobileNo,
-        dateOfBirth = p_dateOfBirth
-    WHERE customerId = p_customerId
-      AND isDeleted = FALSE;
+UPDATE customer
+SET firstName   = p_firstName,
+    lastName    = p_lastName,
+    email       = p_email,
+    nic         = p_nic,
+    address     = p_address,
+    mobileNo    = p_mobileNo,
+    dateOfBirth = p_dateOfBirth
+WHERE customerId = p_customerId
+  AND isDeleted = FALSE;
 END //
 DELIMITER ;
 
@@ -196,7 +196,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_exists_customer_by_id(IN p_customerId INT, OUT p_exists BOOLEAN)
 BEGIN
-    SELECT COUNT(*) > 0 INTO p_exists FROM customer WHERE customerId = p_customerId AND isDeleted = FALSE;
+SELECT COUNT(*) > 0 INTO p_exists FROM customer WHERE customerId = p_customerId AND isDeleted = FALSE;
 END //
 DELIMITER ;
 
@@ -204,7 +204,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_exists_customer_by_email(IN p_email VARCHAR(255), OUT p_exists BOOLEAN)
 BEGIN
-    SELECT COUNT(*) > 0 INTO p_exists FROM customer WHERE email = p_email;
+SELECT COUNT(*) > 0 INTO p_exists FROM customer WHERE email = p_email;
 END //
 DELIMITER ;
 
@@ -216,7 +216,7 @@ CREATE PROCEDURE sp_exists_customer_by_email_except_id(
     OUT p_exists BOOLEAN
 )
 BEGIN
-    SELECT COUNT(*) > 0 INTO p_exists FROM customer WHERE email = p_email AND customerId <> p_customerId;
+SELECT COUNT(*) > 0 INTO p_exists FROM customer WHERE email = p_email AND customerId <> p_customerId;
 END //
 DELIMITER ;
 
@@ -224,7 +224,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_get_customer_count(OUT p_count INT)
 BEGIN
-    SELECT COUNT(*) INTO p_count FROM customer WHERE isDeleted = FALSE;
+SELECT COUNT(*) INTO p_count FROM customer WHERE isDeleted = FALSE;
 END //
 DELIMITER ;
 
@@ -232,21 +232,21 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_get_vehicle_count(OUT p_count INT)
 BEGIN
-    SELECT COUNT(*) INTO p_count FROM vehicle WHERE deleted = FALSE;
+SELECT COUNT(*) INTO p_count FROM vehicle WHERE deleted = FALSE;
 END //
 DELIMITER ;
 
 DELIMITER //
 CREATE PROCEDURE sp_get_driver_count(OUT p_count INT)
 BEGIN
-    SELECT COUNT(*) INTO p_count FROM driver WHERE deleted = FALSE;
+SELECT COUNT(*) INTO p_count FROM driver WHERE deleted = FALSE;
 END //
 DELIMITER ;
 
 DELIMITER //
 CREATE PROCEDURE sp_get_booking_count(OUT p_count INT)
 BEGIN
-    SELECT COUNT(*) INTO p_count FROM booking WHERE deleted = FALSE;
+SELECT COUNT(*) INTO p_count FROM booking WHERE deleted = FALSE;
 END //
 DELIMITER ;
 
@@ -258,11 +258,11 @@ CREATE PROCEDURE sp_get_bookings_count_by_status(
     OUT p_count INT
 )
 BEGIN
-    SELECT COUNT(*)
-    INTO p_count
-    FROM booking
-    WHERE status = p_status
-      AND deleted = FALSE;
+SELECT COUNT(*)
+INTO p_count
+FROM booking
+WHERE status = p_status
+  AND deleted = FALSE;
 END //
 
 DELIMITER ;
@@ -271,10 +271,10 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE sp_get_total_bookings_count(OUT p_count INT)
 BEGIN
-    SELECT COUNT(*)
-    INTO p_count
-    FROM booking
-    WHERE deleted = FALSE;
+SELECT COUNT(*)
+INTO p_count
+FROM booking
+WHERE deleted = FALSE;
 END //
 DELIMITER ;
 
@@ -286,15 +286,15 @@ CREATE PROCEDURE sp_get_total_revenue(
     OUT p_total_revenue DECIMAL(15, 2)
 )
 BEGIN
-    SELECT SUM(total)
-    INTO p_total_revenue
-    FROM booking
-    WHERE status = 'confirmed'
-      AND deleted = FALSE;
+SELECT SUM(total)
+INTO p_total_revenue
+FROM booking
+WHERE status = 'confirmed'
+  AND deleted = FALSE;
 
-    IF p_total_revenue IS NULL THEN
+IF p_total_revenue IS NULL THEN
         SET p_total_revenue = 0.00;
-    END IF;
+END IF;
 END //
 
 DELIMITER ;
@@ -305,15 +305,15 @@ DELIMITER //
 
 CREATE PROCEDURE sp_get_weekly_revenue()
 BEGIN
-    SELECT CONCAT(DATE_FORMAT(MIN(createdAt), '%Y-%m-%d'), ' to ', DATE_FORMAT(MAX(createdAt), '%Y-%m-%d')) AS period,
-           SUM(total)                                                                                       AS totalRevenue,
-           SUM(discount)                                                                                    AS totalDiscounts,
-           SUM(tax)                                                                                         AS totalTaxes,
-           SUM(total - discount + tax)                                                                      AS netRevenue
-    FROM booking
-    WHERE YEARWEEK(createdAt) = YEARWEEK(CURDATE())
-      AND status = 'confirmed'
-    GROUP BY YEARWEEK(createdAt);
+SELECT CONCAT(DATE_FORMAT(MIN(createdAt), '%Y-%m-%d'), ' to ', DATE_FORMAT(MAX(createdAt), '%Y-%m-%d')) AS period,
+       SUM(total)                                                                                       AS totalRevenue,
+       SUM(discount)                                                                                    AS totalDiscounts,
+       SUM(tax)                                                                                         AS totalTaxes,
+       SUM(total - discount + tax)                                                                      AS netRevenue
+FROM booking
+WHERE YEARWEEK(createdAt) = YEARWEEK(CURDATE())
+  AND status = 'confirmed'
+GROUP BY YEARWEEK(createdAt);
 END //
 
 DELIMITER ;
@@ -323,14 +323,14 @@ DELIMITER //
 
 CREATE PROCEDURE sp_get_monthly_revenue()
 BEGIN
-    SELECT DATE_FORMAT(MIN(createdAt), '%Y-%m') AS period, -- Use MIN() to resolve grouping issue
-           SUM(total)                           AS totalRevenue,
-           SUM(discount)                        AS totalDiscounts,
-           SUM(tax)                             AS totalTaxes,
-           SUM(total - discount + tax)          AS netRevenue
-    FROM booking
-    WHERE status = 'confirmed'
-    GROUP BY YEAR(createdAt), MONTH(createdAt);
+SELECT DATE_FORMAT(MIN(createdAt), '%Y-%m') AS period, -- Use MIN() to resolve grouping issue
+       SUM(total)                           AS totalRevenue,
+       SUM(discount)                        AS totalDiscounts,
+       SUM(tax)                             AS totalTaxes,
+       SUM(total - discount + tax)          AS netRevenue
+FROM booking
+WHERE status = 'confirmed'
+GROUP BY YEAR(createdAt), MONTH(createdAt);
 END //
 
 DELIMITER ;
@@ -340,14 +340,14 @@ DELIMITER //
 
 CREATE PROCEDURE sp_get_yearly_revenue()
 BEGIN
-    SELECT YEAR(createdAt)             AS period,
-           SUM(total)                  AS totalRevenue,
-           SUM(discount)               AS totalDiscounts,
-           SUM(tax)                    AS totalTaxes,
-           SUM(total - discount + tax) AS netRevenue
-    FROM booking
-    WHERE status = 'confirmed'
-    GROUP BY YEAR(createdAt);
+SELECT YEAR(createdAt)             AS period,
+    SUM(total)                  AS totalRevenue,
+    SUM(discount)               AS totalDiscounts,
+    SUM(tax)                    AS totalTaxes,
+    SUM(total - discount + tax) AS netRevenue
+FROM booking
+WHERE status = 'confirmed'
+GROUP BY YEAR(createdAt);
 END //
 
 DELIMITER ;
