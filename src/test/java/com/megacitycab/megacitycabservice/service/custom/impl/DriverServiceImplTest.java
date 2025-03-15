@@ -169,10 +169,10 @@ class DriverServiceImplTest {
     @Order(8)
     @DisplayName("Test Updating Driver")
     void testUpdateDriver() throws MegaCityCabException {
-        assertNotNull(testDriverId, "Test driver ID should not be null");
+        assertNotNull(1, "Test driver ID should not be null");
 
         DriverDTO updatedDriver = DriverDTO.builder()
-                .driverId(testDriverId)
+                .driverId(1)
                 .firstName("Nimal")
                 .lastName("Fernando")
                 .licenseNumber("C9876543")
@@ -185,7 +185,7 @@ class DriverServiceImplTest {
 
         List<DriverDTO> drivers = driverService.getAllDrivers();
         boolean isUpdated = drivers.stream()
-                .anyMatch(driver -> driver.getDriverId() == testDriverId
+                .anyMatch(driver -> driver.getDriverId() == 1
                         && driver.getFirstName().equals("Nimal")
                         && driver.getLastName().equals("Fernando"));
 
@@ -196,13 +196,13 @@ class DriverServiceImplTest {
     @Order(9)
     @DisplayName("Test Deleting a Driver")
     void testDeleteDriver() throws MegaCityCabException {
-        assertNotNull(testDriverId, "Test driver ID should not be null");
+        assertNotNull(1, "Test driver ID should not be null");
 
-        Boolean result = driverService.deleteDriver(testDriverId);
+        Boolean result = driverService.deleteDriver(1);
         assertTrue(result, "Driver should be deleted successfully");
 
         List<DriverDTO> drivers = driverService.getAllDrivers();
-        boolean exists = drivers.stream().anyMatch(driver -> driver.getDriverId() == testDriverId);
+        boolean exists = drivers.stream().anyMatch(driver -> driver.getDriverId() == 1);
 
         assertFalse(exists, "Deleted driver should not exist in DB");
     }
