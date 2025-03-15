@@ -533,6 +533,7 @@
                 Customer List
             </h2>
             <div class="d-flex justify-content-end mb-3">
+
                 <button class="btn btn-secondary me-2" onclick="printCustomerList()">
                     <i class="bi bi-printer"></i> Print
                 </button>
@@ -540,7 +541,19 @@
                     <i class="bi bi-file-earmark-spreadsheet"></i> Export as CSV
                 </button>
             </div>
+            <div class="filter-container mb-3">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text">Search</span>
+                            <input type="text" id="search-input" class="form-control"
+                                   placeholder="Name, mobile, email...">
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="table-container">
+
                 <c:if test="${empty customers}">
                     <div class="alert alert-info">
                         No customers found. Add a new customer to get started!
@@ -608,7 +621,8 @@
     </div>
 </div>
 
-<div class="modal fade custom-modal" id="customerGuidelinesModal" tabindex="-1" aria-labelledby="customerGuidelinesModalLabel" aria-hidden="true">
+<div class="modal fade custom-modal" id="customerGuidelinesModal" tabindex="-1"
+     aria-labelledby="customerGuidelinesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -629,7 +643,9 @@
 
                 <h5>1. Register a New Customer</h5>
                 <ol>
-                    <li>Click <strong>"Add Customer"</strong> in Quick Actions or navigate to <strong>Customers</strong> in the navigation bar.</li>
+                    <li>Click <strong>"Add Customer"</strong> in Quick Actions or navigate to <strong>Customers</strong>
+                        in the navigation bar.
+                    </li>
                     <li>Fill in all required fields:
                         <ul>
                             <li><strong>First Name</strong></li>
@@ -824,6 +840,199 @@
             displayTableRows();
         }
         document.getElementById('customerForm').addEventListener('submit', function () {
+            currentPage = 1;
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const ITEMS_PER_PAGE = 10;
+        let currentPage = 1;
+        let filteredRows = [];
+
+        const tableBody = document.querySelector('.customer-table tbody');
+        if (!tableBody) return;
+        const tableRows = Array.from(tableBody.querySelectorAll('tr'));
+        filteredRows = [...tableRows];
+
+        function filterRows() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+
+            filteredRows = tableRows.filter(row => {
+                const fullName = `${row.cells[1].textContent.toLowerCase()} ${row.cells[2].textContent.toLowerCase()}`;
+                const mobileNo = row.cells[6].textContent.toLowerCase();
+                const email = row.cells[7].textContent.toLowerCase();
+
+                return (
+                    fullName.includes(searchTerm) ||
+                    mobileNo.includes(searchTerm) ||
+                    email.includes(searchTerm)
+                );
+
+            });
+
+            currentPage = 1; // Reset to first page
+            displayTableRows();
+            renderPagination();
+        }
+
+        // Display rows for current page
+        function displayTableRows() {
+            tableRows.forEach(row => {
+                row.style.display = 'none';
+            });
+
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredRows.length);
+
+            for (let i = startIndex; i < endIndex; i++) {
+                filteredRows[i].style.display = '';
+            }
+
+            // Show empty state if no results
+            const tableContainer = document.querySelector('.table-container');
+            let emptyState = tableContainer.querySelector('.empty-state');
+            if (filteredRows.length === 0) {
+                if (!emptyState) {
+                    emptyState = document.createElement('div');
+                    emptyState.className = 'empty-state text-center py-4';
+                    emptyState.innerHTML = `
+                    <i class="bi bi-search text-muted" style="font-size: 2rem;"></i>
+                    <p class="mt-2 mb-0">No customers match your filters</p>
+                `;
+                    tableContainer.appendChild(emptyState);
+                }
+            } else if (emptyState) {
+                emptyState.remove();
+            }
+        }
+
+        // Render pagination controls
+        function renderPagination() {
+            let paginationContainer = document.querySelector('.pagination-container');
+            if (!paginationContainer) {
+                paginationContainer = document.createElement('div');
+                paginationContainer.className = 'pagination-container d-flex justify-content-between align-items-center mt-3';
+                const tableContainer = document.querySelector('.table-container');
+                tableContainer.appendChild(paginationContainer);
+            } else {
+                paginationContainer.innerHTML = '';
+            }
+
+            const totalPages = Math.ceil(filteredRows.length / ITEMS_PER_PAGE);
+            if (totalPages <= 1 && filteredRows.length > 0) {
+                document.getElementById('pagination-info').textContent =
+                    `Showing 1 to ${filteredRows.length} of ${filteredRows.length} customers`;
+                return;
+            }
+
+            const paginationNav = document.createElement('nav');
+            paginationNav.setAttribute('aria-label', 'Customer table navigation');
+
+            const paginationList = document.createElement('ul');
+            paginationList.className = 'pagination pagination-sm mb-0';
+
+            // Previous button
+            const prevItem = document.createElement('li');
+            prevItem.className = `page-item ${currentPage == 1 ? 'disabled' : ''}`;
+            prevItem.innerHTML = `<a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">«</span></a>`;
+            prevItem.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayTableRows();
+                    renderPagination();
+                }
+            });
+            paginationList.appendChild(prevItem);
+
+            // Page numbers (limited to 5 buttons)
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+            if (endPage - startPage + 1 < maxButtons) {
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item ${i == currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                pageItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentPage = i;
+                    displayTableRows();
+                    renderPagination();
+                });
+                paginationList.appendChild(pageItem);
+            }
+
+            // Next button
+            const nextItem = document.createElement('li');
+            nextItem.className = `page-item ${currentPage == totalPages ? 'disabled' : ''}`;
+            nextItem.innerHTML = `<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">»</span></a>`;
+            nextItem.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayTableRows();
+                    renderPagination();
+                }
+            });
+            paginationList.appendChild(nextItem);
+
+            const paginationInfo = document.createElement('div');
+            paginationInfo.id = 'pagination-info';
+            paginationInfo.className = 'pagination-info';
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+            const endIndex = Math.min(currentPage * ITEMS_PER_PAGE, filteredRows.length);
+            paginationInfo.textContent =
+                `Showing ${filteredRows.length > 0 ? startIndex : 0} to ${endIndex} of ${filteredRows.length} customers`;
+
+            paginationNav.appendChild(paginationList);
+            paginationContainer.appendChild(paginationInfo);
+            paginationContainer.appendChild(paginationNav);
+        }
+
+        // Event listeners for filters
+        document.getElementById('search-input').addEventListener('input', filterRows);
+        document.getElementById('status-filter').addEventListener('change', filterRows);
+        document.getElementById('date-from').addEventListener('change', filterRows);
+        document.getElementById('date-to').addEventListener('change', filterRows);
+
+
+        // Initial setup
+        if (tableRows.length > 0) {
+            renderPagination();
+            displayTableRows();
+        }
+
+        // Add custom styles
+        const style = document.createElement('style');
+        style.textContent = `
+        .filter-container {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .pagination-container {
+            margin-bottom: 2rem;
+        }
+        .empty-state {
+            width: 100%;
+            padding: 2rem;
+            border: 1px dashed #dee2e6;
+            border-radius: 0.5rem;
+            color: #6c757d;
+        }
+        .customer-table {
+            background-color: #fff;
+            border-radius: 0.5rem;
+        }
+    `;
+        document.head.appendChild(style);
+
+        // Reset pagination on form submission
+        document.getElementById('customerForm')?.addEventListener('submit', function () {
             currentPage = 1;
         });
     });
