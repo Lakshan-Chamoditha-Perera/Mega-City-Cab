@@ -11,7 +11,7 @@ import java.util.List;
 public class VehicleBookingDetailsRepositoryImpl implements VehicleBookingDetailsRepository {
     @Override
     public Boolean save(VehicleBookingDetails entity, Connection connection) throws SQLException {
-        String sql = "INSERT INTO vehiclebookingdetails (bookingId,vehicleid) VALUES(?,?)";
+        String sql = "INSERT INTO vehicle_booking_details (bookingId,vehicleid) VALUES(?,?)";
         return SqlExecutor.execute(
                 connection,
                 sql,
